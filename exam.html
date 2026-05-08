@@ -633,7 +633,7 @@ async function gSeconda(dm, ind) {
     'Rispondi SOLO con questo JSON (nessun altro testo):',
     '{"titolo":"...","introduzione":"...","traccia":"...","punti":["1. ...","2. ...","3. ...","4. ...","5. ..."],"allegati":"...","durata_ore":6}'
   ].join(' ');
-  var raw = await callAI(sys, 'Genera il tema completo di seconda prova come se fosse il vero esame ministeriale italiano. Sii molto dettagliato e realistico.', 3000);
+  var raw = await callAI(sys, 'Genera il tema completo di seconda prova come se fosse il vero esame ministeriale italiano. Sii molto dettagliato e realistico.', 5000);
   var q = safeParseJSON(raw);
   curQ = q.titolo;
   var pl = q.punti.map(function(p) { return '<li style="margin-bottom:10px;line-height:1.7">' + p + '</li>'; }).join('');
