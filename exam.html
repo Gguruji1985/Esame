@@ -605,14 +605,33 @@ async function subOral(qe) {
 
 // ---- SECONDA PROVA ----
 async function gSeconda(dm, ind) {
-  var sys = 'Sei un membro della commissione di seconda prova scritta' + ind + '. Genera un tema ' + dm + ' per: ' + st.subj + '. JSON solo: {"titolo":"...","traccia":"...","punti":["1. ...","2. ...","3. ..."],"durata_ore":6}';
-  var raw = await callAI(sys, 'Genera tema seconda prova.');
+  var sys = [
+    'Sei un membro della commissione ministeriale italiana di seconda prova scritta' + ind + '.',
+    'Genera un tema di seconda prova REALISTICO e MOLTO DETTAGLIATO ' + dm + ' per la materia: ' + st.subj + '.',
+    'Il tema deve simulare ESATTAMENTE una vera seconda prova ministeriale italiana:',
+    '- Titolo ufficiale del tema',
+    '- Introduzione con contesto reale, scenario applicativo o testo letterario (almeno 80 parole)',
+    '- Traccia lunga e articolata (almeno 200 parole) con dati tecnici, specifiche, tabelle descritte, formule, testi o casi studio dove appropriato alla materia',
+    '- Almeno 5 punti da svolgere, ciascuno dettagliato con sotto-richieste specifiche',
+    '- Eventuali allegati descritti (schemi, tabelle dati, testi)',
+    'Rispondi SOLO con questo JSON (nessun altro testo):',
+    '{"titolo":"...","introduzione":"...","traccia":"...","punti":["1. ...","2. ...","3. ...","4. ...","5. ..."],"allegati":"...","durata_ore":6}'
+  ].join(' ');
+  var raw = await callAI(sys, 'Genera il tema completo di seconda prova come se fosse il vero esame ministeriale italiano. Sii molto dettagliato e realistico.');
   var q = JSON.parse(raw.replace(/```json|```/g, '').trim());
   curQ = q.titolo;
-  var pl = q.punti.map(function(p) { return '<li style="margin-bottom:6px">' + p + '</li>'; }).join('');
+  var pl = q.punti.map(function(p) { return '<li style="margin-bottom:10px;line-height:1.7">' + p + '</li>'; }).join('');
+  var allegati = q.allegati ? '<div style="margin-top:16px;padding:12px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;font-size:13px;color:var(--text2)"><strong style="color:var(--text)">📎 Allegati:</strong> ' + q.allegati + '</div>' : '';
   var qenc = encodeURIComponent(JSON.stringify(q));
-  document.getElementById('qa').innerHTML = '<p style="font-size:11px;color:var(--text3);font-family:\'DM Mono\',monospace;margin-bottom:10px">SECONDA PROVA SCRITTA · ' + q.durata_ore + ' ORE</p><p class="qtext">' + q.titolo + '</p><p style="font-size:14px;color:var(--text2);margin-bottom:14px;line-height:1.7">' + q.traccia + '</p><ul style="font-size:14px;padding-left:18px;line-height:1.8">' + pl + '</ul>';
-  document.getElementById('aa').innerHTML = '<textarea id="sa" placeholder="Svolgi la traccia..." style="margin-top:16px;min-height:150px"></textarea><div class="btn-row"><button class="btn primary" onclick="subSeconda(\'' + qenc + '\')">Consegna →</button></div>';
+  document.getElementById('qa').innerHTML =
+    '<p style="font-size:11px;color:var(--text3);font-family:\'DM Mono\',monospace;margin-bottom:10px;letter-spacing:.08em">SECONDA PROVA SCRITTA · ' + q.durata_ore + ' ORE</p>' +
+    '<p class="qtext">' + q.titolo + '</p>' +
+    '<div style="background:var(--surface2);border-left:3px solid var(--gold);padding:14px 16px;border-radius:0 8px 8px 0;margin-bottom:16px;font-size:14px;color:var(--text2);line-height:1.8">' + q.introduzione + '</div>' +
+    '<p style="font-size:14px;color:var(--text);margin-bottom:16px;line-height:1.8">' + q.traccia + '</p>' +
+    '<p style="font-size:11px;color:var(--text3);font-family:\'DM Mono\',monospace;margin-bottom:10px;text-transform:uppercase;letter-spacing:.1em">Punti da svolgere</p>' +
+    '<ol style="font-size:14px;padding-left:20px;line-height:1.8;color:var(--text)">' + pl + '</ol>' +
+    allegati;
+  document.getElementById('aa').innerHTML = '<textarea id="sa" placeholder="Svolgi la traccia..." style="margin-top:16px;min-height:200px"></textarea><div class="btn-row"><button class="btn primary" onclick="subSeconda(\'' + qenc + '\')">Consegna →</button></div>';
   noT();
 }
 async function subSeconda(qe) {
