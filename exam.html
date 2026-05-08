@@ -137,7 +137,7 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
     <div class="card-label">Passo 1 — Scegli il Provider AI</div>
     <p style="font-size:13px;color:var(--text2);margin-bottom:16px;font-weight:400">La tua API key viene usata direttamente nel browser. Mai salvata su server.</p>
     <div class="pgrid" style="grid-template-columns:1fr 1fr;">
-      <button class="prov-btn active" data-p="anthropic" onclick="pickProv(this)"><span class="pdot" style="background:#c8a84b"></span>Anthropic</button>
+      <button class="prov-btn" data-p="anthropic" onclick="pickProv(this)"><span class="pdot" style="background:#c8a84b"></span>Anthropic</button>
       <button class="prov-btn" data-p="openai" onclick="pickProv(this)"><span class="pdot" style="background:#4a9e6e"></span>OpenAI</button>
       <button class="prov-btn" data-p="gemini" onclick="pickProv(this)"><span class="pdot" style="background:#4f87c9"></span>Gemini</button>
       <button class="prov-btn" data-p="groq" onclick="pickProv(this)"><span class="pdot" style="background:#8f6abf"></span>Groq (Free)</button>
@@ -368,26 +368,36 @@ function setS(v){document.getElementById('subj').value=v;}
 function doHistory(){renderHist();show('p-history');}
 
 (()=>{
-  document.getElementById('pinfo').innerHTML=`<code>${PROVS.anthropic.hint}</code>`;
-  document.getElementById('apikey').placeholder=PROVS.anthropic.ph;
-  document.getElementById('key-optional').style.display='none';
-  // Check all providers for a saved key — if found, auto-skip to setup
+  // Find saved provider or default to anthropic
   const provOrder=['anthropic','openai','gemini','groq','custom'];
+  let foundProv='anthropic';
   for(const p of provOrder){
     const k=localStorage.getItem('k_'+p);
     const isCustom=p==='custom'&&localStorage.getItem('custom_url')&&localStorage.getItem('custom_model');
-    if(k||isCustom){
-      prov=p;
-      document.querySelectorAll('.prov-btn').forEach(b=>b.classList.remove('active'));
-      document.querySelector(`.prov-btn[data-p="${p}"]`).classList.add('active');
-      document.getElementById('apikey').value=k||'';
-      document.getElementById('apikey').placeholder=PROVS[p].ph;
-      document.getElementById('pinfo').innerHTML=`<code>${PROVS[p].hint}</code>`;
-      if(p==='custom'){document.getElementById('custom-fields').classList.remove('hidden');document.getElementById('key-optional').style.display='inline';}
-      show('p-setup');
-      return;
-    }
+    if(k||isCustom){foundProv=p;break;}
   }
+  prov=foundProv;
+  // Set active button
+  document.querySelectorAll('.prov-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`.prov-btn[data-p="${prov}"]`).classList.add('active');
+  // Set pinfo, placeholder, key
+  document.getElementById('pinfo').innerHTML=`<code>${PROVS[prov].hint}</code>`;
+  document.getElementById('apikey').placeholder=PROVS[prov].ph;
+  const k=localStorage.getItem('k_'+prov);
+  if(k){document.getElementById('apikey').value=k;document.getElementById('rem').checked=true;}
+  // Custom fields
+  if(prov==='custom'){
+    document.getElementById('custom-fields').classList.remove('hidden');
+    document.getElementById('key-optional').style.display='inline';
+    const cu=localStorage.getItem('custom_url');
+    const cm=localStorage.getItem('custom_model');
+    if(cu)document.getElementById('custom-url').value=cu;
+    if(cm)document.getElementById('custom-model').value=cm;
+  } else {
+    document.getElementById('key-optional').style.display='none';
+  }
+  // Auto-skip to setup if key already saved
+  if(k||(prov==='custom'&&localStorage.getItem('custom_url')))show('p-setup');
 })();
 
 async function callAI(sys,user){
