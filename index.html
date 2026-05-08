@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MaturaAI — Preparati alla Maturità</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080808;
+  --bg2: #0f0f0f;
+  --surface: #141414;
+  --surface2: #1c1c1c;
+  --border: #232323;
+  --border2: #2e2e2e;
+  --text: #f2ede4;
+  --text2: #7a756d;
+  --text3: #3d3a36;
+  --gold: #c8a84b;
+  --gold2: #e6c96e;
+  --gold3: #f5e0a0;
+  --green: #4a9e6e;
+  --red: #c94f4f;
+  --blue: #4f87c9;
+  --purple: #8f6abf;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scorri-behavior: smooth; }
+
+body {
+  font-family: 'Syne', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* GRAIN OVERLAY */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 48px;
+  background: rgba(8,8,8,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  font-family: 'Instrument Serif', serif;
+  font-size: 22px;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+.logo em { color: var(--gold2); font-style: italic; }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  list-style: none;
+}
+.nav-links a {
+  font-size: 13px;
+  color: var(--text2);
+  text-decoration: none;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--text); }
+
+.nav-cta {
+  background: var(--gold);
+  color: #080808 !important;
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-weight: 700 !important;
+  transition: background 0.2s !important;
+}
+.nav-cta:hover { background: var(--gold2) !important; color: #080808 !important; }
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 48px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Radial glow behind hero */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 500px;
+  background: radial-gradient(ellipse, rgba(200,168,75,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border: 1px solid rgba(200,168,75,0.3);
+  border-radius: 999px;
+  padding: 6px 16px;
+  margin-bottom: 32px;
+  animation: fadeUp 0.8s ease both;
+}
+.hero-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.hero h1 {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(3rem, 8vw, 7rem);
+  font-weight: 400;
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+  margin-bottom: 24px;
+  animation: fadeUp 0.8s 0.1s ease both;
+}
+.hero h1 em {
+  font-style: italic;
+  color: var(--gold2);
+}
+.hero h1 .outline {
+  -webkit-text-stroke: 1px var(--text3);
+  color: transparent;
+}
+
+.hero-sub {
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--text2);
+  max-width: 560px;
+  line-height: 1.7;
+  font-weight: 400;
+  margin-bottom: 40px;
+  animation: fadeUp 0.8s 0.2s ease both;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeUp 0.8s 0.3s ease both;
+}
+
+.btn-primary {
+  background: var(--gold);
+  color: #080808;
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 14px 32px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+}
+.btn-primary:hover { background: var(--gold2); transform: translateY(-1px); box-shadow: 0 8px 32px rgba(200,168,75,0.25); }
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 14px 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.2s;
+}
+.btn-secondary:hover { border-color: var(--text2); background: var(--surface); }
+
+/* HERO STATS */
+.hero-stats {
+  display: flex;
+  gap: 48px;
+  margin-top: 64px;
+  animation: fadeUp 0.8s 0.4s ease both;
+}
+.stat { text-align: center; }
+.stat-num {
+  font-family: 'Instrument Serif', serif;
+  font-size: 36px;
+  color: var(--gold2);
+  font-style: italic;
+  line-height: 1;
+}
+.stat-lbl {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 4px;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* SCROLL INDICATOR */
+.scorri-hint {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--text3);
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  animation: fadeUp 1s 0.6s ease both;
+}
+.scorri-line {
+  width: 1px;
+  height: 48px;
+  background: linear-gradient(to bottom, var(--text3), transparent);
+  animation: scorriPulse 2s infinite;
+}
+@keyframes scorriPulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+/* TRACKS SECTION */
+.section {
+  padding: 100px 48px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+}
+.section-title em { font-style: italic; color: var(--gold2); }
+
+.section-sub {
+  font-size: 16px;
+  color: var(--text2);
+  max-width: 520px;
+  line-height: 1.7;
+  font-weight: 400;
+  margin-bottom: 56px;
+}
+
+/* TRACKS GRID */
+.tracks-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.track-card {
+  background: var(--surface);
+  padding: 28px;
+  transition: background 0.2s;
+  position: relative;
+}
+.track-card:hover { background: var(--surface2); }
+.track-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.track-card:hover::after { opacity: 1; }
+
+.track-icon {
+  font-size: 28px;
+  margin-bottom: 12px;
+  display: block;
+}
+.track-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.track-subjects {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+/* FEATURES */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.feature-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  transition: border-color 0.2s, transform 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(200,168,75,0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+.feature-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+
+.feature-card.wide { grid-column: span 2; }
+
+.feature-icon {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+}
+
+.feature-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.feature-desc {
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.7;
+  font-weight: 400;
+}
+
+/* PROVIDERS SECTION */
+.providers-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.prov-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.2s;
+}
+.prov-card:hover { border-color: var(--border2); background: var(--surface2); }
+.prov-dot { width: 14px; height: 14px; border-radius: 50%; margin: 0 auto 10px; }
+.prov-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.prov-model { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); }
+
+/* MODES SECTION */
+.modes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.mode-item {
+  background: var(--surface);
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: background 0.15s;
+}
+.mode-item:hover { background: var(--surface2); }
+.mode-num {
+  font-family: 'Instrument Serif', serif;
+  font-size: 32px;
+  font-style: italic;
+  color: var(--text3);
+  width: 40px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.mode-info { flex: 1; }
+.mode-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.mode-desc { font-size: 13px; color: var(--text2); font-weight: 400; }
+.mode-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border2);
+  color: var(--text3);
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* CTA SECTION */
+.cta-section {
+  margin: 0 48px 100px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 80px 48px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cta-section::before {
+  content: '';
+  position: absolute;
+  top: -100px; left: 50%;
+  transform: translateX(-50%);
+  width: 600px; height: 400px;
+  background: radial-gradient(ellipse, rgba(200,168,75,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-section h2 {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 400;
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+.cta-section h2 em { font-style: italic; color: var(--gold2); }
+.cta-section p { font-size: 16px; color: var(--text2); margin-bottom: 36px; font-weight: 400; }
+
+/* FOOTER */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.footer-logo {
+  font-family: 'Instrument Serif', serif;
+  font-size: 18px;
+  color: var(--text2);
+}
+.footer-logo em { color: var(--gold); font-style: italic; }
+.footer-note {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+}
+
+/* DIVIDER LINE */
+.section-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0 48px;
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  nav { padding: 16px 24px; }
+  .nav-links { display: none; }
+  .hero { padding: 100px 24px 60px; }
+  .hero-stats { gap: 24px; }
+  .section { padding: 60px 24px; }
+  .tracks-grid { grid-template-columns: 1fr 1fr; }
+  .features-grid { grid-template-columns: 1fr; }
+  .feature-card.wide { grid-column: span 1; }
+  .providers-row { grid-template-columns: 1fr 1fr; }
+  .cta-section { margin: 0 24px 60px; padding: 48px 24px; }
+  footer { flex-direction: column; gap: 12px; text-align: center; padding: 24px; }
+  .section-divider { margin: 0 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">Matura<em>AI</em></a>
+  <ul class="nav-links">
+    <li><a href="#tracks">Indirizzi</a></li>
+    <li><a href="#features">Funzionalità</a></li>
+    <li><a href="#modes">Modalità</a></li>
+    <li><a href="exam.html" class="nav-cta">Inizia Gratis →</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">Il Simulatore dell'Esame di Maturità</div>
+  <h1>
+    Ace your<br>
+    <em>Maturità</em><br>
+    <span class="outline">with AI</span>
+  </h1>
+  <p class="hero-sub">
+    Esercitati con domande scritte, orali e seconda prova per qualsiasi materia e qualsiasi indirizzo scolastico — powered by AI.
+  </p>
+  <div class="hero-actions">
+    <a href="exam.html" class="btn-primary">Inizia gratis →</a>
+    <a href="#features" class="btn-secondary">Come funziona</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">20+</div>
+      <div class="stat-lbl">Indirizzi scolastici</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">4</div>
+      <div class="stat-lbl">Modalità esame</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">4</div>
+      <div class="stat-lbl">Provider AI</div>
+    </div>
+  </div>
+  <div class="scorri-hint">
+    <div class="scorri-line"></div>
+    scorri
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- TRACKS -->
+<section class="section" id="tracks">
+  <div class="section-label">Supported Tracks</div>
+  <h2 class="section-title">Tutti gli<br><em>indirizzi scolastici</em></h2>
+  <p class="section-sub">Dal Liceo Classico all'Istituto Tecnico. Scrivi qualsiasi materia o scegli dai preset.</p>
+
+  <div class="tracks-grid reveal">
+    <div class="track-card">
+      <span class="track-icon">🏛️</span>
+      <div class="track-name">Liceo Classico</div>
+      <div class="track-subjects">Latino · Greco · Filosofia · Storia · Italiano</div>
+    </div>
+    <div class="track-card">
+      <span class="track-icon">🔬</span>
+      <div class="track-name">Liceo Scientifico</div>
+      <div class="track-subjects">Matematica · Fisica · Chimica · Biologia · Italiano</div>
+    </div>
+    <div class="track-card">
+      <span class="track-icon">🌍</span>
+      <div class="track-name">Liceo Linguistico</div>
+      <div class="track-subjects">Inglese · Francese · Spagnolo · Tedesco · Italiano</div>
+    </div>
+    <div class="track-card">
+      <span class="track-icon">💻</span>
+      <div class="track-name">Tecnico Informatica</div>
+      <div class="track-subjects">Informatica · TPSIT · Sistemi e Reti · GPOI</div>
+    </div>
+    <div class="track-card">
+      <span class="track-icon">📊</span>
+      <div class="track-name">Tecnico Economico</div>
+      <div class="track-subjects">Economia · Diritto · Matematica · Inglese</div>
+    </div>
+    <div class="track-card">
+      <span class="track-icon">🎨</span>
+      <div class="track-name">Liceo Artistico</div>
+      <div class="track-subjects">Storia dell'Arte · Discipline Grafiche · Italian</div>
+    </div>
+    <div class="track-card">
+      <span class="track-icon">🧬</span>
+      <div class="track-name">Scienze Applicate</div>
+      <div class="track-subjects">Biology · Chemistry · Earth Sciences · Physics</div>
+    </div>
+    <div class="track-card">
+      <span class="track-icon">⚡</span>
+      <div class="track-name">Tecnico Elettronica</div>
+      <div class="track-subjects">Elettronica · Sistemi · Matematica · Fisica</div>
+    </div>
+    <div class="track-card">
+      <span class="track-icon">✏️</span>
+      <div class="track-name">Any Subject</div>
+      <div class="track-subjects">Scrivi qualsiasi materia — l'AI si adatta al tuo programma</div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-label">Funzionalità</div>
+  <h2 class="section-title">Tutto quello che ti serve<br><em>per prepararti</em></h2>
+  <p class="section-sub">Struttura reale dell'esame. Feedback AI reale. Nessun account richiesto.</p>
+
+  <div class="features-grid">
+    <div class="feature-card reveal">
+      <div class="feature-icon">🤖</div>
+      <div class="feature-title">Il tuo AI, la tua key</div>
+      <div class="feature-desc">Usa Anthropic, OpenAI, Gemini o Groq (gratuito). La tua API key va direttamente dal browser all'AI — mai salvata su server.</div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">⏱️</div>
+      <div class="feature-title">Pratica cronometrata</div>
+      <div class="feature-desc">Imposta un timer per le domande a scelta multipla — 60s, 120s o 5 minuti. Domande aperte e orali non hanno timer.</div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">📊</div>
+      <div class="feature-title">Valutazione immediata</div>
+      <div class="feature-desc">Ogni risposta riceve un voto da 1 a 10 con feedback dettagliato — punti forti, deboli e cosa vuole sentire la commissione.</div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">📚</div>
+      <div class="feature-title">Storico sessioni</div>
+      <div class="feature-desc">Tutte le domande e i voti vengono salvati localmente nel browser. Tieni traccia del tuo voto medio e scopri dove migliorare.</div>
+    </div>
+    <div class="feature-card wide reveal">
+      <div class="feature-icon">🎓</div>
+      <div class="feature-title">Struttura reale dell'esame</div>
+      <div class="feature-desc">Le domande seguono il formato reale della maturità italiana — l'AI agisce come un vero membro della commissione, adattando difficoltà e stile al tuo indirizzo e materia. Dal Latino del Liceo Classico ai problemi di database del Tecnico Informatico.</div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- AI PROVIDERS -->
+<section class="section">
+  <div class="section-label">AI Providers</div>
+  <h2 class="section-title">Scegli il tuo<br><em>motore AI</em></h2>
+  <p class="section-sub">Connetti qualsiasi provider con la tua API key. Cambia quando vuoi.</p>
+
+  <div class="providers-row reveal">
+    <div class="prov-card">
+      <div class="prov-dot" style="background:#c9a84c"></div>
+      <div class="prov-name">Anthropic</div>
+      <div class="prov-model">claude-sonnet-4</div>
+    </div>
+    <div class="prov-card">
+      <div class="prov-dot" style="background:#4caf7d"></div>
+      <div class="prov-name">OpenAI</div>
+      <div class="prov-model">gpt-4o-mini</div>
+    </div>
+    <div class="prov-card">
+      <div class="prov-dot" style="background:#5b9bd5"></div>
+      <div class="prov-name">Gemini</div>
+      <div class="prov-model">gemini-1.5-flash</div>
+    </div>
+    <div class="prov-card">
+      <div class="prov-dot" style="background:#9b72cf"></div>
+      <div class="prov-name">Groq</div>
+      <div class="prov-model">llama-3.3-70b · free</div>
+    </div>
+  </div>
+  <p style="font-size:13px;color:var(--text3);font-family:'DM Mono',monospace;text-align:center">Le key vengono salvate solo nel localStorage del browser — mai inviate a server esterni</p>
+</section>
+
+<hr class="section-divider">
+
+<!-- EXAM MODES -->
+<section class="section" id="modes">
+  <div class="section-label">Modalità</div>
+  <h2 class="section-title">Quattro modalità<br><em>per esercitarti</em></h2>
+  <p class="section-sub">Simula ogni parte dell'esame di maturità.</p>
+
+  <div class="modes-list reveal">
+    <div class="mode-item">
+      <div class="mode-num">1</div>
+      <div class="mode-info">
+        <div class="mode-name">Scelta Multipla</div>
+        <div class="mode-desc">Domande a 4 opzioni con feedback immediato e spiegazione. Timer opzionale.</div>
+      </div>
+      <div class="mode-tag">Timer disponibile</div>
+    </div>
+    <div class="mode-item">
+      <div class="mode-num">2</div>
+      <div class="mode-info">
+        <div class="mode-name">Risposta Aperta</div>
+        <div class="mode-desc">Scrivi una risposta completa. L'AI la valuta da 1 a 10 con punti forti, deboli e commento. Senza timer.</div>
+      </div>
+      <div class="mode-tag">Valutazione AI</div>
+    </div>
+    <div class="mode-item">
+      <div class="mode-num">3</div>
+      <div class="mode-info">
+        <div class="mode-name">Simulazione Orale</div>
+        <div class="mode-desc">L'AI interpreta la commissione. Rispondi come se fossi in aula. Valutato su contenuto ed esposizione.</div>
+      </div>
+      <div class="mode-tag">Ruolo commissione</div>
+    </div>
+    <div class="mode-item">
+      <div class="mode-num">4</div>
+      <div class="mode-info">
+        <div class="mode-name">Seconda Prova Scritta</div>
+        <div class="mode-desc">Tema completo articolato in punti, specifico per il tuo indirizzo. Consegna la risposta per una valutazione dettagliata.</div>
+      </div>
+      <div class="mode-tag">Tema completo</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <h2>Pronto a <em>iniziare a prepararti?</em></h2>
+  <p>Nessun account, nessun abbonamento. Solo la tua API key e la tua materia.</p>
+  <a href="exam.html" class="btn-primary" style="font-size:16px;padding:16px 40px">Inizia gratis →</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Matura<em>AI</em></div>
+  <div class="footer-note">Pensato per gli studenti italiani · AI gira nel tuo browser</div>
+</footer>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MaturaAI — Aula Esame</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080808;--bg2:#0f0f0f;--surface:#141414;--surface2:#1c1c1c;--border:#232323;--border2:#2e2e2e;--text:#f2ede4;--text2:#7a756d;--text3:#3d3a36;--gold:#c8a84b;--gold2:#e6c96e;--gold3:#f5e0a0;--green:#4a9e6e;--red:#c94f4f;--blue:#4f87c9;--purple:#8f6abf;--r:12px;--rs:8px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;}
+.hidden{display:none!important;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:rgba(8,8,8,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.logo{font-family:'Instrument Serif',serif;font-size:20px;color:var(--text);text-decoration:none;}
+.logo em{color:var(--gold2);font-style:italic;}
+.nav-back{font-size:13px;color:var(--text2);text-decoration:none;font-weight:500;transition:color .2s;}
+.nav-back:hover{color:var(--text);}
+
+.wrap{max-width:720px;margin:0 auto;padding:88px 24px 60px;}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:16px;}
+.card-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:16px;}
+
+/* PROVIDER SELECT */
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.prov-btn{background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;cursor:pointer;transition:all .15s;text-align:left;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;font-weight:600;display:flex;align-items:center;gap:10px;}
+.prov-btn:hover{border-color:var(--gold);}
+.prov-btn.active{border-color:var(--gold);background:rgba(200,168,75,.07);}
+.pdot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.pinfo{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:12px;}
+.pinfo code{font-family:'DM Mono',monospace;font-size:11px;color:var(--gold2);}
+
+input[type=text],input[type=password],select,textarea{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;padding:11px 14px;outline:none;transition:border-color .2s;font-weight:400;}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);}
+input::placeholder,textarea::placeholder{color:var(--text3);}
+select{appearance:none;cursor:pointer;}
+textarea{resize:vertical;min-height:110px;line-height:1.7;}
+
+.lbl{font-size:11px;color:var(--text3);margin-bottom:6px;font-family:'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;display:block;}
+.chk{display:flex;align-items:center;gap:8px;margin-top:8px;}
+.chk input{width:auto;}
+.chk label{font-size:13px;color:var(--text2);cursor:pointer;font-weight:400;}
+
+.tag-group{display:flex;flex-wrap:wrap;gap:6px;}
+.tag{font-size:12px;padding:5px 12px;border-radius:999px;border:1px solid var(--border2);color:var(--text2);cursor:pointer;transition:all .15s;background:transparent;font-family:'Syne',sans-serif;font-weight:500;}
+.tag:hover{border-color:var(--gold);color:var(--gold);}
+.tag.active{background:var(--gold);border-color:var(--gold);color:#080808;font-weight:700;}
+
+.btn{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;padding:11px 22px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--text);cursor:pointer;transition:all .15s;}
+.btn:hover{background:var(--surface2);}
+.btn.primary{background:var(--gold);border-color:var(--gold);color:#080808;}
+.btn.primary:hover{background:var(--gold2);border-color:var(--gold2);}
+.btn.ghost{border-color:transparent;color:var(--text2);}
+.btn.ghost:hover{color:var(--text);background:var(--surface2);border-color:var(--border);}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+
+/* EXAM HEADER */
+.ehdr{display:flex;align-items:center;gap:16px;margin-bottom:16px;}
+.emeta{flex:1;}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.badge{font-size:10px;padding:3px 8px;border-radius:999px;font-family:'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;}
+.bs{background:rgba(79,135,201,.15);color:var(--blue);border:1px solid rgba(79,135,201,.3);}
+.bm{background:rgba(143,106,191,.15);color:var(--purple);border:1px solid rgba(143,106,191,.3);}
+.bd{background:rgba(200,168,75,.12);color:var(--gold);border:1px solid rgba(200,168,75,.25);}
+.bp{background:rgba(74,158,110,.12);color:var(--green);border:1px solid rgba(74,158,110,.3);}
+
+.srow{display:flex;align-items:center;gap:12px;}
+.strack{flex:1;height:3px;background:var(--surface2);border-radius:2px;overflow:hidden;}
+.sfill{height:100%;background:linear-gradient(90deg,var(--gold),var(--green));border-radius:2px;transition:width .5s cubic-bezier(.34,1.56,.64,1);}
+.stxt{font-family:'DM Mono',monospace;font-size:12px;color:var(--text2);white-space:nowrap;}
+.vdisp{font-family:'Instrument Serif',serif;font-size:24px;font-weight:400;font-style:italic;color:var(--gold2);white-space:nowrap;}
+
+/* TIMER */
+.tring{position:relative;width:52px;height:52px;flex-shrink:0;}
+.tring svg{transform:rotate(-90deg);}
+.tt{fill:none;stroke:var(--surface2);stroke-width:3;}
+.tf{fill:none;stroke:var(--gold);stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset 1s linear,stroke .3s;}
+.tf.warn{stroke:#e09040;}.tf.danger{stroke:var(--red);}
+.tnum{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:13px;font-weight:500;}
+
+hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
+
+.qtext{font-family:'Instrument Serif',serif;font-size:1.25rem;font-weight:400;line-height:1.65;color:var(--text);margin-bottom:20px;}
+
+.opt{display:block;width:100%;text-align:left;padding:13px 16px;border-radius:9px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-family:'Syne',sans-serif;font-size:14px;font-weight:400;cursor:pointer;transition:all .15s;margin-bottom:8px;line-height:1.5;}
+.opt:hover:not(:disabled){border-color:var(--gold);background:rgba(200,168,75,.06);}
+.opt:disabled{cursor:not-allowed;}
+.opt.corrette{border-color:var(--green);background:rgba(74,158,110,.1);color:#7dd4a8;}
+.opt.wrong{border-color:var(--red);background:rgba(201,79,79,.09);color:#e08080;}
+
+.fb{background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:16px;font-size:14px;line-height:1.75;color:var(--text2);margin-top:14px;font-weight:400;}
+.fb strong{color:var(--text);font-weight:600;}
+.fbok{border-color:rgba(74,158,110,.4);}.fbko{border-color:rgba(201,79,79,.35);}.fbg{border-color:rgba(200,168,75,.4);}.fbb{border-color:rgba(79,135,201,.4);}
+
+.hist-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.hist-item:last-child{border-bottom:none;}
+.hdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.hdot.ok{background:var(--green);}.hdot.ko{background:var(--red);}.hdot.op{background:var(--blue);}
+.hinfo{flex:1;}
+.hq{font-size:13px;color:var(--text);line-height:1.4;font-weight:400;}
+.hm{font-size:11px;color:var(--text3);margin-top:2px;font-family:'DM Mono',monospace;}
+.hv{font-family:'Instrument Serif',serif;font-size:20px;color:var(--gold2);font-style:italic;}
+
+.stgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.stbox{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;}
+.stval{font-family:'Instrument Serif',serif;font-size:28px;font-weight:400;font-style:italic;color:var(--gold2);}
+.stlbl{font-size:10px;color:var(--text3);margin-top:2px;font-family:'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;}
+
+.pulse{display:flex;gap:5px;align-items:center;padding:20px 0;}
+.dot{width:5px;height:5px;background:var(--gold);border-radius:50%;animation:pu 1.2s infinite;}
+.dot:nth-child(2){animation-delay:.2s;}.dot:nth-child(3){animation-delay:.4s;}
+@keyframes pu{0%,80%,100%{opacity:.3;transform:scale(.8);}40%{opacity:1;transform:scale(1);}}
+
+.err{color:var(--red);font-size:13px;padding:8px 0;font-weight:400;}
+.note{font-size:12px;color:var(--text3);margin-top:8px;line-height:1.6;font-weight:400;font-family:'DM Mono',monospace;}
+
+@media(max-width:500px){.pgrid,.sgrid{grid-template-columns:1fr;}.ehdr{flex-direction:column;align-items:flex-start;}.tring{display:none;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Matura<em>AI</em></a>
+  <a href="index.html" class="nav-back">← Torna alla home</a>
+</nav>
+
+<div class="wrap">
+
+<!-- PANEL: API SETUP -->
+<div id="p-api">
+  <div class="card">
+    <div class="card-label">Passo 1 — Scegli il Provider AI</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:16px;font-weight:400">La tua API key viene usata direttamente nel browser. Mai salvata su server.</p>
+    <div class="pgrid" style="grid-template-columns:1fr 1fr;">
+      <button class="prov-btn active" data-p="anthropic" onclick="pickProv(this)"><span class="pdot" style="background:#c8a84b"></span>Anthropic</button>
+      <button class="prov-btn" data-p="openai" onclick="pickProv(this)"><span class="pdot" style="background:#4a9e6e"></span>OpenAI</button>
+      <button class="prov-btn" data-p="gemini" onclick="pickProv(this)"><span class="pdot" style="background:#4f87c9"></span>Gemini</button>
+      <button class="prov-btn" data-p="groq" onclick="pickProv(this)"><span class="pdot" style="background:#8f6abf"></span>Groq (Free)</button>
+      <button class="prov-btn" data-p="custom" onclick="pickProv(this)" style="grid-column:span 2"><span class="pdot" style="background:#e05252"></span>Custom / Self-hosted (Ollama, LM Studio, vLLM…)</button>
+    </div>
+    <div class="pinfo" id="pinfo"></div>
+
+    <!-- Custom endpoint fields (shown only for custom provider) -->
+    <div id="custom-fields" class="hidden" style="margin-bottom:12px">
+      <label class="lbl">Endpoint URL</label>
+      <input type="text" id="custom-url" placeholder="es. http://localhost:11434/v1/chat/completions" style="margin-bottom:8px">
+      <label class="lbl">Nome modello</label>
+      <input type="text" id="custom-model" placeholder="es. llama3, mistral, phi3, gemma2...">
+      <p class="note" style="margin-top:6px">Qualsiasi API compatibile con OpenAI funziona — Ollama, LM Studio, vLLM, Jan, text-generation-webui, ecc. Lascia la API key vuota se non richiesta.</p>
+    </div>
+
+    <label class="lbl">API Key <span id="key-optional" style="color:var(--text3);font-size:10px">(opzionale per self-hosted)</span></label>
+    <input type="password" id="apikey" placeholder="Incolla qui la tua API key...">
+    <div class="chk">
+      <input type="checkbox" id="rem">
+      <label for="rem">Ricorda la key in questo browser</label>
+    </div>
+    <div class="btn-row">
+      <button class="btn primary" onclick="saveAndNext()">Continua →</button>
+    </div>
+    <p class="note">Anthropic: console.anthropic.com &nbsp;·&nbsp; OpenAI: platform.openai.com &nbsp;·&nbsp; Gemini: aistudio.google.com &nbsp;·&nbsp; Groq: console.groq.com (gratuito)</p>
+  </div>
+</div>
+
+<!-- PANEL: SETUP -->
+<div id="p-setup" class="hidden">
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div class="card-label" style="margin-bottom:0">Passo 2 — Configura il tuo Esame</div>
+      <button class="btn ghost" style="font-size:12px;padding:5px 10px" onclick="show('p-api')">⚙ Cambia AI</button>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <label class="lbl">Materia — scrivi liberamente o scegli un preset</label>
+      <input type="text" id="subj" placeholder="es. Fisica, Latino, Diritto, Informatica, Storia...">
+      <div class="tag-group" style="margin-top:8px">
+        <span class="tag" onclick="setS('Informatica')">Informatica</span>
+        <span class="tag" onclick="setS('TPSIT')">TPSIT</span>
+        <span class="tag" onclick="setS('Sistemi e Reti')">Sistemi e Reti</span>
+        <span class="tag" onclick="setS('Matematica')">Matematica</span>
+        <span class="tag" onclick="setS('Italiano')">Italiano</span>
+        <span class="tag" onclick="setS('Inglese')">Inglese</span>
+        <span class="tag" onclick="setS('Storia')">Storia</span>
+        <span class="tag" onclick="setS('Fisica')">Fisica</span>
+        <span class="tag" onclick="setS('Chimica')">Chimica</span>
+        <span class="tag" onclick="setS('Biologia')">Biologia</span>
+        <span class="tag" onclick="setS('Latino')">Latino</span>
+        <span class="tag" onclick="setS('Greco')">Greco</span>
+        <span class="tag" onclick="setS('Filosofia')">Filosofia</span>
+        <span class="tag" onclick="setS('Diritto')">Diritto</span>
+        <span class="tag" onclick="setS('Economia')">Economia</span>
+        <span class="tag" onclick="setS('Storia dell\'Arte')">Storia dell'Arte</span>
+        <span class="tag" onclick="setS('Scienze Umane')">Scienze Umane</span>
+        <span class="tag" onclick="setS('GPOI')">GPOI</span>
+      </div>
+    </div>
+
+    <div class="sgrid">
+      <div>
+        <label class="lbl">Difficoltà</label>
+        <select id="sel-diff">
+          <option value="base">Base — ripasso veloce</option>
+          <option value="medio" selected>Medio — livello esame reale</option>
+          <option value="avanzato">Avanzato — commissione severa</option>
+        </select>
+      </div>
+      <div>
+        <label class="lbl">Indirizzo Scolastico</label>
+        <select id="sel-ind">
+          <option value="Istituto Tecnico Informatica">Tecnico IT</option>
+          <option value="Liceo Scientifico">Liceo Scientifico</option>
+          <option value="Liceo Classico">Liceo Classico</option>
+          <option value="Liceo Linguistico">Liceo Linguistico</option>
+          <option value="Liceo delle Scienze Umane">Scienze Umane</option>
+          <option value="Liceo Artistico">Liceo Artistico</option>
+          <option value="Istituto Tecnico Economico">Tecnico Economico</option>
+          <option value="Istituto Professionale">Professionale</option>
+          <option value="">Generico</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <label class="lbl">Modalità Esame</label>
+      <div class="tag-group" id="tg-mode">
+        <span class="tag active" data-val="mc" onclick="pickTag(this,'tg-mode')">Scelta Multipla</span>
+        <span class="tag" data-val="open" onclick="pickTag(this,'tg-mode')">Risposta Aperta</span>
+        <span class="tag" data-val="oral" onclick="pickTag(this,'tg-mode')">Simulazione Orale</span>
+        <span class="tag" data-val="seconda" onclick="pickTag(this,'tg-mode')">Seconda Prova</span>
+      </div>
+    </div>
+
+    <div style="margin-bottom:4px">
+      <label class="lbl">Timer (solo scelta multipla)</label>
+      <div class="tag-group" id="tg-timer">
+        <span class="tag" data-val="0" onclick="pickTag(this,'tg-timer')">Nessuno</span>
+        <span class="tag active" data-val="60" onclick="pickTag(this,'tg-timer')">60 sec</span>
+        <span class="tag" data-val="120" onclick="pickTag(this,'tg-timer')">120 sec</span>
+        <span class="tag" data-val="300" onclick="pickTag(this,'tg-timer')">5 min</span>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn primary" onclick="startExam()">Inizia Esame →</button>
+      <button class="btn ghost" onclick="doHistory()">Vedi Storico</button>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL: EXAM -->
+<div id="p-exam" class="hidden">
+  <div class="card">
+    <div class="ehdr">
+      <div class="emeta">
+        <div class="badges">
+          <span class="badge bs" id="b-s"></span>
+          <span class="badge bm" id="b-m"></span>
+          <span class="badge bd" id="b-d"></span>
+          <span class="badge bp" id="b-p"></span>
+        </div>
+        <div class="srow">
+          <div class="strack"><div class="sfill" id="sbar" style="width:0%"></div></div>
+          <div class="stxt" id="stxt">0/0</div>
+          <div class="vdisp" id="vdisp">—</div>
+        </div>
+      </div>
+      <div class="tring">
+        <svg width="52" height="52" viewBox="0 0 52 52">
+          <circle class="tt" cx="26" cy="26" r="22"/>
+          <circle class="tf" id="tarc" cx="26" cy="26" r="22" stroke-dasharray="138.2" stroke-dashoffset="0"/>
+        </svg>
+        <div class="tnum" id="tnum">—</div>
+      </div>
+    </div>
+    <hr>
+    <div id="qa"><div class="pulse"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
+    <div id="aa"></div>
+    <div id="fa"></div>
+    <div class="btn-row hidden" id="actrow">
+      <button class="btn primary" onclick="nextQ()">Prossima Domanda →</button>
+      <button class="btn ghost" onclick="show('p-setup')">↩ Cambia</button>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL: HISTORY -->
+<div id="p-history" class="hidden">
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div class="card-label" style="margin-bottom:0">Storico Sessioni</div>
+      <button class="btn ghost" style="font-size:12px;padding:5px 10px" onclick="clearHist()">Cancella tutto</button>
+    </div>
+    <div id="sta"></div>
+    <div id="hl"></div>
+    <div class="btn-row"><button class="btn primary" onclick="show('p-setup')">← Torna</button></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const PROVS={
+  anthropic:{label:'Anthropic',model:'claude-sonnet-4-20250514',hint:'Model: claude-sonnet-4-20250514',ph:'sk-ant-...'},
+  openai:{label:'OpenAI',model:'gpt-4o-mini',hint:'Model: gpt-4o-mini',ph:'sk-...'},
+  gemini:{label:'Gemini',model:'gemini-1.5-flash',hint:'Model: gemini-1.5-flash',ph:'AIza...'},
+  groq:{label:'Groq (Free)',model:'llama-3.3-70b-versatile',hint:'Model: llama-3.3-70b-versatile (gratuito)',ph:'gsk_...'},
+  custom:{label:'Custom',model:'',hint:'Endpoint OpenAI-compatibile — inserisci URL e nome modello sotto',ph:'opzionale (lascia vuoto se non richiesta)'}
+};
+let prov='anthropic';
+let hist=JSON.parse(localStorage.getItem('mh')||'[]');
+let st={subj:'',diff:'medio',mode:'mc',timer:60,ind:'',corrette:0,totale:0,ti:null,tl:0};
+let curQ='';
+const CIRC=138.2;
+const ML={mc:'Scelta Multipla',open:'Risposta Aperta',oral:'Orale',seconda:'2a Prova'};
+
+function pickProv(el){
+  document.querySelectorAll('.prov-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');prov=el.dataset.p;
+  document.getElementById('pinfo').innerHTML=`<code>${PROVS[prov].hint}</code>`;
+  const s=localStorage.getItem('k_'+prov);
+  document.getElementById('apikey').value=s||'';
+  document.getElementById('apikey').placeholder=PROVS[prov].ph;
+  // show/hide custom fields
+  const cf=document.getElementById('custom-fields');
+  const ko=document.getElementById('key-optional');
+  if(prov==='custom'){
+    cf.classList.remove('hidden');
+    ko.style.display='inline';
+    const cu=localStorage.getItem('custom_url');
+    const cm=localStorage.getItem('custom_model');
+    if(cu)document.getElementById('custom-url').value=cu;
+    if(cm)document.getElementById('custom-model').value=cm;
+  } else {
+    cf.classList.add('hidden');
+    ko.style.display='none';
+  }
+}
+
+function saveAndNext(){
+  if(prov==='custom'){
+    const url=document.getElementById('custom-url').value.trim();
+    const model=document.getElementById('custom-model').value.trim();
+    if(!url){alert('Inserisci l\'URL dell\'endpoint.');return;}
+    if(!model){alert('Inserisci il nome del modello.');return;}
+    if(document.getElementById('rem').checked){
+      localStorage.setItem('custom_url',url);
+      localStorage.setItem('custom_model',model);
+      const k=document.getElementById('apikey').value.trim();
+      if(k)localStorage.setItem('k_custom',k);
+    }
+  } else {
+    const k=document.getElementById('apikey').value.trim();
+    if(!k){alert('Inserisci la tua API key.');return;}
+    if(document.getElementById('rem').checked)localStorage.setItem('k_'+prov,k);
+  }
+  show('p-setup');
+}
+
+function show(id){['p-api','p-setup','p-exam','p-history'].forEach(pid=>document.getElementById(pid).classList.add('hidden'));document.getElementById(id).classList.remove('hidden');}
+function pickTag(el,g){document.querySelectorAll('#'+g+' .tag').forEach(t=>t.classList.remove('active'));el.classList.add('active');}
+function getTag(g){const e=document.querySelector('#'+g+' .tag.active');return e?e.dataset.val:null;}
+function setS(v){document.getElementById('subj').value=v;}
+function doHistory(){renderHist();show('p-history');}
+
+(()=>{
+  document.getElementById('pinfo').innerHTML=`<code>${PROVS.anthropic.hint}</code>`;
+  document.getElementById('apikey').placeholder=PROVS.anthropic.ph;
+  document.getElementById('key-optional').style.display='none';
+  // Check all providers for a saved key — if found, auto-skip to setup
+  const provOrder=['anthropic','openai','gemini','groq','custom'];
+  for(const p of provOrder){
+    const k=localStorage.getItem('k_'+p);
+    const isCustom=p==='custom'&&localStorage.getItem('custom_url')&&localStorage.getItem('custom_model');
+    if(k||isCustom){
+      prov=p;
+      document.querySelectorAll('.prov-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelector(`.prov-btn[data-p="${p}"]`).classList.add('active');
+      document.getElementById('apikey').value=k||'';
+      document.getElementById('apikey').placeholder=PROVS[p].ph;
+      document.getElementById('pinfo').innerHTML=`<code>${PROVS[p].hint}</code>`;
+      if(p==='custom'){document.getElementById('custom-fields').classList.remove('hidden');document.getElementById('key-optional').style.display='inline';}
+      show('p-setup');
+      return;
+    }
+  }
+})();
+
+async function callAI(sys,user){
+  const key=document.getElementById('apikey').value.trim()||localStorage.getItem('k_'+prov)||'';
+
+  if(prov==='anthropic'){
+    if(!key)throw new Error('Nessuna API key trovata');
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:PROVS.anthropic.model,max_tokens:1200,system:sys,messages:[{role:'user',content:user}]})});
+    const d=await r.json();if(d.error)throw new Error(d.error.message);return d.content[0].text;
+  }
+  if(prov==='openai'){
+    if(!key)throw new Error('Nessuna API key trovata');
+    const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:PROVS.openai.model,max_tokens:1200,messages:[{role:'system',content:sys},{role:'user',content:user}]})});
+    const d=await r.json();if(d.error)throw new Error(d.error.message);return d.choices[0].message.content;
+  }
+  if(prov==='gemini'){
+    if(!key)throw new Error('Nessuna API key trovata');
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${PROVS.gemini.model}:generateContent?key=${key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:sys+'\n\n'+user}]}]})});
+    const d=await r.json();if(d.error)throw new Error(d.error.message);return d.candidates[0].content.parts[0].text;
+  }
+  if(prov==='groq'){
+    if(!key)throw new Error('Nessuna API key trovata');
+    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:PROVS.groq.model,max_tokens:1200,messages:[{role:'system',content:sys},{role:'user',content:user}]})});
+    const d=await r.json();if(d.error)throw new Error(typeof d.error==='string'?d.error:d.error.message||JSON.stringify(d.error));return d.choices[0].message.content;
+  }
+  if(prov==='custom'){
+    // OpenAI-compatible endpoint — works with Ollama, LM Studio, vLLM, Jan, text-generation-webui, etc.
+    const url=document.getElementById('custom-url').value.trim()||localStorage.getItem('custom_url')||'';
+    const model=document.getElementById('custom-model').value.trim()||localStorage.getItem('custom_model')||'';
+    if(!url)throw new Error('Inserisci l\'URL dell\'endpoint custom.');
+    if(!model)throw new Error('Inserisci il nome del modello custom.');
+    const headers={'Content-Type':'application/json'};
+    if(key)headers['Authorization']='Bearer '+key;
+    const r=await fetch(url,{method:'POST',headers,body:JSON.stringify({model,max_tokens:1200,messages:[{role:'system',content:sys},{role:'user',content:user}]})});
+    const d=await r.json();
+    if(d.error)throw new Error(typeof d.error==='string'?d.error:d.error.message||JSON.stringify(d.error));
+    return d.choices[0].message.content;
+  }
+}
+
+function startExam(){
+  const s=document.getElementById('subj').value.trim();
+  if(!s){alert('Inserisci una materia.');return;}
+  st.subj=s;st.diff=document.getElementById('sel-diff').value;
+  st.ind=document.getElementById('sel-ind').value;
+  st.mode=getTag('tg-mode')||'mc';st.timer=parseInt(getTag('tg-timer')||'60');
+  st.corrette=0;st.totale=0;
+  document.getElementById('b-s').textContent=s;
+  document.getElementById('b-m').textContent=ML[st.mode];
+  document.getElementById('b-d').textContent={base:'Base',medio:'Medio',avanzato:'Avanzato'}[st.diff];
+  document.getElementById('b-p').textContent=PROVS[prov].label;
+  updScore();show('p-exam');genQ();
+}
+
+const CIRC2=138.2;
+function startT(){
+  stopT();
+  if(!st.timer){document.getElementById('tnum').textContent='∞';document.getElementById('tarc').style.strokeDashoffset=0;return;}
+  st.tl=st.timer;renderT();
+  st.ti=setInterval(()=>{st.tl--;renderT();if(st.tl<=0){stopT();timeUp();}},1000);
+}
+function stopT(){clearInterval(st.ti);st.ti=null;}
+function renderT(){
+  const p=st.timer?st.tl/st.timer:1;
+  const a=document.getElementById('tarc');
+  a.style.strokeDashoffset=CIRC2*(1-p);
+  a.className='tf'+(p<=.2?' danger':p<=.4?' warn':'');
+  document.getElementById('tnum').textContent=st.tl>0?st.tl:'0';
+}
+function noT(){document.getElementById('tnum').textContent='—';document.getElementById('tarc').style.strokeDashoffset=0;}
+function timeUp(){
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  document.getElementById('fa').innerHTML='<div class="fb fbko">⏱ Time\'s up!</div>';
+  st.totale++;updScore();logE({question:curQ,corrette:false,vote:null,mode:st.mode,subject:st.subj});
+  document.getElementById('actrow').classList.remove('hidden');
+}
+
+function updScore(){
+  const p=st.totale>0?Math.round(st.corrette/st.totale*100):0;
+  document.getElementById('sbar').style.width=p+'%';
+  document.getElementById('stxt').textContent=st.corrette+'/'+st.totale;
+  const v=st.totale>0?Math.max(1,Math.min(10,Math.round(st.corrette/st.totale*9+1))):null;
+  document.getElementById('vdisp').textContent=v?v+'/10':'—';
+}
+
+function loading(){document.getElementById('qa').innerHTML='<div class="pulse"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';document.getElementById('aa').innerHTML='';document.getElementById('fa').innerHTML='';document.getElementById('actrow').classList.add('hidden');}
+
+async function genQ(){
+  loading();
+  const dm={base:'semplice, adatta al ripasso',medio:'di media difficoltà, tipica dell'esame reale',avanzato:'difficile e approfondita, da commissione severa'}[st.diff];
+  const ind=st.ind?` for ${st.ind}`:'';
+  try{
+    if(st.mode==='mc')await gMC(dm,ind);
+    else if(st.mode==='open')await gOpen(dm,ind);
+    else if(st.mode==='oral')await gOral(dm,ind);
+    else await gSeconda(dm,ind);
+  }catch(e){
+    document.getElementById('qa').innerHTML=`<div class="err">Errore: ${e.message||'Controlla la tua API key e riprova.'}</div>`;
+    document.getElementById('actrow').classList.remove('hidden');
+  }
+}
+
+function nextQ(){genQ();}
+
+async function gMC(dm,ind){
+  const sys=`Sei un commissario d'esame di maturità italiana${ind}. Generate ONE multiple choice question ${dm} on the subject: ${st.subj}. Rispondi SOLO con JSON valido, nessun altro testo: {"domanda":"...","opzioni":["A) ...","B) ...","C) ...","D) ..."],"corretta":"A","spiegazione":"..."}`;
+  const raw=await callAI(sys,'Genera una domanda.');
+  const q=JSON.parse(raw.replace(/```json|```/g,'').trim());
+  curQ=q.domanda;
+  document.getElementById('qa').innerHTML=`<p class="qtext">${q.domanda}</p>`;
+  const aa=document.getElementById('aa');
+  q.opzioni.forEach((o,i)=>{
+    const l='ABCD'[i];const b=document.createElement('button');
+    b.className='opt';b.textContent=o;
+    b.onclick=()=>chkMC(l,q.corretta,q.spiegazione,b);
+    aa.appendChild(b);
+  });
+  startT();
+}
+
+function chkMC(sel,corr,sp,btn){
+  stopT();
+  const bs=document.querySelectorAll('.opt');bs.forEach(b=>b.disabled=true);
+  const ok=sel===corr;st.totale++;if(ok)st.corrette++;updScore();
+  btn.className='opt '+(ok?'corrette':'wrong');
+  if(!ok)bs.forEach((b,i)=>{if('ABCD'[i]===corr)b.className='opt corrette';});
+  document.getElementById('fa').innerHTML=`<div class="fb ${ok?'fbok':'fbko'}"><strong>${ok?'✓ Corretto!':'✗ Sbagliato'}</strong> ${sp}</div>`;
+  logE({question:curQ,corrette:ok,vote:null,mode:'mc',subject:st.subj});
+  document.getElementById('actrow').classList.remove('hidden');
+}
+
+async function gOpen(dm,ind){
+  const sys=`Sei un commissario d'esame di maturità italiana${ind}. Generate ONE open-ended question ${dm} on: ${st.subj}. JSON solo: {"domanda":"...","criteri":["...","...","..."],"voto_max":10}`;
+  const raw=await callAI(sys,'Genera una domanda aperta.');
+  const q=JSON.parse(raw.replace(/```json|```/g,'').trim());
+  curQ=q.domanda;
+  document.getElementById('qa').innerHTML=`<p class="qtext">${q.domanda}</p><p style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace">Voto max: ${q.voto_max}/10</p>`;
+  document.getElementById('aa').innerHTML=`<textarea id="oa" placeholder="Scrivi la tua risposta..." style="margin-top:12px"></textarea><div class="btn-row"><button class="btn primary" onclick="subOpen('${encodeURIComponent(JSON.stringify(q))}')">Consegna risposta →</button></div>`;
+  noT();
+}
+
+async function subOpen(qe){
+  const q=JSON.parse(decodeURIComponent(qe));
+  const ans=document.getElementById('oa').value.trim();
+  if(!ans){document.getElementById('fa').innerHTML='<div class="err">Scrivi prima una risposta.</div>';return;}
+  document.getElementById('aa').querySelectorAll('button').forEach(b=>b.disabled=true);
+  document.getElementById('aa').querySelector('textarea').readOnly=true;
+  document.getElementById('fa').innerHTML='<div class="pulse"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+  const sys=`Sei un commissario d'esame di maturità italiana. Grade this open answer from 1 to 10.
+Question: ${q.domanda} — Criteria: ${q.criteri.join(', ')}
+JSON solo: {"voto":7,"commento":"...","punti_forti":["..."],"punti_deboli":["..."]}`;
+  try{
+    const raw=await callAI(sys,`Risposta studente:\n${ans}`);
+    const ev=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    st.totale++;st.corrette+=ev.voto/10;updScore();
+    const pf=ev.punti_forti.map(p=>`<li style="color:var(--green)">✓ ${p}</li>`).join('');
+    const pd=ev.punti_deboli.map(p=>`<li style="color:var(--red)">✗ ${p}</li>`).join('');
+    document.getElementById('fa').innerHTML=`<div class="fb fbg"><div style="display:flex;align-items:baseline;gap:8px;margin-bottom:10px"><span style="font-family:'Instrument Serif',serif;font-size:32px;font-style:italic;color:var(--gold2)">${ev.voto}/10</span><span style="font-size:13px;color:var(--text2)">${ev.commento}</span></div><ul style="font-size:13px;margin-bottom:6px;padding-left:4px;list-style:none">${pf}</ul><ul style="font-size:13px;padding-left:4px;list-style:none">${pd}</ul></div>`;
+    logE({question:curQ,corrette:ev.voto>=6,vote:ev.voto,mode:'open',subject:st.subj});
+    document.getElementById('actrow').classList.remove('hidden');
+  }catch(e){document.getElementById('fa').innerHTML=`<div class="err">Errore: ${e.message}</div>`;document.getElementById('actrow').classList.remove('hidden');}
+}
+
+async function gOral(dm,ind){
+  const sys=`Sei un commissario d'esame di maturità (orale)${ind}. Generate ONE oral question ${dm} on: ${st.subj}. JSON solo: {"domanda":"...","suggerimento":"cosa vuole sentire la commissione","voto_max":10}`;
+  const raw=await callAI(sys,'Genera una domanda orale.');
+  const q=JSON.parse(raw.replace(/```json|```/g,'').trim());
+  curQ=q.domanda;
+  document.getElementById('qa').innerHTML=`<p style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:8px;letter-spacing:.08em">COMMISSIONE → CANDIDATO</p><p class="qtext">"${q.domanda}"</p><p style="font-size:12px;color:var(--text3);font-style:italic">💡 ${q.suggerimento}</p>`;
+  document.getElementById('aa').innerHTML=`<textarea id="ora" placeholder="Rispondi come se fossi davanti alla commissione..." style="margin-top:14px"></textarea><div class="btn-row"><button class="btn primary" onclick="subOral('${encodeURIComponent(JSON.stringify(q))}')">Rispondi →</button></div>`;
+  noT();
+}
+
+async function subOral(qe){
+  const q=JSON.parse(decodeURIComponent(qe));
+  const ans=document.getElementById('ora').value.trim();
+  if(!ans){document.getElementById('fa').innerHTML='<div class="err">Scrivi una risposta.</div>';return;}
+  document.getElementById('aa').querySelectorAll('button,textarea').forEach(el=>{el.disabled=true;if(el.tagName==='TEXTAREA')el.readOnly=true;});
+  document.getElementById('fa').innerHTML='<div class="pulse"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+  const sys=`Sei un commissario d'esame di maturità (orale). Grade this oral answer from 1 to 10.
+Question: "${q.domanda}"
+JSON solo: {"voto":7,"esposizione":"...","contenuto":"...","consiglio":"..."}`;
+  try{
+    const raw=await callAI(sys,`Risposta candidato: ${ans}`);
+    const ev=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    st.totale++;st.corrette+=ev.voto/10;updScore();
+    document.getElementById('fa').innerHTML=`<div class="fb fbb"><div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px"><span style="font-family:'Instrument Serif',serif;font-size:32px;font-style:italic;color:var(--gold2)">${ev.voto}/10</span></div><p style="font-size:13px;margin-bottom:6px"><strong>Esposizione:</strong> ${ev.esposizione}</p><p style="font-size:13px;margin-bottom:6px"><strong>Contenuto:</strong> ${ev.contenuto}</p><p style="font-size:13px;color:var(--gold)">💡 ${ev.consiglio}</p></div>`;
+    logE({question:curQ,corrette:ev.voto>=6,vote:ev.voto,mode:'oral',subject:st.subj});
+    document.getElementById('actrow').classList.remove('hidden');
+  }catch(e){document.getElementById('fa').innerHTML=`<div class="err">Errore: ${e.message}</div>`;document.getElementById('actrow').classList.remove('hidden');}
+}
+
+async function gSeconda(dm,ind){
+  const sys=`You are a member of the Italian maturità seconda prova commission${ind}. Generate a seconda prova topic ${dm} on: ${st.subj}. JSON solo: {"titolo":"...","traccia":"...","punti":["1. ...","2. ...","3. ..."],"durata_ore":6}`;
+  const raw=await callAI(sys,'Generate a seconda prova topic.');
+  const q=JSON.parse(raw.replace(/```json|```/g,'').trim());
+  curQ=q.titolo;
+  const pl=q.punti.map(p=>`<li style="margin-bottom:6px">${p}</li>`).join('');
+  document.getElementById('qa').innerHTML=`<p style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:10px;letter-spacing:.08em">SECONDA PROVA SCRITTA · ${q.durata_ore} ORE</p><p class="qtext">${q.titolo}</p><p style="font-size:14px;color:var(--text2);margin-bottom:14px;line-height:1.7;font-weight:400">${q.traccia}</p><ul style="font-size:14px;padding-left:18px;line-height:1.8;color:var(--text);font-weight:400">${pl}</ul>`;
+  document.getElementById('aa').innerHTML=`<textarea id="sa" placeholder="Scrivi la tua risposta..." style="margin-top:16px;min-height:150px"></textarea><div class="btn-row"><button class="btn primary" onclick="subSeconda('${encodeURIComponent(JSON.stringify(q))}')">Consegna →</button></div>`;
+  noT();
+}
+
+async function subSeconda(qe){
+  const q=JSON.parse(decodeURIComponent(qe));
+  const ans=document.getElementById('sa').value.trim();
+  if(!ans){document.getElementById('fa').innerHTML='<div class="err">Scrivi prima una risposta.</div>';return;}
+  document.getElementById('aa').querySelectorAll('button,textarea').forEach(el=>{el.disabled=true;if(el.tagName==='TEXTAREA')el.readOnly=true;});
+  document.getElementById('fa').innerHTML='<div class="pulse"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+  const sys=`You are an Italian maturità seconda prova commission member. Grade this answer from 1 to 10.
+Topic: "${q.titolo}" — Points: ${q.punti.join('; ')}
+JSON solo: {"voto":7,"completezza":"...","correttezza":"...","stile":"...","suggerimento":"..."}`;
+  try{
+    const raw=await callAI(sys,`Svolgimento: ${ans}`);
+    const ev=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    st.totale++;st.corrette+=ev.voto/10;updScore();
+    document.getElementById('fa').innerHTML=`<div class="fb fbg"><div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px"><span style="font-family:'Instrument Serif',serif;font-size:32px;font-style:italic;color:var(--gold2)">${ev.voto}/10</span><span style="font-size:13px;color:var(--text2)">seconda prova</span></div><p style="font-size:13px;margin-bottom:5px"><strong>Completezza:</strong> ${ev.completezza}</p><p style="font-size:13px;margin-bottom:5px"><strong>Correttezza:</strong> ${ev.correttezza}</p><p style="font-size:13px;margin-bottom:8px"><strong>Stile:</strong> ${ev.stile}</p><p style="font-size:13px;color:var(--gold)">💡 ${ev.suggerimento}</p></div>`;
+    logE({question:curQ,corrette:ev.voto>=6,vote:ev.voto,mode:'seconda',subject:st.subj});
+    document.getElementById('actrow').classList.remove('hidden');
+  }catch(e){document.getElementById('fa').innerHTML=`<div class="err">Errore: ${e.message}</div>`;document.getElementById('actrow').classList.remove('hidden');}
+}
+
+function logE(e){e.ts=Date.now();hist.unshift(e);if(hist.length>100)hist=hist.slice(0,100);localStorage.setItem('mh',JSON.stringify(hist));}
+
+function renderHist(){
+  const tot=hist.length,ok=hist.filter(h=>h.corrette).length;
+  const vs=hist.filter(h=>h.vote!=null).map(h=>h.vote);
+  const avg=vs.length?(vs.reduce((a,b)=>a+b,0)/vs.length).toFixed(1):null;
+  document.getElementById('sta').innerHTML=`<div class="stgrid"><div class="stbox"><div class="stval">${tot}</div><div class="stlbl">totale</div></div><div class="stbox"><div class="stval">${tot?Math.round(ok/tot*100):0}%</div><div class="stlbl">corrette</div></div><div class="stbox"><div class="stval">${avg||'—'}</div><div class="stlbl">voto medio</div></div></div>`;
+  if(!hist.length){document.getElementById('hl').innerHTML='<p style="color:var(--text3);font-size:13px">Nessuna sessione salvata.</p>';return;}
+  document.getElementById('hl').innerHTML=hist.slice(0,30).map(h=>`<div class="hist-item"><div class="hdot ${h.mode==='mc'?(h.corrette?'ok':'ko'):'op'}"></div><div class="hinfo"><div class="hq">${h.question||'—'}</div><div class="hm">${h.subject} · ${ML[h.mode]||h.mode} · ${new Date(h.ts).toLocaleDateString('it-IT')}</div></div>${h.vote!=null?`<div class="hv">${h.vote}/10</div>`:h.corrette?'<div style="color:var(--green)">✓</div>':'<div style="color:var(--red)">✗</div>'}</div>`).join('');
+}
+
+function clearHist(){if(!confirm('Cancella tutto history?'))return;hist=[];localStorage.removeItem('mh');renderHist();}
+</script>
+</body>
+</html>
