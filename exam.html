@@ -637,32 +637,59 @@ async function subOral(qe) {
 // ---- SECONDA PROVA ----
 async function gSeconda(dm, ind) {
   var sys = [
-    'Sei un membro della commissione ministeriale italiana di seconda prova scritta' + ind + '.',
-    'Genera un tema di seconda prova REALISTICO e DETTAGLIATO ' + dm + ' per la materia: ' + st.subj + '.',
-    'REGOLE IMPORTANTI PER IL JSON:',
-    '1. NON usare mai tabelle markdown (| col | col |) — descrivile in prosa.',
-    '2. NON usare newline letterali nei valori JSON — usa solo testo continuo con punti e virgola.',
-    '3. NON usare caratteri speciali non escaped.',
-    '4. Tutti i valori devono essere stringhe JSON valide su una sola riga logica.',
-    'Il tema deve includere: titolo ufficiale, introduzione con scenario reale (80+ parole), traccia dettagliata (150+ parole) con specifiche tecniche in prosa, 5 punti dettagliati da svolgere, allegati descritti in prosa.',
-    'Rispondi SOLO con questo JSON minificato (tutto su una riga, nessun altro testo):',
-    '{"titolo":"...","introduzione":"...","traccia":"...","punti":["1. ...","2. ...","3. ...","4. ...","5. ..."],"allegati":"...","durata_ore":6}'
+    'Sei un membro esperto della commissione ministeriale italiana per la seconda prova scritta degli Esami di Stato (Maturita)' + ind + '.',
+    'Genera un tema di seconda prova per la materia: ' + st.subj + ' con difficolta: ' + dm + '.',
+    '',
+    'STILE UFFICIALE MINISTERIALE — segui esattamente questo formato:',
+    '- Premessa: contesto tecnico/professionale reale con terminologia specifica della materia (100+ parole)',
+    '- Caso professionale: scenario aziendale o istituzionale reale dettagliato con dati numerici specifici, nomi fittizi di aziende/enti, requisiti funzionali e non funzionali (200+ parole)',
+    '- Prima parte: 5-6 punti tecnici da svolgere obbligatoriamente, ciascuno con sotto-richieste specifiche e precise',
+    '- Seconda parte: 4 quesiti opzionali tra cui il candidato sceglie 2, ognuno su aspetti approfonditi del tema',
+    '- Allegati descritti: dati tecnici, specifiche, schemi logici parziali, tabelle dati in formato testuale',
+    '',
+    'ESEMPI DI STILE (per Informatica): la traccia reale 2025 chiedeva di progettare una piattaforma web per il labeling di fake news con schema ER, SQL, query specifiche e codice lato client/server.',
+    'ESEMPI DI STILE (per Sistemi e Reti): la traccia reale 2024 chiedeva di progettare una rete in fibra ottica regionale con piano di indirizzamento IP, dispositivi, sicurezza e schedulazione backup.',
+    '',
+    'REGOLE JSON OBBLIGATORIE:',
+    '1. NO tabelle markdown — solo testo in prosa con dati inline',
+    '2. NO newline letterali nelle stringhe JSON',
+    '3. NO caratteri speciali non escaped',
+    'Rispondi SOLO con questo JSON (nessun altro testo):',
+    '{"titolo":"...","premessa":"...","caso":"...","punti_prima_parte":["1. ...","2. ...","3. ...","4. ...","5. ..."],"quesiti_seconda_parte":["I. ...","II. ...","III. ...","IV. ..."],"allegati":"...","durata_ore":6}'
   ].join(' ');
-  var raw = await callAI(sys, 'Genera il tema completo di seconda prova come se fosse il vero esame ministeriale italiano. Sii molto dettagliato e realistico.', 5000);
+  var raw = await callAI(sys, 'Genera il tema completo di seconda prova esattamente come nei veri esami ministeriali italiani. Usa terminologia tecnica precisa, dati numerici realistici e richieste operative concrete.', 5000);
   var q = safeParseJSON(raw);
+  // Support both old format (punti) and new format (punti_prima_parte)
+  if (!q.punti_prima_parte && q.punti) { q.punti_prima_parte = q.punti; }
+  if (!q.quesiti_seconda_parte) { q.quesiti_seconda_parte = []; }
+  if (!q.premessa && q.introduzione) { q.premessa = q.introduzione; }
+  if (!q.caso && q.traccia) { q.caso = q.traccia; }
   curQ = q.titolo;
-  var pl = q.punti.map(function(p,i) { var txt = p.replace(/^\d+\.\s*/, ''); return '<li style="margin-bottom:10px;line-height:1.7"><strong style="color:var(--gold)">' + (i+1) + '.</strong> ' + txt + '</li>'; }).join('');
-  var allegati = q.allegati ? '<div style="margin-top:16px;padding:12px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;font-size:13px;color:var(--text2)"><strong style="color:var(--text)">📎 Allegati:</strong> ' + q.allegati + '</div>' : '';
+  var pl1 = q.punti_prima_parte.map(function(p,i) {
+    var txt = p.replace(/^\d+\.\s*/, '');
+    return '<li style="margin-bottom:12px;line-height:1.75"><strong style="color:var(--gold)">' + (i+1) + '.</strong> ' + txt + '</li>';
+  }).join('');
+  var pl2 = q.quesiti_seconda_parte.length > 0 ? q.quesiti_seconda_parte.map(function(p,i) {
+    var txt = p.replace(/^[IVX]+\.\s*/, '');
+    var rom = ['I','II','III','IV'][i] || (i+1);
+    return '<li style="margin-bottom:12px;line-height:1.75"><strong style="color:var(--blue)">' + rom + '.</strong> ' + txt + '</li>';
+  }).join('') : '';
+  var allegati = q.allegati ? '<div style="margin-top:16px;padding:12px 16px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;font-size:13px;color:var(--text2);line-height:1.7"><strong style="color:var(--text)">📎 Allegati forniti:</strong> ' + q.allegati + '</div>' : '';
+  var secondaParte = pl2 ? '<div style="margin-top:20px;padding:14px 16px;background:rgba(79,135,201,0.06);border:1px solid rgba(79,135,201,0.25);border-radius:10px"><p style="font-size:11px;color:var(--blue);font-family:\'DM Mono\',monospace;margin-bottom:10px;text-transform:uppercase;letter-spacing:.1em">Seconda parte — scegli 2 quesiti su 4</p><ul style="font-size:14px;padding-left:8px;line-height:1.8;color:var(--text);list-style:none">' + pl2 + '</ul></div>' : '';
   var qenc = encodeURIComponent(JSON.stringify(q));
   document.getElementById('qa').innerHTML =
-    '<p style="font-size:11px;color:var(--text3);font-family:\'DM Mono\',monospace;margin-bottom:10px;letter-spacing:.08em">SECONDA PROVA SCRITTA · ' + q.durata_ore + ' ORE</p>' +
-    '<p class="qtext">' + q.titolo + '</p>' +
-    '<div style="background:var(--surface2);border-left:3px solid var(--gold);padding:14px 16px;border-radius:0 8px 8px 0;margin-bottom:16px;font-size:14px;color:var(--text2);line-height:1.8">' + q.introduzione + '</div>' +
-    '<p style="font-size:14px;color:var(--text);margin-bottom:16px;line-height:1.8">' + q.traccia + '</p>' +
-    '<p style="font-size:11px;color:var(--text3);font-family:\'DM Mono\',monospace;margin-bottom:10px;text-transform:uppercase;letter-spacing:.1em">Punti da svolgere</p>' +
-    '<ul style="font-size:14px;padding-left:8px;line-height:1.8;color:var(--text);list-style:none">' + pl + '</ul>' +
+    '<p style="font-size:11px;color:var(--text3);font-family:\'DM Mono\',monospace;margin-bottom:12px;letter-spacing:.1em">SECONDA PROVA SCRITTA · ESAME DI STATO · ' + q.durata_ore + ' ORE</p>' +
+    '<p class="qtext" style="margin-bottom:16px">' + q.titolo + '</p>' +
+    (q.premessa ? '<div style="margin-bottom:14px"><p style="font-size:11px;color:var(--text3);font-family:\'DM Mono\',monospace;margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Premessa</p><p style="font-size:14px;color:var(--text2);line-height:1.8">' + q.premessa + '</p></div>' : '') +
+    (q.caso ? '<div style="margin-bottom:16px"><p style="font-size:11px;color:var(--text3);font-family:\'DM Mono\',monospace;margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Caso professionale</p><p style="font-size:14px;color:var(--text);line-height:1.8">' + q.caso + '</p></div>' : '') +
+    '<div style="padding:14px 16px;background:rgba(200,168,75,0.05);border:1px solid rgba(200,168,75,0.2);border-radius:10px;margin-bottom:0">' +
+    '<p style="font-size:11px;color:var(--gold);font-family:\'DM Mono\',monospace;margin-bottom:10px;text-transform:uppercase;letter-spacing:.1em">Prima parte — da svolgere obbligatoriamente</p>' +
+    '<p style="font-size:13px;color:var(--text2);margin-bottom:10px;font-style:italic">Il candidato svolga tutti i punti della prima parte.</p>' +
+    '<ul style="font-size:14px;padding-left:8px;line-height:1.8;color:var(--text);list-style:none">' + pl1 + '</ul>' +
+    '</div>' +
+    secondaParte +
     allegati;
-  document.getElementById('aa').innerHTML = '<textarea id="sa" placeholder="Svolgi la traccia..." style="margin-top:16px;min-height:200px"></textarea><div class="btn-row"><button class="btn primary" onclick="subSeconda(\'' + qenc + '\')">Consegna →</button></div>';
+  document.getElementById('aa').innerHTML = '<textarea id="sa" placeholder="Svolgi la prima parte e i quesiti scelti..." style="margin-top:16px;min-height:220px"></textarea><div class="btn-row"><button class="btn primary" onclick="subSeconda(\'' + qenc + '\')">Consegna →</button></div>';
   noT();
 }
 async function subSeconda(qe) {
@@ -671,12 +698,21 @@ async function subSeconda(qe) {
   if (!ans) { document.getElementById('fa').innerHTML = '<div class="err">Svolgi la traccia prima.</div>'; return; }
   document.getElementById('aa').querySelectorAll('button,textarea').forEach(function(el) { el.disabled = true; if (el.tagName === 'TEXTAREA') el.readOnly = true; });
   document.getElementById('fa').innerHTML = '<div class="pulse"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
-  var sys = 'Sei un commissario seconda prova. Valuta lo svolgimento. Voto 1-10. Traccia: "' + q.titolo + '" — Punti: ' + q.punti.join('; ') + '. JSON solo: {"voto":7,"completezza":"...","correttezza":"...","stile":"...","suggerimento":"..."}';
+  var puntiStr = (q.punti_prima_parte || q.punti || []).join('; ');
+  var sys = 'Sei un commissario della seconda prova scritta degli Esami di Stato italiani. Valuta lo svolgimento con voto da 1 a 10 seguendo i criteri ministeriali: pertinenza alla traccia, completezza dei punti svolti, correttezza tecnica/disciplinare, organizzazione e chiarezza espositiva. Traccia: "' + q.titolo + '" — Prima parte: ' + puntiStr + '. JSON solo: {"voto":7,"pertinenza":"...","completezza":"...","correttezza_tecnica":"...","esposizione":"...","suggerimento":"..."}';
   try {
     var raw = await callAI(sys, 'Svolgimento: ' + ans);
     var ev = safeParseJSON(raw);
     st.total++; st.correct += ev.voto / 10; updScore();
-    document.getElementById('fa').innerHTML = '<div class="fb fbg"><div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px"><span style="font-family:\'Instrument Serif\',serif;font-size:32px;font-style:italic;color:var(--gold2)">' + ev.voto + '/10</span></div><p style="font-size:13px;margin-bottom:5px"><strong>Completezza:</strong> ' + ev.completezza + '</p><p style="font-size:13px;margin-bottom:5px"><strong>Correttezza:</strong> ' + ev.correttezza + '</p><p style="font-size:13px;margin-bottom:8px"><strong>Stile:</strong> ' + ev.stile + '</p><p style="font-size:13px;color:var(--gold)">💡 ' + ev.suggerimento + '</p></div>';
+    var fbHtml = '<div class="fb fbg">';
+    fbHtml += '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:14px"><span style="font-family:\'Instrument Serif\',serif;font-size:36px;font-style:italic;color:var(--gold2)">' + ev.voto + '/10</span><span style="font-size:13px;color:var(--text2)">valutazione commissione</span></div>';
+    if (ev.pertinenza) fbHtml += '<p style="font-size:13px;margin-bottom:6px"><strong>Pertinenza:</strong> ' + ev.pertinenza + '</p>';
+    if (ev.completezza) fbHtml += '<p style="font-size:13px;margin-bottom:6px"><strong>Completezza:</strong> ' + ev.completezza + '</p>';
+    if (ev.correttezza_tecnica) fbHtml += '<p style="font-size:13px;margin-bottom:6px"><strong>Correttezza tecnica:</strong> ' + ev.correttezza_tecnica + '</p>';
+    if (ev.esposizione) fbHtml += '<p style="font-size:13px;margin-bottom:8px"><strong>Esposizione:</strong> ' + ev.esposizione + '</p>';
+    if (ev.suggerimento) fbHtml += '<p style="font-size:13px;color:var(--gold)">💡 ' + ev.suggerimento + '</p>';
+    fbHtml += '</div>';
+    document.getElementById('fa').innerHTML = fbHtml;
     logE({ question:curQ, correct:ev.voto >= 6, vote:ev.voto, mode:'seconda', subject:st.subj });
     document.getElementById('actrow').classList.remove('hidden');
   } catch(e) { document.getElementById('fa').innerHTML = '<div class="err">Errore: ' + e.message + '</div>'; document.getElementById('actrow').classList.remove('hidden'); }
