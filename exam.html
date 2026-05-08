@@ -481,7 +481,7 @@ function loading(){document.getElementById('qa').innerHTML='<div class="pulse"><
 
 async function genQ(){
   loading();
-  const dm={base:'semplice, adatta al ripasso',medio:'di media difficoltà, tipica dell'esame reale',avanzato:'difficile e approfondita, da commissione severa'}[st.diff];
+  const dm={base:'semplice, adatta al ripasso',medio:"di media difficoltà, tipica dell'esame reale",avanzato:'difficile e approfondita, da commissione severa'}[st.diff];
   const ind=st.ind?` for ${st.ind}`:'';
   try{
     if(st.mode==='mc')await gMC(dm,ind);
