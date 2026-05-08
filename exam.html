@@ -651,7 +651,7 @@ async function gSeconda(dm, ind) {
   var raw = await callAI(sys, 'Genera il tema completo di seconda prova come se fosse il vero esame ministeriale italiano. Sii molto dettagliato e realistico.', 5000);
   var q = safeParseJSON(raw);
   curQ = q.titolo;
-  var pl = q.punti.map(function(p) { return '<li style="margin-bottom:10px;line-height:1.7">' + p + '</li>'; }).join('');
+  var pl = q.punti.map(function(p,i) { var txt = p.replace(/^\d+\.\s*/, ''); return '<li style="margin-bottom:10px;line-height:1.7"><strong style="color:var(--gold)">' + (i+1) + '.</strong> ' + txt + '</li>'; }).join('');
   var allegati = q.allegati ? '<div style="margin-top:16px;padding:12px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;font-size:13px;color:var(--text2)"><strong style="color:var(--text)">📎 Allegati:</strong> ' + q.allegati + '</div>' : '';
   var qenc = encodeURIComponent(JSON.stringify(q));
   document.getElementById('qa').innerHTML =
@@ -660,7 +660,7 @@ async function gSeconda(dm, ind) {
     '<div style="background:var(--surface2);border-left:3px solid var(--gold);padding:14px 16px;border-radius:0 8px 8px 0;margin-bottom:16px;font-size:14px;color:var(--text2);line-height:1.8">' + q.introduzione + '</div>' +
     '<p style="font-size:14px;color:var(--text);margin-bottom:16px;line-height:1.8">' + q.traccia + '</p>' +
     '<p style="font-size:11px;color:var(--text3);font-family:\'DM Mono\',monospace;margin-bottom:10px;text-transform:uppercase;letter-spacing:.1em">Punti da svolgere</p>' +
-    '<ol style="font-size:14px;padding-left:20px;line-height:1.8;color:var(--text)">' + pl + '</ol>' +
+    '<ul style="font-size:14px;padding-left:8px;line-height:1.8;color:var(--text);list-style:none">' + pl + '</ul>' +
     allegati;
   document.getElementById('aa').innerHTML = '<textarea id="sa" placeholder="Svolgi la traccia..." style="margin-top:16px;min-height:200px"></textarea><div class="btn-row"><button class="btn primary" onclick="subSeconda(\'' + qenc + '\')">Consegna →</button></div>';
   noT();
