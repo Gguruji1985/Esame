@@ -27,7 +27,7 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { scorri-behavior: smooth; }
+html { scroll-behavior: smooth; }
 
 body {
   font-family: 'Syne', sans-serif;
@@ -241,7 +241,7 @@ nav {
 }
 
 /* SCROLL INDICATOR */
-.scorri-hint {
+.scroll-hint {
   position: absolute;
   bottom: 40px;
   left: 50%;
@@ -257,13 +257,13 @@ nav {
   text-transform: uppercase;
   animation: fadeUp 1s 0.6s ease both;
 }
-.scorri-line {
+.scroll-line {
   width: 1px;
   height: 48px;
   background: linear-gradient(to bottom, var(--text3), transparent);
-  animation: scorriPulse 2s infinite;
+  animation: scrollPulse 2s infinite;
 }
-@keyframes scorriPulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+@keyframes scrollPulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
 
 /* TRACKS SECTION */
 .section {
@@ -599,8 +599,8 @@ footer {
       <div class="stat-lbl">Provider AI</div>
     </div>
   </div>
-  <div class="scorri-hint">
-    <div class="scorri-line"></div>
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
     scorri
   </div>
 </section>
@@ -609,7 +609,7 @@ footer {
 
 <!-- TRACKS -->
 <section class="section" id="tracks">
-  <div class="section-label">Supported Tracks</div>
+  <div class="section-label">Indirizzi Scolastici</div>
   <h2 class="section-title">Tutti gli<br><em>indirizzi scolastici</em></h2>
   <p class="section-sub">Dal Liceo Classico all'Istituto Tecnico. Scrivi qualsiasi materia o scegli dai preset.</p>
 
