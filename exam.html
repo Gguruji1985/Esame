@@ -280,6 +280,18 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
 </div>
 
 <script>
+function safeParseJSON(raw) {
+  // Strip markdown fences
+  var s = raw.replace(/```json|```/g, '').trim();
+  // Remove bad control characters (newlines/tabs inside strings)
+  s = s.replace(/[\x00-\x09\x0b\x0c\x0e-\x1f]/g, ' ');
+  // Replace literal newlines inside JSON strings with \n
+  s = s.replace(/("(?:[^"\\]|\\.)*")/g, function(match) {
+    return match.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t');
+  });
+  return JSON.parse(s);
+}
+
 const PROVS = {
   anthropic: { label:'Anthropic', model:'claude-sonnet-4-20250514', hint:'Model: claude-sonnet-4-20250514', ph:'sk-ant-...' },
   openai:    { label:'OpenAI',    model:'gpt-4o-mini',              hint:'Model: gpt-4o-mini',              ph:'sk-...' },
@@ -520,7 +532,7 @@ async function genQ() {
 async function gMC(dm, ind) {
   var sys = 'Sei un commissario d\'esame di maturità italiana' + ind + '. Genera UNA domanda a risposta multipla ' + dm + ' sulla materia: ' + st.subj + '. Rispondi SOLO con JSON valido, nessun altro testo: {"domanda":"...","opzioni":["A) ...","B) ...","C) ...","D) ..."],"corretta":"A","spiegazione":"..."}';
   var raw = await callAI(sys, 'Genera una domanda.');
-  var q = JSON.parse(raw.replace(/```json|```/g, '').trim());
+  var q = safeParseJSON(raw);
   curQ = q.domanda;
   document.getElementById('qa').innerHTML = '<p class="qtext">' + q.domanda + '</p>';
   var aa = document.getElementById('aa');
@@ -551,7 +563,7 @@ function chkMC(sel, corr, sp, btn) {
 async function gOpen(dm, ind) {
   var sys = 'Sei un commissario d\'esame di maturità italiana' + ind + '. Genera UNA domanda aperta ' + dm + ' per: ' + st.subj + '. JSON solo: {"domanda":"...","criteri":["...","...","..."],"voto_max":10}';
   var raw = await callAI(sys, 'Genera domanda aperta.');
-  var q = JSON.parse(raw.replace(/```json|```/g, '').trim());
+  var q = safeParseJSON(raw);
   curQ = q.domanda;
   document.getElementById('qa').innerHTML = '<p class="qtext">' + q.domanda + '</p><p style="font-size:11px;color:var(--text3);font-family:\'DM Mono\',monospace">Voto max: ' + q.voto_max + '/10</p>';
   var qenc = encodeURIComponent(JSON.stringify(q));
@@ -568,7 +580,7 @@ async function subOpen(qe) {
   var sys = 'Sei un commissario d\'esame di maturità. Valuta la risposta con voto 1-10. Domanda: ' + q.domanda + ' — Criteri: ' + q.criteri.join(', ') + '. JSON solo: {"voto":7,"commento":"...","punti_forti":["..."],"punti_deboli":["..."]}';
   try {
     var raw = await callAI(sys, 'Risposta studente:\n' + ans);
-    var ev = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    var ev = safeParseJSON(raw);
     st.total++; st.correct += ev.voto / 10; updScore();
     var pf = ev.punti_forti.map(function(p) { return '<li style="color:var(--green)">✓ ' + p + '</li>'; }).join('');
     var pd = ev.punti_deboli.map(function(p) { return '<li style="color:var(--red)">✗ ' + p + '</li>'; }).join('');
@@ -582,7 +594,7 @@ async function subOpen(qe) {
 async function gOral(dm, ind) {
   var sys = 'Sei un commissario d\'esame di maturità (orale)' + ind + '. Genera UNA domanda orale ' + dm + ' per: ' + st.subj + '. JSON solo: {"domanda":"...","suggerimento":"cosa vuole sentire la commissione","voto_max":10}';
   var raw = await callAI(sys, 'Genera domanda orale.');
-  var q = JSON.parse(raw.replace(/```json|```/g, '').trim());
+  var q = safeParseJSON(raw);
   curQ = q.domanda;
   var qenc = encodeURIComponent(JSON.stringify(q));
   document.getElementById('qa').innerHTML = '<p style="font-size:11px;color:var(--text3);font-family:\'DM Mono\',monospace;margin-bottom:8px">COMMISSIONE → CANDIDATO</p><p class="qtext">"' + q.domanda + '"</p><p style="font-size:12px;color:var(--text3);font-style:italic">💡 ' + q.suggerimento + '</p>';
@@ -598,7 +610,7 @@ async function subOral(qe) {
   var sys = 'Sei un commissario d\'esame (orale). Valuta. Voto 1-10. Domanda: "' + q.domanda + '". JSON solo: {"voto":7,"esposizione":"...","contenuto":"...","consiglio":"..."}';
   try {
     var raw = await callAI(sys, 'Risposta candidato: ' + ans);
-    var ev = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    var ev = safeParseJSON(raw);
     st.total++; st.correct += ev.voto / 10; updScore();
     document.getElementById('fa').innerHTML = '<div class="fb fbb"><div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px"><span style="font-family:\'Instrument Serif\',serif;font-size:32px;font-style:italic;color:var(--gold2)">' + ev.voto + '/10</span></div><p style="font-size:13px;margin-bottom:6px"><strong>Esposizione:</strong> ' + ev.esposizione + '</p><p style="font-size:13px;margin-bottom:6px"><strong>Contenuto:</strong> ' + ev.contenuto + '</p><p style="font-size:13px;color:var(--gold)">💡 ' + ev.consiglio + '</p></div>';
     logE({ question:curQ, correct:ev.voto >= 6, vote:ev.voto, mode:'oral', subject:st.subj });
@@ -621,7 +633,7 @@ async function gSeconda(dm, ind) {
     '{"titolo":"...","introduzione":"...","traccia":"...","punti":["1. ...","2. ...","3. ...","4. ...","5. ..."],"allegati":"...","durata_ore":6}'
   ].join(' ');
   var raw = await callAI(sys, 'Genera il tema completo di seconda prova come se fosse il vero esame ministeriale italiano. Sii molto dettagliato e realistico.');
-  var q = JSON.parse(raw.replace(/```json|```/g, '').trim());
+  var q = safeParseJSON(raw);
   curQ = q.titolo;
   var pl = q.punti.map(function(p) { return '<li style="margin-bottom:10px;line-height:1.7">' + p + '</li>'; }).join('');
   var allegati = q.allegati ? '<div style="margin-top:16px;padding:12px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;font-size:13px;color:var(--text2)"><strong style="color:var(--text)">📎 Allegati:</strong> ' + q.allegati + '</div>' : '';
@@ -646,7 +658,7 @@ async function subSeconda(qe) {
   var sys = 'Sei un commissario seconda prova. Valuta lo svolgimento. Voto 1-10. Traccia: "' + q.titolo + '" — Punti: ' + q.punti.join('; ') + '. JSON solo: {"voto":7,"completezza":"...","correttezza":"...","stile":"...","suggerimento":"..."}';
   try {
     var raw = await callAI(sys, 'Svolgimento: ' + ans);
-    var ev = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    var ev = safeParseJSON(raw);
     st.total++; st.correct += ev.voto / 10; updScore();
     document.getElementById('fa').innerHTML = '<div class="fb fbg"><div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px"><span style="font-family:\'Instrument Serif\',serif;font-size:32px;font-style:italic;color:var(--gold2)">' + ev.voto + '/10</span></div><p style="font-size:13px;margin-bottom:5px"><strong>Completezza:</strong> ' + ev.completezza + '</p><p style="font-size:13px;margin-bottom:5px"><strong>Correttezza:</strong> ' + ev.correttezza + '</p><p style="font-size:13px;margin-bottom:8px"><strong>Stile:</strong> ' + ev.stile + '</p><p style="font-size:13px;color:var(--gold)">💡 ' + ev.suggerimento + '</p></div>';
     logE({ question:curQ, correct:ev.voto >= 6, vote:ev.voto, mode:'seconda', subject:st.subj });
