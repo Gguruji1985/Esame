@@ -389,7 +389,8 @@ function saveAndNext() {
 })();
 
 // ---- AI CALL ----
-async function callAI(sys, user) {
+async function callAI(sys, user, maxTokens) {
+  maxTokens = maxTokens || 1200;
   var key = document.getElementById('apikey').value.trim() || localStorage.getItem('k_' + prov) || '';
 
   if (prov === 'anthropic') {
@@ -397,7 +398,7 @@ async function callAI(sys, user) {
     var r = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type':'application/json', 'x-api-key':key, 'anthropic-version':'2023-06-01' },
-      body: JSON.stringify({ model: PROVS.anthropic.model, max_tokens:1200, system:sys, messages:[{role:'user',content:user}] })
+      body: JSON.stringify({ model: PROVS.anthropic.model, max_tokens:maxTokens, system:sys, messages:[{role:'user',content:user}] })
     });
     var d = await r.json();
     if (d.error) throw new Error(d.error.message);
@@ -411,7 +412,7 @@ async function callAI(sys, user) {
     var r2 = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type':'application/json', 'Authorization':'Bearer ' + key },
-      body: JSON.stringify({ model:model, max_tokens:1200, messages:[{role:'system',content:sys},{role:'user',content:user}] })
+      body: JSON.stringify({ model:model, max_tokens:maxTokens, messages:[{role:'system',content:sys},{role:'user',content:user}] })
     });
     var d2 = await r2.json();
     if (d2.error) throw new Error(typeof d2.error === 'string' ? d2.error : d2.error.message || JSON.stringify(d2.error));
@@ -440,7 +441,7 @@ async function callAI(sys, user) {
     var r4 = await fetch(url, {
       method: 'POST',
       headers: headers4,
-      body: JSON.stringify({ model:cmodel, max_tokens:1200, messages:[{role:'system',content:sys},{role:'user',content:user}] })
+      body: JSON.stringify({ model:cmodel, max_tokens:maxTokens, messages:[{role:'system',content:sys},{role:'user',content:user}] })
     });
     var d4 = await r4.json();
     if (d4.error) throw new Error(typeof d4.error === 'string' ? d4.error : d4.error.message || JSON.stringify(d4.error));
@@ -632,7 +633,7 @@ async function gSeconda(dm, ind) {
     'Rispondi SOLO con questo JSON (nessun altro testo):',
     '{"titolo":"...","introduzione":"...","traccia":"...","punti":["1. ...","2. ...","3. ...","4. ...","5. ..."],"allegati":"...","durata_ore":6}'
   ].join(' ');
-  var raw = await callAI(sys, 'Genera il tema completo di seconda prova come se fosse il vero esame ministeriale italiano. Sii molto dettagliato e realistico.');
+  var raw = await callAI(sys, 'Genera il tema completo di seconda prova come se fosse il vero esame ministeriale italiano. Sii molto dettagliato e realistico.', 3000);
   var q = safeParseJSON(raw);
   curQ = q.titolo;
   var pl = q.punti.map(function(p) { return '<li style="margin-bottom:10px;line-height:1.7">' + p + '</li>'; }).join('');
