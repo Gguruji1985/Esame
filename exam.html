@@ -368,7 +368,6 @@ function setS(v){document.getElementById('subj').value=v;}
 function doHistory(){renderHist();show('p-history');}
 
 (()=>{
-  // Find saved provider or default to anthropic
   const provOrder=['anthropic','openai','gemini','groq','custom'];
   let foundProv='anthropic';
   for(const p of provOrder){
@@ -377,15 +376,12 @@ function doHistory(){renderHist();show('p-history');}
     if(k||isCustom){foundProv=p;break;}
   }
   prov=foundProv;
-  // Set active button
   document.querySelectorAll('.prov-btn').forEach(b=>b.classList.remove('active'));
   document.querySelector(`.prov-btn[data-p="${prov}"]`).classList.add('active');
-  // Set pinfo, placeholder, key
   document.getElementById('pinfo').innerHTML=`<code>${PROVS[prov].hint}</code>`;
   document.getElementById('apikey').placeholder=PROVS[prov].ph;
   const k=localStorage.getItem('k_'+prov);
   if(k){document.getElementById('apikey').value=k;document.getElementById('rem').checked=true;}
-  // Custom fields
   if(prov==='custom'){
     document.getElementById('custom-fields').classList.remove('hidden');
     document.getElementById('key-optional').style.display='inline';
@@ -396,8 +392,6 @@ function doHistory(){renderHist();show('p-history');}
   } else {
     document.getElementById('key-optional').style.display='none';
   }
-  // Auto-skip to setup if key already saved
-  if(k||(prov==='custom'&&localStorage.getItem('custom_url')))show('p-setup');
 })();
 
 async function callAI(sys,user){
