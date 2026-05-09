@@ -404,6 +404,63 @@ function saveAndNext() {
 })();
 
 // ---- AI CALL ----
+async function callAIWithImages(sys, user, images) {
+  var key = document.getElementById('apikey').value.trim() || localStorage.getItem('k_' + prov) || '';
+  if (!key) throw new Error('Nessuna API key');
+  // Build content array with text + images
+  var content = [];
+  images.forEach(function(dataUrl) {
+    var parts = dataUrl.split(',');
+    var mimeMatch = parts[0].match(/:(.*?);/);
+    var mediaType = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+    var b64 = parts[1];
+    content.push({ type: 'image', source: { type: 'base64', media_type: mediaType, data: b64 } });
+  });
+  content.push({ type: 'text', text: user });
+  if (prov === 'anthropic') {
+    var r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'x-api-key':key, 'anthropic-version':'2023-06-01' },
+      body: JSON.stringify({ model: PROVS.anthropic.model, max_tokens: 2000, system: sys, messages: [{ role:'user', content: content }] })
+    });
+    var d = await r.json();
+    if (d.error) throw new Error(d.error.message);
+    return d.content[0].text;
+  }
+  if (prov === 'openai') {
+    var oaiContent = images.map(function(dataUrl) {
+      return { type: 'image_url', image_url: { url: dataUrl } };
+    });
+    oaiContent.push({ type: 'text', text: user });
+    var r2 = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'Authorization':'Bearer ' + key },
+      body: JSON.stringify({ model: 'gpt-4o', max_tokens: 2000, messages: [{ role:'system', content: sys }, { role:'user', content: oaiContent }] })
+    });
+    var d2 = await r2.json();
+    if (d2.error) throw new Error(d2.error.message);
+    return d2.choices[0].message.content;
+  }
+  // Gemini vision
+  if (prov === 'gemini') {
+    var parts2 = images.map(function(dataUrl) {
+      var sp = dataUrl.split(',');
+      var mm = sp[0].match(/:(.*?);/);
+      return { inline_data: { mime_type: mm ? mm[1] : 'image/jpeg', data: sp[1] } };
+    });
+    parts2.push({ text: sys + '\n\n' + user });
+    var r3 = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + key, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({ contents: [{ parts: parts2 }] })
+    });
+    var d3 = await r3.json();
+    if (d3.error) throw new Error(d3.error.message);
+    return d3.candidates[0].content.parts[0].text;
+  }
+  throw new Error('Il provider selezionato non supporta le immagini. Usa Anthropic, OpenAI o Gemini.');
+}
+
 async function callAI(sys, user, maxTokens) {
   maxTokens = maxTokens || 1200;
   var key = document.getElementById('apikey').value.trim() || localStorage.getItem('k_' + prov) || '';
@@ -689,19 +746,86 @@ async function gSeconda(dm, ind) {
     '</div>' +
     secondaParte +
     allegati;
-  document.getElementById('aa').innerHTML = '<textarea id="sa" placeholder="Svolgi la prima parte e i quesiti scelti..." style="margin-top:16px;min-height:220px"></textarea><div class="btn-row"><button class="btn primary" onclick="subSeconda(\'' + qenc + '\')">Consegna →</button></div>';
+  document.getElementById('aa').innerHTML =
+    '<div style="margin-top:16px">' +
+    '<div style="display:flex;gap:8px;margin-bottom:10px">' +
+    '<button class="btn active" id="tab-text" onclick="switchTab(\'text\')" style="font-size:12px;padding:6px 14px;background:var(--gold);border-color:var(--gold);color:#080808">✏️ Scrivi</button>' +
+    '<button class="btn" id="tab-img" onclick="switchTab(\'img\')" style="font-size:12px;padding:6px 14px">📷 Carica foto quaderno</button>' +
+    '</div>' +
+    '<div id="input-text"><textarea id="sa" placeholder="Svolgi la prima parte e i quesiti scelti..." style="min-height:220px;width:100%"></textarea></div>' +
+    '<div id="input-img" style="display:none">' +
+    '<label style="display:block;border:2px dashed var(--border2);border-radius:10px;padding:32px;text-align:center;cursor:pointer;transition:border-color .2s" id="drop-zone" ondragover="event.preventDefault();this.style.borderColor=\'var(--gold)\'" ondragleave="this.style.borderColor=\'var(--border2)\'" ondrop="handleDrop(event)">' +
+    '<input type="file" id="img-input" accept="image/*" multiple style="display:none" onchange="handleFiles(this.files)">' +
+    '<p style="font-size:24px;margin-bottom:8px">📸</p>' +
+    '<p style="font-size:14px;color:var(--text2);margin-bottom:4px">Clicca o trascina le foto del quaderno</p>' +
+    '<p style="font-size:12px;color:var(--text3)">Puoi caricare più pagine · JPG, PNG, HEIC</p>' +
+    '</label>' +
+    '<div id="img-previews" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"></div>' +
+    '</div>' +
+    '<div class="btn-row"><button class="btn primary" onclick="subSeconda(\'' + qenc + '\')">Consegna per la valutazione →</button></div>' +
+    '</div>';
   noT();
 }
+// Tab switching and image handling
+var uploadedImages = [];
+function switchTab(tab) {
+  document.getElementById('input-text').style.display = tab === 'text' ? 'block' : 'none';
+  document.getElementById('input-img').style.display = tab === 'img' ? 'block' : 'none';
+  document.getElementById('tab-text').style.background = tab === 'text' ? 'var(--gold)' : 'transparent';
+  document.getElementById('tab-text').style.color = tab === 'text' ? '#080808' : 'var(--text)';
+  document.getElementById('tab-text').style.borderColor = tab === 'text' ? 'var(--gold)' : 'var(--border2)';
+  document.getElementById('tab-img').style.background = tab === 'img' ? 'var(--gold)' : 'transparent';
+  document.getElementById('tab-img').style.color = tab === 'img' ? '#080808' : 'var(--text)';
+  document.getElementById('tab-img').style.borderColor = tab === 'img' ? 'var(--gold)' : 'var(--border2)';
+  if (tab === 'img') document.getElementById('drop-zone').onclick = function(){ document.getElementById('img-input').click(); };
+}
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('drop-zone').style.borderColor = 'var(--border2)';
+  handleFiles(e.dataTransfer.files);
+}
+function handleFiles(files) {
+  Array.from(files).forEach(function(file) {
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      uploadedImages.push(ev.target.result);
+      var prev = document.getElementById('img-previews');
+      var img = document.createElement('img');
+      img.src = ev.target.result;
+      img.style.cssText = 'height:120px;border-radius:8px;border:1px solid var(--border2);object-fit:cover;cursor:pointer';
+      img.title = 'Clicca per rimuovere';
+      img.onclick = function() {
+        var idx = uploadedImages.indexOf(ev.target.result);
+        if (idx > -1) uploadedImages.splice(idx, 1);
+        img.remove();
+      };
+      prev.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 async function subSeconda(qe) {
   var q = JSON.parse(decodeURIComponent(qe));
-  var ans = document.getElementById('sa').value.trim();
-  if (!ans) { document.getElementById('fa').innerHTML = '<div class="err">Svolgi la traccia prima.</div>'; return; }
-  document.getElementById('aa').querySelectorAll('button,textarea').forEach(function(el) { el.disabled = true; if (el.tagName === 'TEXTAREA') el.readOnly = true; });
+  var isImg = document.getElementById('input-img') && document.getElementById('input-img').style.display !== 'none';
+  var ans = '';
+  if (isImg) {
+    if (uploadedImages.length === 0) { document.getElementById('fa').innerHTML = '<div class="err">Carica almeno una foto del quaderno.</div>'; return; }
+  } else {
+    ans = document.getElementById('sa') ? document.getElementById('sa').value.trim() : '';
+    if (!ans) { document.getElementById('fa').innerHTML = '<div class="err">Svolgi la traccia prima.</div>'; return; }
+  }
+  document.getElementById('aa').querySelectorAll('button,textarea,input').forEach(function(el) { el.disabled = true; if (el.tagName === 'TEXTAREA') el.readOnly = true; });
   document.getElementById('fa').innerHTML = '<div class="pulse"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
   var puntiStr = (q.punti_prima_parte || q.punti || []).join('; ');
   var sys = 'Sei un commissario della seconda prova scritta degli Esami di Stato italiani. Valuta lo svolgimento con voto da 1 a 10 seguendo i criteri ministeriali: pertinenza alla traccia, completezza dei punti svolti, correttezza tecnica/disciplinare, organizzazione e chiarezza espositiva. Traccia: "' + q.titolo + '" — Prima parte: ' + puntiStr + '. JSON solo: {"voto":7,"pertinenza":"...","completezza":"...","correttezza_tecnica":"...","esposizione":"...","suggerimento":"..."}';
   try {
-    var raw = await callAI(sys, 'Svolgimento: ' + ans);
+    var raw;
+    if (isImg) {
+      raw = await callAIWithImages(sys, 'Leggi e valuta lo svolgimento scritto a mano nelle immagini fornite dal candidato. Valuta il contenuto tecnico.', uploadedImages);
+    } else {
+      raw = await callAI(sys, 'Svolgimento: ' + ans);
+    }
     var ev = safeParseJSON(raw);
     st.total++; st.correct += ev.voto / 10; updScore();
     var fbHtml = '<div class="fb fbg">';
