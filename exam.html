@@ -109,20 +109,43 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
     <p style="font-size:13px;color:var(--text2);margin-bottom:16px">La tua API key viene usata direttamente nel browser. Mai salvata su server.</p>
     <div class="pgrid">
       <button class="prov-btn" data-p="anthropic" onclick="pickProv(this)">
-        <span class="pdot" style="background:#c8a84b"></span>Anthropic
+        <span class="pdot" style="background:#c8a84b"></span>
+        <span>
+          <span style="display:block">Anthropic</span>
+          <span style="font-size:10px;font-weight:400;color:var(--text3)">✅ Testo + 📷 Foto quaderno</span>
+        </span>
       </button>
       <button class="prov-btn" data-p="openai" onclick="pickProv(this)">
-        <span class="pdot" style="background:#4a9e6e"></span>OpenAI
+        <span class="pdot" style="background:#4a9e6e"></span>
+        <span>
+          <span style="display:block">OpenAI</span>
+          <span style="font-size:10px;font-weight:400;color:var(--text3)">✅ Testo + 📷 Foto quaderno</span>
+        </span>
       </button>
       <button class="prov-btn" data-p="gemini" onclick="pickProv(this)">
-        <span class="pdot" style="background:#4f87c9"></span>Gemini
+        <span class="pdot" style="background:#4f87c9"></span>
+        <span>
+          <span style="display:block">Gemini</span>
+          <span style="font-size:10px;font-weight:400;color:var(--text3)">✅ Testo + 📷 Foto quaderno</span>
+        </span>
       </button>
       <button class="prov-btn" data-p="groq" onclick="pickProv(this)">
-        <span class="pdot" style="background:#8f6abf"></span>Groq (Free)
+        <span class="pdot" style="background:#8f6abf"></span>
+        <span>
+          <span style="display:block">Groq (Free)</span>
+          <span style="font-size:10px;font-weight:400;color:var(--text3)">✅ Testo · ❌ Foto quaderno</span>
+        </span>
       </button>
       <button class="prov-btn" data-p="custom" onclick="pickProv(this)" style="grid-column:span 2">
-        <span class="pdot" style="background:#e05252"></span>Custom / Self-hosted (Ollama, LM Studio, vLLM…)
+        <span class="pdot" style="background:#e05252"></span>
+        <span>
+          <span style="display:block">Custom / Self-hosted (Ollama, LM Studio, vLLM…)</span>
+          <span style="font-size:10px;font-weight:400;color:var(--text3)">✅ Testo · ❌ Foto quaderno</span>
+        </span>
       </button>
+    </div>
+    <div style="background:rgba(200,168,75,0.07);border:1px solid rgba(200,168,75,0.2);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--text2);line-height:1.6">
+      <strong style="color:var(--gold)">📷 Foto quaderno</strong> — puoi fotografare la seconda prova svolta a mano e caricarla per la valutazione AI. Richiede un provider con supporto visione (Anthropic, OpenAI, Gemini).
     </div>
     <div class="pinfo" id="pinfo">Seleziona un provider</div>
     <div id="custom-fields" class="hidden" style="margin-bottom:12px">
