@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MaturaAI — Prompt per ChatGPT & AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080808;--surface:#141414;--surface2:#1c1c1c;--border:#232323;--border2:#2e2e2e;--text:#f2ede4;--text2:#7a756d;--text3:#3d3a36;--gold:#c8a84b;--gold2:#e6c96e;--green:#4a9e6e;--red:#c94f4f;--blue:#4f87c9;--purple:#8f6abf;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 40px;background:rgba(8,8,8,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.logo{font-family:'Instrument Serif',serif;font-size:20px;color:var(--text);text-decoration:none;}
+.logo em{color:var(--gold2);font-style:italic;}
+.nav-back{font-size:13px;color:var(--text2);text-decoration:none;transition:color .2s;}
+.nav-back:hover{color:var(--text);}
+.wrap{max-width:860px;margin:0 auto;padding:88px 24px 80px;}
+
+/* HERO */
+.hero{text-align:center;padding:40px 0 48px;}
+.hero-badge{display:inline-block;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.15em;color:var(--gold);border:1px solid rgba(200,168,75,.3);border-radius:999px;padding:5px 14px;margin-bottom:18px;text-transform:uppercase;}
+.hero h1{font-family:'Instrument Serif',serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:400;line-height:1.1;margin-bottom:12px;}
+.hero h1 em{font-style:italic;color:var(--gold2);}
+.hero p{font-size:15px;color:var(--text2);max-width:540px;margin:0 auto 20px;line-height:1.7;}
+
+/* AI LINKS */
+.ai-links{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:8px;}
+.ai-link{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:7px 14px;border-radius:999px;border:1px solid var(--border2);color:var(--text2);text-decoration:none;transition:all .15s;}
+.ai-link:hover{border-color:var(--gold);color:var(--gold);}
+
+/* SUBJECT CUSTOMIZER */
+.customizer{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:28px;}
+.customizer-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;}
+.cust-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+@media(max-width:500px){.cust-row{grid-template-columns:1fr;}}
+label.lbl{font-size:11px;color:var(--text3);margin-bottom:5px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.08em;display:block;}
+input[type=text],select{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;padding:9px 12px;outline:none;transition:border-color .2s;appearance:none;}
+input:focus,select:focus{border-color:var(--gold);}
+input::placeholder{color:var(--text3);}
+
+/* SECTION HEADERS */
+.section-head{margin:32px 0 14px;}
+.section-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+.section-title{font-family:'Instrument Serif',serif;font-size:1.6rem;font-weight:400;}
+.section-title em{font-style:italic;color:var(--gold2);}
+
+/* PROMPT CARDS */
+.prompt-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:12px;overflow:hidden;}
+.prompt-top{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px;}
+.prompt-name{font-size:15px;font-weight:700;color:var(--text);}
+.prompt-desc{font-size:12px;color:var(--text2);margin-top:2px;font-weight:400;}
+.badge{font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}
+.b-mc{background:rgba(143,106,191,.15);color:var(--purple);border:1px solid rgba(143,106,191,.3);}
+.b-open{background:rgba(79,135,201,.15);color:var(--blue);border:1px solid rgba(79,135,201,.3);}
+.b-oral{background:rgba(200,168,75,.12);color:var(--gold);border:1px solid rgba(200,168,75,.25);}
+.b-seconda{background:rgba(74,158,110,.12);color:var(--green);border:1px solid rgba(74,158,110,.3);}
+.b-valuta{background:rgba(201,79,79,.12);color:var(--red);border:1px solid rgba(201,79,79,.3);}
+.b-studio{background:rgba(143,106,191,.12);color:var(--purple);border:1px solid rgba(143,106,191,.3);}
+
+.prompt-box{position:relative;margin:0 18px 14px;}
+.prompt-text{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:14px 50px 14px 14px;font-family:'DM Mono',monospace;font-size:12px;line-height:1.8;color:var(--text2);white-space:pre-wrap;word-break:break-word;max-height:180px;overflow-y:auto;}
+.prompt-text.expanded{max-height:none;}
+.copy-btn{position:absolute;top:10px;right:10px;background:var(--surface);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;font-size:11px;font-family:'DM Mono',monospace;color:var(--text2);cursor:pointer;transition:all .15s;}
+.copy-btn:hover{background:var(--gold);border-color:var(--gold);color:#080808;}
+.copy-btn.copied{background:var(--green);border-color:var(--green);color:#080808;}
+.expand-btn{background:none;border:none;font-size:11px;font-family:'DM Mono',monospace;color:var(--text3);cursor:pointer;padding:0 18px 12px;display:block;transition:color .15s;}
+.expand-btn:hover{color:var(--text2);}
+
+/* TIPS BOX */
+.tip-box{background:rgba(200,168,75,0.06);border:1px solid rgba(200,168,75,0.2);border-radius:12px;padding:16px 20px;margin-bottom:28px;font-size:13px;color:var(--text2);line-height:1.7;}
+.tip-box strong{color:var(--gold2);}
+.tip-box ul{padding-left:16px;margin-top:6px;}
+.tip-box li{margin-bottom:4px;}
+
+hr.div{border:none;border-top:1px solid var(--border);margin:32px 0;}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">Matura<em>AI</em></a>
+  <a href="index.html" class="nav-back">← Home</a>
+</nav>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-badge">Prompt Library</div>
+    <h1>Usali su <em>ChatGPT, Claude,<br>Gemini</em> e tutti gli altri</h1>
+    <p>Prompt pronti per simulare l'esame di maturità su qualsiasi AI. Personalizza la materia e copia il prompt.</p>
+    <div class="ai-links">
+      <a class="ai-link" href="https://chat.openai.com" target="_blank">🟢 ChatGPT</a>
+      <a class="ai-link" href="https://claude.ai" target="_blank">🟡 Claude</a>
+      <a class="ai-link" href="https://gemini.google.com" target="_blank">🔵 Gemini</a>
+      <a class="ai-link" href="https://copilot.microsoft.com" target="_blank">🟣 Copilot</a>
+      <a class="ai-link" href="https://mistral.ai/chat" target="_blank">⚡ Le Chat</a>
+    </div>
+  </div>
+
+  <!-- CUSTOMIZER -->
+  <div class="customizer">
+    <div class="customizer-title">⚙ Personalizza i prompt con la tua materia e indirizzo</div>
+    <div class="cust-row">
+      <div>
+        <label class="lbl">Materia</label>
+        <input type="text" id="c-subj" placeholder="es. Informatica, Latino, Fisica..." value="Informatica" oninput="updateAll()">
+      </div>
+      <div>
+        <label class="lbl">Indirizzo scolastico</label>
+        <select id="c-ind" onchange="updateAll()">
+          <option value="Istituto Tecnico Informatica">Tecnico IT</option>
+          <option value="Liceo Scientifico">Liceo Scientifico</option>
+          <option value="Liceo Classico">Liceo Classico</option>
+          <option value="Liceo Linguistico">Liceo Linguistico</option>
+          <option value="Istituto Tecnico Economico">Tecnico Economico</option>
+          <option value="Liceo delle Scienze Umane">Scienze Umane</option>
+          <option value="Liceo Artistico">Liceo Artistico</option>
+          <option value="">Generico</option>
+        </select>
+      </div>
+      <div>
+        <label class="lbl">Difficoltà</label>
+        <select id="c-diff" onchange="updateAll()">
+          <option value="semplice, adatta al ripasso">Base</option>
+          <option value="di media difficoltà, tipica dell'esame reale" selected>Media</option>
+          <option value="difficile, da commissione severa">Avanzata</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIP -->
+  <div class="tip-box">
+    <strong>💡 Come usare questi prompt:</strong>
+    <ul>
+      <li>Copia il prompt con il pulsante <strong>Copia</strong></li>
+      <li>Aprilo in ChatGPT, Claude, Gemini o qualsiasi altra AI</li>
+      <li>Incollalo e premi invio — l'AI inizierà a simulare l'esame</li>
+      <li>Rispondi all'AI come se fossi davanti alla commissione</li>
+    </ul>
+  </div>
+
+  <!-- SECTION: SCELTA MULTIPLA -->
+  <div class="section-head">
+    <div class="section-label">Modalità 1</div>
+    <h2 class="section-title">Domande a <em>scelta multipla</em></h2>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-top">
+      <div>
+        <div class="prompt-name">Generatore domande multiscelta</div>
+        <div class="prompt-desc">L'AI genera una domanda con 4 opzioni e spiega la risposta corretta</div>
+      </div>
+      <span class="badge b-mc">Multiscelta</span>
+    </div>
+    <div class="prompt-box">
+      <pre class="prompt-text" id="p-mc1"></pre>
+      <button class="copy-btn" onclick="copyPrompt('p-mc1', this)">Copia</button>
+    </div>
+    <button class="expand-btn" onclick="toggleExpand('p-mc1', this)">▼ Mostra tutto</button>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-top">
+      <div>
+        <div class="prompt-name">Sessione di quiz (domande multiple)</div>
+        <div class="prompt-desc">L'AI continua a fare domande finché non dici "basta" — tiene il punteggio</div>
+      </div>
+      <span class="badge b-mc">Multiscelta</span>
+    </div>
+    <div class="prompt-box">
+      <pre class="prompt-text" id="p-mc2"></pre>
+      <button class="copy-btn" onclick="copyPrompt('p-mc2', this)">Copia</button>
+    </div>
+    <button class="expand-btn" onclick="toggleExpand('p-mc2', this)">▼ Mostra tutto</button>
+  </div>
+
+  <hr class="div">
+
+  <!-- SECTION: RISPOSTA APERTA -->
+  <div class="section-head">
+    <div class="section-label">Modalità 2</div>
+    <h2 class="section-title">Domanda <em>aperta</em> con valutazione</h2>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-top">
+      <div>
+        <div class="prompt-name">Domanda aperta + valutazione</div>
+        <div class="prompt-desc">L'AI fa una domanda, tu rispondi, poi ti dà un voto e un feedback dettagliato</div>
+      </div>
+      <span class="badge b-open">Aperta</span>
+    </div>
+    <div class="prompt-box">
+      <pre class="prompt-text" id="p-open1"></pre>
+      <button class="copy-btn" onclick="copyPrompt('p-open1', this)">Copia</button>
+    </div>
+    <button class="expand-btn" onclick="toggleExpand('p-open1', this)">▼ Mostra tutto</button>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-top">
+      <div>
+        <div class="prompt-name">Valuta questa mia risposta</div>
+        <div class="prompt-desc">Incolla una domanda che hai già e la tua risposta — l'AI la valuta da 1 a 10</div>
+      </div>
+      <span class="badge b-valuta">Valutazione</span>
+    </div>
+    <div class="prompt-box">
+      <pre class="prompt-text" id="p-open2"></pre>
+      <button class="copy-btn" onclick="copyPrompt('p-open2', this)">Copia</button>
+    </div>
+    <button class="expand-btn" onclick="toggleExpand('p-open2', this)">▼ Mostra tutto</button>
+  </div>
+
+  <hr class="div">
+
+  <!-- SECTION: ORALE -->
+  <div class="section-head">
+    <div class="section-label">Modalità 3</div>
+    <h2 class="section-title">Simulazione <em>orale</em></h2>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-top">
+      <div>
+        <div class="prompt-name">Simulazione colloquio orale</div>
+        <div class="prompt-desc">L'AI fa la parte della commissione e ti fa domande come al vero esame orale</div>
+      </div>
+      <span class="badge b-oral">Orale</span>
+    </div>
+    <div class="prompt-box">
+      <pre class="prompt-text" id="p-oral1"></pre>
+      <button class="copy-btn" onclick="copyPrompt('p-oral1', this)">Copia</button>
+    </div>
+    <button class="expand-btn" onclick="toggleExpand('p-oral1', this)">▼ Mostra tutto</button>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-top">
+      <div>
+        <div class="prompt-name">Orale su un argomento specifico</div>
+        <div class="prompt-desc">Indica tu l'argomento e l'AI approfondisce con domande mirate</div>
+      </div>
+      <span class="badge b-oral">Orale</span>
+    </div>
+    <div class="prompt-box">
+      <pre class="prompt-text" id="p-oral2"></pre>
+      <button class="copy-btn" onclick="copyPrompt('p-oral2', this)">Copia</button>
+    </div>
+    <button class="expand-btn" onclick="toggleExpand('p-oral2', this)">▼ Mostra tutto</button>
+  </div>
+
+  <hr class="div">
+
+  <!-- SECTION: SECONDA PROVA -->
+  <div class="section-head">
+    <div class="section-label">Modalità 4</div>
+    <h2 class="section-title">Seconda prova <em>scritta</em></h2>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-top">
+      <div>
+        <div class="prompt-name">Genera tema di seconda prova</div>
+        <div class="prompt-desc">L'AI genera una traccia ministeriale completa con prima e seconda parte</div>
+      </div>
+      <span class="badge b-seconda">2a Prova</span>
+    </div>
+    <div class="prompt-box">
+      <pre class="prompt-text" id="p-sec1"></pre>
+      <button class="copy-btn" onclick="copyPrompt('p-sec1', this)">Copia</button>
+    </div>
+    <button class="expand-btn" onclick="toggleExpand('p-sec1', this)">▼ Mostra tutto</button>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-top">
+      <div>
+        <div class="prompt-name">Valuta il mio svolgimento</div>
+        <div class="prompt-desc">Incolla la traccia e il tuo svolgimento — l'AI valuta come la commissione reale</div>
+      </div>
+      <span class="badge b-valuta">Valutazione</span>
+    </div>
+    <div class="prompt-box">
+      <pre class="prompt-text" id="p-sec2"></pre>
+      <button class="copy-btn" onclick="copyPrompt('p-sec2', this)">Copia</button>
+    </div>
+    <button class="expand-btn" onclick="toggleExpand('p-sec2', this)">▼ Mostra tutto</button>
+  </div>
+
+  <hr class="div">
+
+  <!-- SECTION: STUDIO -->
+  <div class="section-head">
+    <div class="section-label">Extra</div>
+    <h2 class="section-title">Prompt per <em>studiare</em></h2>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-top">
+      <div>
+        <div class="prompt-name">Spiegami questo argomento</div>
+        <div class="prompt-desc">L'AI spiega un argomento con esempi pratici adatti all'esame di maturità</div>
+      </div>
+      <span class="badge b-studio">Studio</span>
+    </div>
+    <div class="prompt-box">
+      <pre class="prompt-text" id="p-study1"></pre>
+      <button class="copy-btn" onclick="copyPrompt('p-study1', this)">Copia</button>
+    </div>
+    <button class="expand-btn" onclick="toggleExpand('p-study1', this)">▼ Mostra tutto</button>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-top">
+      <div>
+        <div class="prompt-name">Fai un riassunto da studiare</div>
+        <div class="prompt-desc">L'AI crea uno schema riassuntivo con i punti chiave per l'esame</div>
+      </div>
+      <span class="badge b-studio">Studio</span>
+    </div>
+    <div class="prompt-box">
+      <pre class="prompt-text" id="p-study2"></pre>
+      <button class="copy-btn" onclick="copyPrompt('p-study2', this)">Copia</button>
+    </div>
+    <button class="expand-btn" onclick="toggleExpand('p-study2', this)">▼ Mostra tutto</button>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-top">
+      <div>
+        <div class="prompt-name">Correggi il mio elaborato</div>
+        <div class="prompt-desc">Incolla un tuo testo scritto — l'AI lo corregge e suggerisce miglioramenti</div>
+      </div>
+      <span class="badge b-valuta">Correzione</span>
+    </div>
+    <div class="prompt-box">
+      <pre class="prompt-text" id="p-study3"></pre>
+      <button class="copy-btn" onclick="copyPrompt('p-study3', this)">Copia</button>
+    </div>
+    <button class="expand-btn" onclick="toggleExpand('p-study3', this)">▼ Mostra tutto</button>
+  </div>
+
+</div>
+
+<script>
+function getVars() {
+  var subj = document.getElementById('c-subj').value.trim() || 'Informatica';
+  var ind  = document.getElementById('c-ind').value;
+  var diff = document.getElementById('c-diff').value;
+  var indStr = ind ? ' per ' + ind : '';
+  return { subj, ind, diff, indStr };
+}
+
+function buildPrompts() {
+  var v = getVars();
+  return {
+    'p-mc1': `Sei un commissario d'esame di maturità italiana${v.indStr}.
+Generami UNA domanda a risposta multipla ${v.diff} sulla materia: ${v.subj}.
+
+La domanda deve avere esattamente 4 opzioni (A, B, C, D).
+Dopo che rispondo, dimmi se ho sbagliato o indovinato e spiega perché la risposta corretta è quella giusta.
+
+Inizia subito con la domanda, senza preamboli.`,
+
+    'p-mc2': `Sei un commissario d'esame di maturità italiana${v.indStr}. Voglio fare un quiz di preparazione su: ${v.subj}.
+
+Ecco le regole:
+- Fai una domanda a risposta multipla (A, B, C, D) alla volta
+- Aspetta la mia risposta
+- Dimmi se è corretta o sbagliata, spiega brevemente il perché
+- Aggiorna il punteggio (es. "Punteggio: 3/5")
+- Fai subito la domanda successiva
+- Quando dico "basta" o "stop", dammi il riepilogo finale
+
+Difficoltà: ${v.diff}
+Inizia con la prima domanda.`,
+
+    'p-open1': `Sei un commissario d'esame di maturità italiana${v.indStr}.
+Fami una domanda aperta ${v.diff} sulla materia: ${v.subj}.
+
+Dopo che rispondo, valutami con un voto da 1 a 10 e dammi un feedback dettagliato su:
+- Punti forti della mia risposta
+- Punti deboli o mancanti
+- Cosa avrebbe voluto sentire la commissione
+
+Inizia con la domanda.`,
+
+    'p-open2': `Sei un commissario d'esame di maturità italiana${v.indStr}, materia: ${v.subj}.
+
+Valuta questa risposta con voto da 1 a 10 seguendo i criteri dell'esame di maturità.
+
+[INCOLLA QUI LA DOMANDA]
+
+La mia risposta:
+[INCOLLA QUI LA TUA RISPOSTA]
+
+Dammi: voto, commento generale, punti forti, punti deboli, e cosa avrei dovuto aggiungere.`,
+
+    'p-oral1': `Sei un commissario d'esame di maturità italiana (colloquio orale)${v.indStr}.
+Devi interrogarmi sulla materia: ${v.subj}.
+
+Simula una vera interrogazione orale:
+- Fai una domanda alla volta
+- Aspetta la mia risposta
+- Fai domande di approfondimento o collegamento basate su quello che dico
+- Alla fine (quando dico "fine" o "basta") dammi un voto da 1 a 10 con commento su esposizione e contenuto
+
+Difficoltà: ${v.diff}
+Inizia con la prima domanda come farebbe un vero commissario.`,
+
+    'p-oral2': `Sei un commissario d'esame di maturità italiana (colloquio orale)${v.indStr}.
+Voglio esercitarmi sull'argomento specifico: [SCRIVI QUI L'ARGOMENTO]
+Materia: ${v.subj}
+
+Fai domande approfondite su questo argomento specifico, collega con altri argomenti della materia quando è naturale farlo. Aspetta sempre la mia risposta prima di fare la domanda successiva.
+
+Alla fine valutami da 1 a 10 con feedback su chiarezza, correttezza e completezza.`,
+
+    'p-sec1': `Sei un membro della commissione ministeriale italiana della seconda prova scritta degli Esami di Stato${v.indStr}.
+Generami un tema di seconda prova completo per la materia: ${v.subj}.
+Difficoltà: ${v.diff}
+
+Il tema deve seguire il formato ministeriale reale:
+1. PREMESSA — contesto tecnico/professionale con terminologia specifica (almeno 100 parole)
+2. CASO PROFESSIONALE — scenario reale con dati numerici, nomi fittizi di aziende/enti, requisiti specifici (almeno 200 parole)
+3. PRIMA PARTE — 5 punti obbligatori da svolgere, ciascuno con sotto-richieste precise
+4. SECONDA PARTE — 4 quesiti opzionali (il candidato ne sceglie 2)
+5. ALLEGATI — descrizione dei materiali forniti (dati, schemi, tabelle)
+
+Durata: 6 ore. Sii dettagliato e realistico come nei veri esami ministeriali.`,
+
+    'p-sec2': `Sei un commissario della seconda prova scritta degli Esami di Stato italiani, materia: ${v.subj}${v.indStr}.
+
+Valuta il seguente svolgimento con voto da 1 a 10 usando i criteri ministeriali reali.
+
+TRACCIA:
+[INCOLLA QUI LA TRACCIA]
+
+MIO SVOLGIMENTO:
+[INCOLLA QUI IL TUO SVOLGIMENTO]
+
+Dammi:
+- Voto (1-10)
+- Pertinenza alla traccia
+- Completezza dei punti svolti
+- Correttezza tecnica/disciplinare
+- Qualità dell'esposizione
+- Suggerimento principale per migliorare`,
+
+    'p-study1': `Sei un professore esperto di ${v.subj}${v.indStr} che prepara gli studenti alla maturità.
+
+Spiegami questo argomento: [SCRIVI QUI L'ARGOMENTO]
+
+La spiegazione deve:
+- Essere chiara e adatta a un esame di maturità
+- Includere esempi pratici e concreti
+- Evidenziare i concetti chiave da sapere per l'esame
+- Indicare possibili domande che potrebbe fare la commissione su questo argomento
+- Essere completa ma non eccessivamente lunga`,
+
+    'p-study2': `Sei un professore esperto di ${v.subj}${v.indStr} che prepara gli studenti alla maturità.
+
+Crea uno schema riassuntivo completo per l'argomento: [SCRIVI QUI L'ARGOMENTO]
+
+Lo schema deve includere:
+- Concetti principali con definizioni chiare
+- Punti chiave da ricordare per l'esame
+- Possibili collegamenti con altri argomenti della materia
+- 3-5 domande tipiche che potrebbe fare la commissione
+
+Formato: usa titoli, sottotitoli e punti elenco per renderlo facile da studiare.`,
+
+    'p-study3': `Sei un professore correttore di ${v.subj}${v.indStr} che valuta elaborati per la maturità.
+
+Correggi e migliora questo mio testo/elaborato:
+
+[INCOLLA QUI IL TUO TESTO]
+
+Dimmi:
+- Errori grammaticali o di forma
+- Errori di contenuto o imprecisioni
+- Struttura e organizzazione del testo
+- Come migliorare l'esposizione
+- Voto provvisorio (1-10) e commento finale`
+  };
+}
+
+function updateAll() {
+  var prompts = buildPrompts();
+  Object.keys(prompts).forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = prompts[id];
+  });
+}
+
+function copyPrompt(id, btn) {
+  var text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    btn.textContent = '✓ Copiato!';
+    btn.classList.add('copied');
+    setTimeout(function() {
+      btn.textContent = 'Copia';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+function toggleExpand(id, btn) {
+  var el = document.getElementById(id);
+  var expanded = el.classList.toggle('expanded');
+  btn.textContent = expanded ? '▲ Comprimi' : '▼ Mostra tutto';
+}
+
+// Init
+updateAll();
+</script>
+</body>
+</html>
