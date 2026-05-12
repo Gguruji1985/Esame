@@ -24,7 +24,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .prov-btn.active{border-color:var(--gold);background:rgba(200,168,75,.1);box-shadow:0 0 0 1px var(--gold);}
 .pdot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
 .pinfo{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-family:'DM Mono',monospace;font-size:11px;color:var(--gold2);}
-input[type=text],input[type=password],select,textarea{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;padding:11px 14px;outline:none;transition:border-color .2s;}
+input[type=text],input[type=password],select,textarea{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Syne',sans-serif;font-size:16px;padding:11px 14px;outline:none;transition:border-color .2s;}
 input:focus,select:focus,textarea:focus{border-color:var(--gold);}
 input::placeholder,textarea::placeholder{color:var(--text3);}
 select{appearance:none;cursor:pointer;}
@@ -92,7 +92,77 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
 @keyframes pu{0%,80%,100%{opacity:.3;transform:scale(.8);}40%{opacity:1;transform:scale(1);}}
 .err{color:var(--red);font-size:13px;padding:8px 0;}
 .note{font-size:11px;color:var(--text3);margin-top:8px;line-height:1.6;font-family:'DM Mono',monospace;}
-@media(max-width:500px){.pgrid,.sgrid{grid-template-columns:1fr;}.tring{display:none;}}
+
+/* ===== MOBILE ===== */
+@media(max-width:600px){
+  nav{padding:12px 16px;}
+  .wrap{padding:72px 14px 48px;}
+  .card{padding:18px 16px;border-radius:12px;}
+  .card-label{margin-bottom:12px;}
+
+  /* Provider grid: 1 column on mobile */
+  .pgrid{grid-template-columns:1fr;}
+  .prov-btn{padding:12px 14px;font-size:13px;}
+
+  /* Setup grid: 1 column */
+  .sgrid{grid-template-columns:1fr;}
+
+  /* Tags: smaller */
+  .tag{font-size:11px;padding:5px 10px;}
+
+  /* Exam header: stack vertically */
+  .ehdr{flex-direction:column;align-items:stretch;gap:10px;}
+  .tring{align-self:flex-end;margin-top:-44px;}
+  .badges{gap:4px;}
+  .badge{font-size:9px;padding:2px 6px;}
+  .vdisp{font-size:18px;}
+
+  /* Score row */
+  .srow{gap:8px;}
+  .stxt{font-size:11px;}
+
+  /* Question text */
+  .qtext{font-size:1.05rem;}
+
+  /* Option buttons: full width, bigger touch target */
+  .opt{padding:14px 14px;font-size:14px;margin-bottom:6px;}
+
+  /* Buttons */
+  .btn{padding:12px 16px;font-size:13px;}
+  .btn-row{gap:6px;}
+  .btn-row .btn{flex:1;text-align:center;}
+
+  /* Textarea */
+  textarea{font-size:15px;min-height:130px;}
+
+  /* History */
+  .stgrid{grid-template-columns:repeat(3,1fr);gap:6px;}
+  .stval{font-size:20px;}
+  .stlbl{font-size:9px;}
+  .hq{font-size:12px;}
+
+  /* Feedback */
+  .fb{font-size:13px;padding:12px;}
+
+  /* Back button */
+  #p-exam > div:first-child .btn{width:100%;text-align:center;}
+
+  /* Image upload */
+  #drop-zone{padding:20px 14px;}
+  #img-previews img{height:90px;}
+
+  /* Seconda prova sections */
+  #qa p, #qa div{font-size:13px !important;}
+  #qa .qtext{font-size:1.05rem !important;}
+}
+
+@media(max-width:380px){
+  .wrap{padding:68px 10px 40px;}
+  .card{padding:14px 12px;}
+  .tag{font-size:10px;padding:4px 8px;}
+  .btn{padding:11px 12px;font-size:12px;}
+}
+
 </style>
 </head>
 <body>
