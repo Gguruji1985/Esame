@@ -300,6 +300,7 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
         <span class="tag" data-val="open" onclick="pickTag(this,'tg-mode')">Risposta Aperta</span>
         <span class="tag" data-val="oral" onclick="pickTag(this,'tg-mode')">Simulazione Orale</span>
         <span class="tag" data-val="seconda" onclick="pickTag(this,'tg-mode')">Seconda Prova</span>
+        <span class="tag" data-val="prima" onclick="pickTag(this,'tg-mode')">Prima Prova</span>
       </div>
     </div>
     <div style="margin-bottom:4px">
@@ -413,7 +414,7 @@ let hist = JSON.parse(localStorage.getItem('mh') || '[]');
 let st = { subj:'', diff:'medio', mode:'mc', timer:60, ind:'', correct:0, total:0, ti:null, tl:0 };
 let curQ = '';
 const CIRC = 138.2;
-const ML = { mc:'Scelta Multipla', open:'Risposta Aperta', oral:'Orale', seconda:'2a Prova' };
+const ML = { mc:'Scelta Multipla', open:'Risposta Aperta', oral:'Orale', seconda:'2a Prova', prima:'1a Prova' };
 
 // ---- UI HELPERS ----
 function showPanel(id) {
@@ -687,6 +688,7 @@ async function genQ() {
     if      (st.mode === 'mc')      await gMC(dm, ind);
     else if (st.mode === 'open')    await gOpen(dm, ind);
     else if (st.mode === 'oral')    await gOral(dm, ind);
+    else if (st.mode === 'prima')   await gPrima(dm, ind);
     else                             await gSeconda(dm, ind);
   } catch(e) {
     document.getElementById('qa').innerHTML = '<div class="err">Errore: ' + (e.message || 'Controlla la API key e riprova.') + '</div>';
@@ -931,6 +933,122 @@ async function subSeconda(qe) {
     fbHtml += '</div>';
     document.getElementById('fa').innerHTML = fbHtml;
     logE({ question:curQ, correct:ev.voto >= 6, vote:ev.voto, mode:'seconda', subject:st.subj });
+    document.getElementById('actrow').classList.remove('hidden');
+  } catch(e) { document.getElementById('fa').innerHTML = '<div class="err">Errore: ' + e.message + '</div>'; document.getElementById('actrow').classList.remove('hidden'); }
+}
+
+// ---- PRIMA PROVA ----
+async function gPrima(dm, ind) {
+  var tipologia = st.tipologia || 'A';
+  var tipoLabel = { A:'Tipologia A — Analisi del testo', B:'Tipologia B — Analisi e produzione di un testo argomentativo', C:'Tipologia C — Riflessione critica di carattere espositivo-argomentativo' };
+
+  // Show tipologia selector first if not already chosen for this round
+  if (!st._primaStarted) {
+    document.getElementById('qa').innerHTML =
+      '<div class="card-label">Prima Prova Scritta — Scegli la tipologia</div>' +
+      '<div class="tag-group" style="margin-bottom:16px">' +
+        '<span class="tag' + (tipologia==='A'?' active':'') + '" onclick="st.tipologia=\'A\';this.parentNode.querySelectorAll(\'.tag\').forEach(function(t){t.classList.remove(\'active\')});this.classList.add(\'active\')">Tipologia A</span>' +
+        '<span class="tag' + (tipologia==='B'?' active':'') + '" onclick="st.tipologia=\'B\';this.parentNode.querySelectorAll(\'.tag\').forEach(function(t){t.classList.remove(\'active\')});this.classList.add(\'active\')">Tipologia B</span>' +
+        '<span class="tag' + (tipologia==='C'?' active':'') + '" onclick="st.tipologia=\'C\';this.parentNode.querySelectorAll(\'.tag\').forEach(function(t){t.classList.remove(\'active\')});this.classList.add(\'active\')">Tipologia C</span>' +
+      '</div>' +
+      '<div class="btn-row"><button class="btn primary" onclick="st._primaStarted=true;nextQ()">Genera Traccia →</button></div>';
+    document.getElementById('actrow').classList.add('hidden');
+    return;
+  }
+  st._primaStarted = false;
+  tipologia = st.tipologia || 'A';
+
+  var sysA = [
+    'Sei un commissario ministeriale italiano per la prima prova scritta degli Esami di Stato (Maturità).',
+    'Genera una traccia realistica di Tipologia A — Analisi e interpretazione di un testo letterario italiano.',
+    'La traccia deve includere: un brano letterario autentico (autore del Novecento italiano: Ungaretti, Montale, Pirandello, Svevo, Verga, Pascoli, D\'Annunzio, Moravia, Calvino, Pavese, Primo Levi), il contesto dell\'autore, e domande di analisi strutturate.',
+    'Difficoltà: ' + dm + '.',
+    'Rispondi SOLO in JSON valido: {"titolo":"...","autore":"...","opera":"...","anno":"...","brano":"...","note_contestuali":"...","consegne":["1. ...","2. ...","3. ...","4. ...","5. ..."],"durata_ore":6}'
+  ].join(' ');
+
+  var sysB = [
+    'Sei un commissario ministeriale italiano per la prima prova scritta degli Esami di Stato (Maturità).',
+    'Genera una traccia realistica di Tipologia B — Analisi e produzione di un testo argomentativo.',
+    'La traccia deve includere: un documento di riferimento (articolo, saggio, discorso — ambito artistico, scientifico, storico-politico o socio-economico), consegne di analisi e richiesta di produzione argomentativa.',
+    'Difficoltà: ' + dm + '.',
+    'Rispondi SOLO in JSON valido: {"titolo":"...","ambito":"artistico|scientifico|storico-politico|socio-economico","documento_autore":"...","documento_titolo":"...","documento_testo":"...","consegne":["1. ...","2. ...","3. ..."],"durata_ore":6}'
+  ].join(' ');
+
+  var sysC = [
+    'Sei un commissario ministeriale italiano per la prima prova scritta degli Esami di Stato (Maturità).',
+    'Genera una traccia realistica di Tipologia C — Riflessione critica di carattere espositivo-argomentativo su tematiche di attualità.',
+    'Scegli un tema di attualità rilevante (tecnologia e società, ambiente, identità, lavoro, memoria storica, ecc.) con spunto di riflessione e consegne precise.',
+    'Difficoltà: ' + dm + '.',
+    'Rispondi SOLO in JSON valido: {"titolo":"...","tema":"...","spunto":"...","consegne":["1. ...","2. ...","3. ..."],"suggerimento":"breve hint per lo studente","durata_ore":6}'
+  ].join(' ');
+
+  var sys = tipologia === 'A' ? sysA : tipologia === 'B' ? sysB : sysC;
+  var raw = await callAI(sys, 'Genera la traccia completa di prima prova scritta.', 4000);
+  var q = safeParseJSON(raw);
+  if (!q || !q.titolo) throw new Error('Risposta AI non valida. Riprova.');
+
+  curQ = q.titolo;
+  var html = '<div class="badges"><span class="badge bp">' + (tipoLabel[tipologia]||tipologia) + '</span><span class="badge bd">' + (q.durata_ore||6) + ' ore</span></div>';
+  html += '<div class="qtext" style="font-size:1.05rem">' + q.titolo + '</div>';
+
+  if (tipologia === 'A') {
+    html += '<div style="background:rgba(200,168,75,0.05);border:1px solid rgba(200,168,75,0.2);border-radius:10px;padding:16px;margin-bottom:14px">';
+    html += '<p style="font-size:10px;color:var(--gold);font-family:\'DM Mono\',monospace;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">' + (q.autore||'') + (q.opera ? ' — ' + q.opera : '') + (q.anno ? ' (' + q.anno + ')' : '') + '</p>';
+    html += '<p style="font-size:14px;line-height:1.85;color:var(--text);white-space:pre-wrap">' + (q.brano||'') + '</p>';
+    if (q.note_contestuali) html += '<p style="font-size:12px;color:var(--text2);margin-top:10px;font-style:italic">' + q.note_contestuali + '</p>';
+    html += '</div>';
+  } else if (tipologia === 'B') {
+    html += '<div style="background:rgba(79,135,201,0.06);border:1px solid rgba(79,135,201,0.2);border-radius:10px;padding:16px;margin-bottom:14px">';
+    html += '<p style="font-size:10px;color:var(--blue);font-family:\'DM Mono\',monospace;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">Ambito ' + (q.ambito||'') + ' — ' + (q.documento_autore||'') + (q.documento_titolo ? ', ' + q.documento_titolo : '') + '</p>';
+    html += '<p style="font-size:14px;line-height:1.85;color:var(--text);white-space:pre-wrap">' + (q.documento_testo||'') + '</p>';
+    html += '</div>';
+  } else {
+    html += '<div style="background:rgba(143,106,191,0.06);border:1px solid rgba(143,106,191,0.2);border-radius:10px;padding:16px;margin-bottom:14px">';
+    html += '<p style="font-size:10px;color:var(--purple);font-family:\'DM Mono\',monospace;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">Tema: ' + (q.tema||'') + '</p>';
+    html += '<p style="font-size:14px;line-height:1.85;color:var(--text)">' + (q.spunto||'') + '</p>';
+    if (q.suggerimento) html += '<p style="font-size:12px;color:var(--text2);margin-top:8px;font-style:italic">💡 ' + q.suggerimento + '</p>';
+    html += '</div>';
+  }
+
+  var consegne = q.consegne || [];
+  if (consegne.length) {
+    html += '<div style="margin-bottom:14px"><p style="font-size:11px;color:var(--text3);font-family:\'DM Mono\',monospace;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Consegne</p><ol style="font-size:14px;line-height:2;color:var(--text);padding-left:18px">' + consegne.map(function(c){return '<li>' + c + '</li>';}).join('') + '</ol></div>';
+  }
+
+  var qenc = encodeURIComponent(JSON.stringify(q));
+  html += '<textarea id="pa" placeholder="Scrivi il tuo elaborato qui..." style="margin-top:12px;min-height:220px"></textarea>';
+  html += '<div class="btn-row"><button class="btn primary" onclick="subPrima(\'' + qenc + '\',\'' + tipologia + '\')">Consegna elaborato →</button></div>';
+  document.getElementById('qa').innerHTML = html;
+  document.getElementById('actrow').classList.add('hidden');
+  document.getElementById('fa').innerHTML = '';
+}
+
+async function subPrima(qe, tipologia) {
+  var ans = document.getElementById('pa') ? document.getElementById('pa').value.trim() : '';
+  if (!ans) { document.getElementById('fa').innerHTML = '<div class="err">Scrivi prima il tuo elaborato.</div>'; return; }
+  var q = safeParseJSON(decodeURIComponent(qe));
+  document.getElementById('fa').innerHTML = '<div class="pulse"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+
+  var criteri = 'Valuta con voto da 1 a 10 secondo i criteri ministeriali: pertinenza alla traccia e rispetto delle consegne, correttezza e ricchezza linguistica, coerenza argomentativa e organizzazione del testo, originalità e approfondimento critico.';
+  var contesto = tipologia === 'A' ? 'Traccia Tipologia A — Analisi del testo: "' + (q.autore||'') + ' — ' + (q.titolo||'') + '".' :
+                 tipologia === 'B' ? 'Traccia Tipologia B — Testo argomentativo, ambito ' + (q.ambito||'') + ': "' + (q.titolo||'') + '".' :
+                 'Traccia Tipologia C — Tema di attualità: "' + (q.titolo||'') + '".';
+  var sys = 'Sei un commissario della prima prova scritta degli Esami di Stato italiani. ' + criteri + ' ' + contesto + ' JSON solo: {"voto":7,"pertinenza":"...","linguistica":"...","argomentazione":"...","originalita":"...","suggerimento":"..."}';
+
+  try {
+    var raw = await callAI(sys, 'Elaborato dello studente:\n\n' + ans, 1500);
+    var ev = safeParseJSON(raw);
+    if (!ev || ev.voto == null) throw new Error('Risposta non valida.');
+    var col = ev.voto >= 7 ? 'var(--green)' : ev.voto >= 5 ? 'var(--gold)' : 'var(--red)';
+    var fbHtml = '<div class="fb fbg"><p style="font-size:22px;font-family:\'Instrument Serif\',serif;font-style:italic;color:' + col + ';margin-bottom:10px">' + ev.voto + '/10</p>';
+    if (ev.pertinenza)    fbHtml += '<p style="font-size:13px;margin-bottom:6px"><strong>Pertinenza:</strong> ' + ev.pertinenza + '</p>';
+    if (ev.linguistica)   fbHtml += '<p style="font-size:13px;margin-bottom:6px"><strong>Linguistica:</strong> ' + ev.linguistica + '</p>';
+    if (ev.argomentazione) fbHtml += '<p style="font-size:13px;margin-bottom:6px"><strong>Argomentazione:</strong> ' + ev.argomentazione + '</p>';
+    if (ev.originalita)   fbHtml += '<p style="font-size:13px;margin-bottom:6px"><strong>Originalità:</strong> ' + ev.originalita + '</p>';
+    if (ev.suggerimento)  fbHtml += '<p style="font-size:13px;color:var(--gold);margin-top:6px">💡 ' + ev.suggerimento + '</p>';
+    fbHtml += '</div>';
+    document.getElementById('fa').innerHTML = fbHtml;
+    logE({ question:curQ, correct:ev.voto >= 6, vote:ev.voto, mode:'prima', subject:st.subj });
     document.getElementById('actrow').classList.remove('hidden');
   } catch(e) { document.getElementById('fa').innerHTML = '<div class="err">Errore: ' + e.message + '</div>'; document.getElementById('actrow').classList.remove('hidden'); }
 }
