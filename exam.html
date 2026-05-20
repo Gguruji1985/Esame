@@ -239,7 +239,7 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
     <div class="btn-row">
       <button class="btn primary" onclick="saveAndNext()">Continua →</button>
     </div>
-    <p class="note">Anthropic: console.anthropic.com · OpenAI: platform.openai.com · Gemini: aistudio.google.com · Groq: console.groq.com</p>
+
   </div>
 </div>
 
@@ -363,10 +363,22 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
   </div>
 </div>
 
+<!-- SESSION SUMMARY PANEL -->
+<div id="p-summary" class="hidden">
+  <div class="card">
+    <div class="card-label" style="margin-bottom:16px">Riepilogo Sessione</div>
+    <div id="summary-content"></div>
+    <div class="btn-row" style="margin-top:16px">
+      <button class="btn primary" onclick="showPanel('p-type')">Nuovo Esame →</button>
+      <button class="btn ghost" onclick="doHistory()">Storico completo</button>
+    </div>
+  </div>
+</div>
+
 <!-- EXAM PANEL -->
 <div id="p-exam" class="hidden">
   <div style="margin-bottom:8px">
-    <button class="btn ghost" style="font-size:13px;padding:6px 12px" onclick="showPanel('p-setup')">← Torna alla configurazione</button>
+    <button class="btn ghost" style="font-size:13px;padding:6px 12px" onclick="endSession()">← Ricomincia</button>
   </div>
   <div class="card">
     <div class="ehdr">
@@ -397,7 +409,8 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
     <div id="fa"></div>
     <div class="btn-row hidden" id="actrow">
       <button class="btn primary" onclick="nextQ()">Prossima →</button>
-      <button class="btn ghost" onclick="showPanel('p-setup')">↩ Cambia</button>
+      <button class="btn ghost" id="btn-retry" style="display:none" onclick="retryQ()">↺ Riprova</button>
+      <button class="btn ghost" onclick="showPanel('p-type')">↩ Cambia</button>
     </div>
   </div>
 </div>
@@ -411,7 +424,10 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
     </div>
     <div id="sta"></div>
     <div id="hl"></div>
-    <div class="btn-row"><button class="btn primary" onclick="showPanel('p-setup')">← Torna</button></div>
+    <div class="btn-row">
+      <button class="btn primary" onclick="showPanel('p-type')">← Torna</button>
+      <button class="btn ghost" onclick="exportCSV()">↓ Esporta CSV</button>
+    </div>
   </div>
 </div>
 
@@ -454,18 +470,26 @@ const PROVS = {
 };
 
 let prov = null;
+let apiKey = '';
 let hist = JSON.parse(localStorage.getItem('mh') || '[]');
 let st = { subj:'', diff:'medio', mode:'mc', timer:60, ind:'', correct:0, total:0, ti:null, tl:0 };
 let curQ = '';
+let lastGenArgs = null;
 const CIRC = 138.2;
-const ML = { mc:'Scelta Multipla', open:'Risposta Aperta', oral:'Orale', seconda:'2a Prova', prima:'1a Prova' };
+const ML = { mc:'Scelta Multipla', open:'Risposta Aperta', oral:'Colloquio Orale', seconda:'2a Prova', prima:'1a Prova' };
 
 // ---- UI HELPERS ----
 function showPanel(id) {
-  ['p-api','p-type','p-setup','p-exam','p-history'].forEach(function(pid) {
+  ['p-api','p-type','p-setup','p-exam','p-history','p-summary'].forEach(function(pid) {
     document.getElementById(pid).classList.add('hidden');
   });
   document.getElementById(id).classList.remove('hidden');
+  if (id === 'p-type' && typeof examType !== 'undefined' && examType) {
+    ['prima','seconda','colloquio'].forEach(function(t) {
+      const el = document.getElementById('et-' + t);
+      if (el) el.classList.toggle('active', t === examType);
+    });
+  }
 }
 
 function pickTag(el, g) {
@@ -505,23 +529,41 @@ function pickProv(el) {
   }
 }
 
+function showApiErr(msg) {
+  let el = document.getElementById('api-err');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'api-err';
+    el.className = 'err';
+    document.getElementById('apikey').insertAdjacentElement('afterend', el);
+  }
+  el.textContent = msg;
+}
+function clearApiErr() {
+  const el = document.getElementById('api-err');
+  if (el) el.textContent = '';
+}
+
 function saveAndNext() {
-  if (!prov) { alert('Seleziona un provider.'); return; }
+  clearApiErr();
+  if (!prov) { showApiErr('Seleziona un provider.'); return; }
   if (prov === 'custom') {
-    var url = document.getElementById('custom-url').value.trim();
-    var model = document.getElementById('custom-model').value.trim();
-    if (!url) { alert("Inserisci l'URL dell'endpoint."); return; }
-    if (!model) { alert('Inserisci il nome del modello.'); return; }
+    const url = document.getElementById('custom-url').value.trim();
+    const model = document.getElementById('custom-model').value.trim();
+    if (!url) { showApiErr("Inserisci l'URL dell'endpoint."); return; }
+    if (!model) { showApiErr('Inserisci il nome del modello.'); return; }
     if (document.getElementById('rem').checked) {
       localStorage.setItem('custom_url', url);
       localStorage.setItem('custom_model', model);
-      var k2 = document.getElementById('apikey').value.trim();
+      const k2 = document.getElementById('apikey').value.trim();
       if (k2) localStorage.setItem('k_custom', k2);
     }
+    apiKey = document.getElementById('apikey').value.trim();
   } else {
-    var k = document.getElementById('apikey').value.trim();
-    if (!k) { alert('Inserisci la tua API key.'); return; }
+    const k = document.getElementById('apikey').value.trim();
+    if (!k) { showApiErr('Inserisci la tua API key.'); return; }
     if (document.getElementById('rem').checked) localStorage.setItem('k_' + prov, k);
+    apiKey = k;
   }
   showPanel('p-type');
 }
@@ -539,128 +581,109 @@ function saveAndNext() {
   if (found) {
     var btn = document.querySelector('.prov-btn[data-p="' + found + '"]');
     if (btn) pickProv(btn);
-    if (document.getElementById('apikey').value) document.getElementById('rem').checked = true;
+    if (document.getElementById('apikey').value) {
+      document.getElementById('rem').checked = true;
+      apiKey = document.getElementById('apikey').value;
+    }
   }
 })();
 
-// ---- AI CALL ----
-async function callAIWithImages(sys, user, images) {
-  var key = document.getElementById('apikey').value.trim() || localStorage.getItem('k_' + prov) || '';
-  if (!key) throw new Error('Nessuna API key');
-  // Build content array with text + images
-  var content = [];
-  images.forEach(function(dataUrl) {
-    var parts = dataUrl.split(',');
-    var mimeMatch = parts[0].match(/:(.*?);/);
-    var mediaType = mimeMatch ? mimeMatch[1] : 'image/jpeg';
-    var b64 = parts[1];
-    content.push({ type: 'image', source: { type: 'base64', media_type: mediaType, data: b64 } });
-  });
-  content.push({ type: 'text', text: user });
-  if (prov === 'anthropic') {
-    var r = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json', 'x-api-key':key, 'anthropic-version':'2023-06-01' },
-      body: JSON.stringify({ model: PROVS.anthropic.model, max_tokens: 2000, system: sys, messages: [{ role:'user', content: content }] })
-    });
-    var d = await r.json();
-    if (d.error) throw new Error(d.error.message);
-    return d.content[0].text;
-  }
-  if (prov === 'openai') {
-    var oaiContent = images.map(function(dataUrl) {
-      return { type: 'image_url', image_url: { url: dataUrl } };
-    });
-    oaiContent.push({ type: 'text', text: user });
-    var r2 = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json', 'Authorization':'Bearer ' + key },
-      body: JSON.stringify({ model: 'gpt-4o', max_tokens: 2000, messages: [{ role:'system', content: sys }, { role:'user', content: oaiContent }] })
-    });
-    var d2 = await r2.json();
-    if (d2.error) throw new Error(d2.error.message);
-    return d2.choices[0].message.content;
-  }
-  // Gemini vision
-  if (prov === 'gemini') {
-    var parts2 = images.map(function(dataUrl) {
-      var sp = dataUrl.split(',');
-      var mm = sp[0].match(/:(.*?);/);
-      return { inline_data: { mime_type: mm ? mm[1] : 'image/jpeg', data: sp[1] } };
-    });
-    parts2.push({ text: sys + '\n\n' + user });
-    var r3 = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + key, {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json' },
-      body: JSON.stringify({ contents: [{ parts: parts2 }] })
-    });
-    var d3 = await r3.json();
-    if (d3.error) throw new Error(d3.error.message);
-    return d3.candidates[0].content.parts[0].text;
-  }
-  throw new Error('Il provider selezionato non supporta le immagini. Usa Anthropic, OpenAI o Gemini.');
-}
-
-async function callAI(sys, user, maxTokens) {
+// ---- AI CALL (merged) ----
+// images: optional array of base64 dataURLs for vision requests
+async function callAI(sys, user, maxTokens, images) {
   maxTokens = maxTokens || 1200;
-  var key = document.getElementById('apikey').value.trim() || localStorage.getItem('k_' + prov) || '';
+  const key = apiKey || localStorage.getItem('k_' + prov) || '';
+  if (!key && prov !== 'custom') throw new Error('Nessuna API key');
+  const hasImages = images && images.length > 0;
 
   if (prov === 'anthropic') {
-    if (!key) throw new Error('Nessuna API key');
-    var r = await fetch('https://api.anthropic.com/v1/messages', {
+    const userContent = hasImages
+      ? [
+          ...images.map(function(dataUrl) {
+            const parts = dataUrl.split(',');
+            const mm = parts[0].match(/:(.*?);/);
+            return { type:'image', source:{ type:'base64', media_type: mm ? mm[1] : 'image/jpeg', data: parts[1] } };
+          }),
+          { type:'text', text: user }
+        ]
+      : user;
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type':'application/json', 'x-api-key':key, 'anthropic-version':'2023-06-01' },
-      body: JSON.stringify({ model: PROVS.anthropic.model, max_tokens:maxTokens, system:sys, messages:[{role:'user',content:user}] })
+      body: JSON.stringify({ model: PROVS.anthropic.model, max_tokens: maxTokens, system: sys, messages: [{ role:'user', content: userContent }] })
     });
-    var d = await r.json();
+    const d = await r.json();
     if (d.error) throw new Error(d.error.message);
     return d.content[0].text;
   }
 
   if (prov === 'openai' || prov === 'groq') {
-    if (!key) throw new Error('Nessuna API key');
-    var endpoint = prov === 'groq' ? 'https://api.groq.com/openai/v1/chat/completions' : 'https://api.openai.com/v1/chat/completions';
-    var model = prov === 'groq' ? PROVS.groq.model : PROVS.openai.model;
-    var r2 = await fetch(endpoint, {
+    const endpoint = prov === 'groq' ? 'https://api.groq.com/openai/v1/chat/completions' : 'https://api.openai.com/v1/chat/completions';
+    const model = hasImages ? 'gpt-4o' : (prov === 'groq' ? PROVS.groq.model : PROVS.openai.model);
+    const userContent = hasImages
+      ? [
+          ...images.map(function(dataUrl) { return { type:'image_url', image_url:{ url: dataUrl } }; }),
+          { type:'text', text: user }
+        ]
+      : user;
+    const r = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type':'application/json', 'Authorization':'Bearer ' + key },
-      body: JSON.stringify({ model:model, max_tokens:maxTokens, messages:[{role:'system',content:sys},{role:'user',content:user}] })
+      body: JSON.stringify({ model, max_tokens: maxTokens, messages: [{ role:'system', content: sys }, { role:'user', content: userContent }] })
     });
-    var d2 = await r2.json();
-    if (d2.error) throw new Error(typeof d2.error === 'string' ? d2.error : d2.error.message || JSON.stringify(d2.error));
-    return d2.choices[0].message.content;
+    const d = await r.json();
+    if (d.error) throw new Error(typeof d.error === 'string' ? d.error : d.error.message || JSON.stringify(d.error));
+    return d.choices[0].message.content;
   }
 
   if (prov === 'gemini') {
-    if (!key) throw new Error('Nessuna API key');
-    var r3 = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + PROVS.gemini.model + ':generateContent?key=' + key, {
+    const geminiParts = hasImages
+      ? [
+          ...images.map(function(dataUrl) {
+            const sp = dataUrl.split(',');
+            const mm = sp[0].match(/:(.*?);/);
+            return { inline_data: { mime_type: mm ? mm[1] : 'image/jpeg', data: sp[1] } };
+          }),
+          { text: user }
+        ]
+      : [{ text: user }];
+    const body = {
+      system_instruction: { parts: [{ text: sys }] },
+      contents: [{ parts: geminiParts }]
+    };
+    const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + PROVS.gemini.model + ':generateContent?key=' + key, {
       method: 'POST',
       headers: { 'Content-Type':'application/json' },
-      body: JSON.stringify({ contents:[{ parts:[{ text: sys + '\n\n' + user }] }] })
+      body: JSON.stringify(body)
     });
-    var d3 = await r3.json();
-    if (d3.error) throw new Error(d3.error.message);
-    return d3.candidates[0].content.parts[0].text;
+    const d = await r.json();
+    if (d.error) throw new Error(d.error.message);
+    return d.candidates[0].content.parts[0].text;
   }
 
   if (prov === 'custom') {
-    var url = document.getElementById('custom-url').value.trim() || localStorage.getItem('custom_url') || '';
-    var cmodel = document.getElementById('custom-model').value.trim() || localStorage.getItem('custom_model') || '';
+    const url = localStorage.getItem('custom_url') || '';
+    const cmodel = localStorage.getItem('custom_model') || '';
     if (!url) throw new Error("Inserisci l'URL dell'endpoint custom.");
     if (!cmodel) throw new Error('Inserisci il nome del modello custom.');
-    var headers4 = { 'Content-Type':'application/json' };
-    if (key) headers4['Authorization'] = 'Bearer ' + key;
-    var r4 = await fetch(url, {
+    const headers = { 'Content-Type':'application/json' };
+    if (key) headers['Authorization'] = 'Bearer ' + key;
+    const r = await fetch(url, {
       method: 'POST',
-      headers: headers4,
-      body: JSON.stringify({ model:cmodel, max_tokens:maxTokens, messages:[{role:'system',content:sys},{role:'user',content:user}] })
+      headers,
+      body: JSON.stringify({ model: cmodel, max_tokens: maxTokens, messages: [{ role:'system', content: sys }, { role:'user', content: user }] })
     });
-    var d4 = await r4.json();
-    if (d4.error) throw new Error(typeof d4.error === 'string' ? d4.error : d4.error.message || JSON.stringify(d4.error));
-    return d4.choices[0].message.content;
+    const d = await r.json();
+    if (d.error) throw new Error(typeof d.error === 'string' ? d.error : d.error.message || JSON.stringify(d.error));
+    return d.choices[0].message.content;
   }
 
   throw new Error('Provider non selezionato');
+}
+
+// Legacy alias for vision calls (callAIWithImages → callAI with images param)
+async function callAIWithImages(sys, user, images) {
+  return callAI(sys, user, 2000, images);
 }
 
 // ---- EXAM ----
@@ -704,9 +727,22 @@ function pickExamType(type) {
   showPanel('p-setup');
 }
 
+function showSetupErr(msg) {
+  let el = document.getElementById('setup-err');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'setup-err';
+    el.className = 'err';
+    document.getElementById('subj').insertAdjacentElement('afterend', el);
+  }
+  el.textContent = msg;
+}
+
 function startExam() {
-  var s = document.getElementById('subj').value.trim();
-  if (!s) { alert('Inserisci una materia.'); return; }
+  const s = document.getElementById('subj').value.trim();
+  if (!s) { showSetupErr('Inserisci una materia.'); return; }
+  const errEl = document.getElementById('setup-err');
+  if (errEl) errEl.textContent = '';
   st.subj = s;
   st.diff = document.getElementById('sel-diff').value;
   st.ind  = document.getElementById('sel-ind').value;
@@ -761,19 +797,72 @@ function loading() {
   document.getElementById('aa').innerHTML = '';
   document.getElementById('fa').innerHTML = '';
   document.getElementById('actrow').classList.add('hidden');
+  document.getElementById('btn-retry').style.display = 'none';
 }
 function nextQ() { genQ(); }
+
+function endSession() {
+  stopT();
+  if (st.total > 0) {
+    showSummary();
+  } else {
+    showPanel('p-type');
+  }
+}
+
+function showSummary() {
+  const avg = (function() {
+    const votes = hist.filter(function(h) { return h.vote != null && h.subject === st.subj; }).slice(0, st.total).map(function(h) { return h.vote; });
+    return votes.length ? (votes.reduce(function(a,b){return a+b;},0)/votes.length).toFixed(1) : null;
+  })();
+  const pct = st.total > 0 ? Math.round(st.correct/st.total*100) : 0;
+  const grade = st.total > 0 ? Math.max(1, Math.min(10, Math.round(st.correct/st.total*9+1))) : null;
+  document.getElementById('summary-content').innerHTML =
+    '<div class="stgrid" style="margin-bottom:16px">' +
+      '<div class="stbox"><div class="stval">' + st.total + '</div><div class="stlbl">domande</div></div>' +
+      '<div class="stbox"><div class="stval">' + pct + '%</div><div class="stlbl">corrette</div></div>' +
+      '<div class="stbox"><div class="stval" style="color:' + (grade >= 6 ? 'var(--green)' : grade >= 5 ? 'var(--gold)' : 'var(--red)') + '">' + (grade ? grade+'/10' : '—') + '</div><div class="stlbl">voto</div></div>' +
+    '</div>' +
+    '<p style="font-size:13px;color:var(--text2)">Materia: <strong style="color:var(--text)">' + st.subj + '</strong> · Modalità: <strong style="color:var(--text)">' + (ML[st.mode]||st.mode) + '</strong></p>' +
+    (avg ? '<p style="font-size:13px;color:var(--text2);margin-top:4px">Voto medio (storico materia): <strong style="color:var(--gold)">' + avg + '</strong></p>' : '');
+  showPanel('p-summary');
+}
+
+function retryQ() {
+  genQ();
+}
+
+function exportCSV() {
+  if (!hist.length) return;
+  const rows = [['Data','Materia','Modalità','Domanda','Corretta','Voto']];
+  hist.forEach(function(h) {
+    rows.push([
+      new Date(h.ts).toLocaleDateString('it-IT'),
+      h.subject || '',
+      ML[h.mode] || h.mode || '',
+      (h.question || '').replace(/"/g,'""'),
+      h.correct ? 'Sì' : 'No',
+      h.vote != null ? h.vote : ''
+    ]);
+  });
+  const csv = rows.map(function(r){ return r.map(function(c){ return '"'+c+'"'; }).join(','); }).join('\n');
+  const blob = new Blob(['\uFEFF'+csv], { type:'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'maturaai-storico.csv';
+  a.click();
+}
 
 // ---- GENERATE ----
 async function genQ() {
   loading();
-  var diffMap = {
+  const diffMap = {
     base: 'semplice, adatta al ripasso',
     medio: "di media difficoltà, tipica dell'esame reale",
     avanzato: 'difficile e approfondita, da commissione severa'
   };
-  var dm = diffMap[st.diff];
-  var ind = st.ind ? ' per ' + st.ind : '';
+  const dm = diffMap[st.diff];
+  const ind = st.ind ? ' per ' + st.ind : '';
   try {
     if      (st.mode === 'mc')      await gMC(dm, ind);
     else if (st.mode === 'open')    await gOpen(dm, ind);
@@ -782,6 +871,7 @@ async function genQ() {
     else                             await gSeconda(dm, ind);
   } catch(e) {
     document.getElementById('qa').innerHTML = '<div class="err">Errore: ' + (e.message || 'Controlla la API key e riprova.') + '</div>';
+    document.getElementById('btn-retry').style.display = 'inline-flex';
     document.getElementById('actrow').classList.remove('hidden');
   }
 }
@@ -1073,7 +1163,7 @@ async function gPrima(dm, ind) {
   ].join(' ');
 
   var sys = tipologia === 'A' ? sysA : tipologia === 'B' ? sysB : sysC;
-  var raw = await callAI(sys, 'Genera la traccia completa di prima prova scritta.', 4000);
+  var raw = await callAI(sys, 'Genera la traccia completa di prima prova scritta.', 5000);
   var q = safeParseJSON(raw);
   if (!q || !q.titolo) throw new Error('Risposta AI non valida. Riprova.');
 
