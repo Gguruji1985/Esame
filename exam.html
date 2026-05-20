@@ -402,11 +402,11 @@ function safeParseJSON(raw) {
 }
 
 const PROVS = {
-  anthropic: { label:'Anthropic', model:'claude-sonnet-4-20250514', hint:'Model: claude-sonnet-4-20250514', ph:'sk-ant-...' },
-  openai:    { label:'OpenAI',    model:'gpt-4o-mini',              hint:'Model: gpt-4o-mini',              ph:'sk-...' },
-  gemini:    { label:'Gemini',    model:'gemini-1.5-flash',         hint:'Model: gemini-1.5-flash',         ph:'AIza...' },
-  groq:      { label:'Groq',      model:'llama-3.3-70b-versatile',  hint:'Model: llama-3.3-70b-versatile (gratuito)', ph:'gsk_...' },
-  custom:    { label:'Custom',    model:'',                         hint:'Endpoint OpenAI-compatibile personalizzato', ph:'opzionale...' }
+  anthropic: { label:'Anthropic', model:'claude-sonnet-4-20250514', hint:'Model: claude-sonnet-4-20250514', ph:'sk-ant-...', url:'https://console.anthropic.com/settings/keys' },
+  openai:    { label:'OpenAI',    model:'gpt-4o-mini',              hint:'Model: gpt-4o-mini',              ph:'sk-...',     url:'https://platform.openai.com/api-keys' },
+  gemini:    { label:'Gemini',    model:'gemini-1.5-flash',         hint:'Model: gemini-1.5-flash',         ph:'AIza...',    url:'https://aistudio.google.com/app/apikey' },
+  groq:      { label:'Groq',      model:'llama-3.3-70b-versatile',  hint:'Model: llama-3.3-70b-versatile (gratuito)', ph:'gsk_...', url:'https://console.groq.com/keys' },
+  custom:    { label:'Custom',    model:'',                         hint:'Endpoint OpenAI-compatibile personalizzato', ph:'opzionale...', url:null }
 };
 
 let prov = null;
@@ -442,7 +442,9 @@ function pickProv(el) {
   document.querySelectorAll('.prov-btn').forEach(function(b) { b.classList.remove('active'); });
   el.classList.add('active');
   prov = el.dataset.p;
-  document.getElementById('pinfo').textContent = PROVS[prov].hint;
+  var p = PROVS[prov];
+  var linkHtml = p.url ? ' <a href="' + p.url + '" target="_blank" rel="noopener" style="margin-left:10px;font-size:10px;color:var(--gold);text-decoration:none;border:1px solid rgba(200,168,75,0.4);border-radius:4px;padding:2px 7px;white-space:nowrap">Ottieni API Key ↗</a>' : '';
+  document.getElementById('pinfo').innerHTML = '<span>' + p.hint + '</span>' + linkHtml;
   var saved = localStorage.getItem('k_' + prov);
   document.getElementById('apikey').value = saved || '';
   document.getElementById('apikey').placeholder = PROVS[prov].ph;
