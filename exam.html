@@ -93,6 +93,11 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
 .err{color:var(--red);font-size:13px;padding:8px 0;}
 .note{font-size:11px;color:var(--text3);margin-top:8px;line-height:1.6;font-family:'DM Mono',monospace;}
 
+/* ===== EXAM TYPE BUTTONS ===== */
+.exam-type-btn{width:100%;background:var(--surface2);border:2px solid var(--border2);border-radius:12px;padding:16px;cursor:pointer;transition:all .15s;text-align:left;color:var(--text);font-family:'Syne',sans-serif;}
+.exam-type-btn:hover{border-color:var(--gold);background:rgba(200,168,75,0.05);}
+.exam-type-btn.active{border-color:var(--gold);background:rgba(200,168,75,0.08);box-shadow:0 0 0 1px var(--gold);}
+
 /* ===== MOBILE ===== */
 @media(max-width:600px){
   nav{padding:12px 16px;}
@@ -238,22 +243,63 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
   </div>
 </div>
 
-<!-- SETUP PANEL -->
+<!-- PASSO 2 — TIPO ESAME -->
+<div id="p-type" class="hidden">
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div class="card-label" style="margin-bottom:0">Passo 2 — Tipo di Esame</div>
+      <button class="btn ghost" style="font-size:12px;padding:5px 10px" onclick="showPanel('p-api')">⚙ Cambia AI</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="exam-type-btn" onclick="pickExamType('prima')" id="et-prima">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:42px;height:42px;border-radius:10px;background:rgba(200,168,75,0.12);border:1px solid rgba(200,168,75,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">✍️</div>
+          <div style="text-align:left">
+            <div style="font-size:15px;font-weight:700;color:var(--text)">Prima Prova</div>
+            <div style="font-size:12px;color:var(--text2);margin-top:2px">Italiano scritto — Tipologia A, B o C</div>
+          </div>
+        </div>
+      </button>
+      <button class="exam-type-btn" onclick="pickExamType('seconda')" id="et-seconda">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:42px;height:42px;border-radius:10px;background:rgba(79,135,201,0.12);border:1px solid rgba(79,135,201,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📄</div>
+          <div style="text-align:left">
+            <div style="font-size:15px;font-weight:700;color:var(--text)">Seconda Prova</div>
+            <div style="font-size:12px;color:var(--text2);margin-top:2px">Prova scritta disciplinare — traccia ministeriale</div>
+          </div>
+        </div>
+      </button>
+      <button class="exam-type-btn" onclick="pickExamType('colloquio')" id="et-colloquio">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:42px;height:42px;border-radius:10px;background:rgba(74,158,110,0.12);border:1px solid rgba(74,158,110,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🎤</div>
+          <div style="text-align:left">
+            <div style="font-size:15px;font-weight:700;color:var(--text)">Colloquio Orale</div>
+            <div style="font-size:12px;color:var(--text2);margin-top:2px">Simulazione commissione — scelta multipla, aperta, orale</div>
+          </div>
+        </div>
+      </button>
+    </div>
+    <div class="btn-row" style="margin-top:16px">
+      <button class="btn ghost" onclick="doHistory()">Storico</button>
+    </div>
+  </div>
+</div>
+
+<!-- PASSO 3 — CONFIGURA -->
 <div id="p-setup" class="hidden">
   <div class="card">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-      <div class="card-label" style="margin-bottom:0">Passo 2 — Configura l'Esame</div>
-      <button class="btn ghost" style="font-size:12px;padding:5px 10px" onclick="showPanel('p-api')">⚙ Cambia AI</button>
+      <div class="card-label" style="margin-bottom:0">Passo 3 — Configura l'Esame</div>
+      <button class="btn ghost" style="font-size:12px;padding:5px 10px" onclick="showPanel('p-type')">← Tipo</button>
     </div>
     <div style="margin-bottom:14px">
       <label class="lbl">Materia — scrivi o scegli un preset</label>
       <input type="text" id="subj" placeholder="es. Fisica, Latino, Diritto, Informatica...">
-      <div class="tag-group" style="margin-top:8px">
+      <div class="tag-group" style="margin-top:8px" id="subj-presets">
         <span class="tag" onclick="setS('Informatica')">Informatica</span>
         <span class="tag" onclick="setS('TPSI')">TPSI</span>
         <span class="tag" onclick="setS('Sistemi e Reti')">Sistemi e Reti</span>
         <span class="tag" onclick="setS('Matematica')">Matematica</span>
-        <span class="tag" onclick="setS('Italiano')">Italiano</span>
         <span class="tag" onclick="setS('Inglese')">Inglese</span>
         <span class="tag" onclick="setS('Storia')">Storia</span>
         <span class="tag" onclick="setS('Fisica')">Fisica</span>
@@ -293,17 +339,15 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
         </select>
       </div>
     </div>
-    <div style="margin-bottom:14px">
-      <label class="lbl">Modalità Esame</label>
+    <div id="mode-section" style="margin-bottom:14px">
+      <label class="lbl">Modalità</label>
       <div class="tag-group" id="tg-mode">
         <span class="tag active" data-val="mc" onclick="pickTag(this,'tg-mode')">Scelta Multipla</span>
         <span class="tag" data-val="open" onclick="pickTag(this,'tg-mode')">Risposta Aperta</span>
         <span class="tag" data-val="oral" onclick="pickTag(this,'tg-mode')">Simulazione Orale</span>
-        <span class="tag" data-val="seconda" onclick="pickTag(this,'tg-mode')">Seconda Prova</span>
-        <span class="tag" data-val="prima" onclick="pickTag(this,'tg-mode')">Prima Prova</span>
       </div>
     </div>
-    <div style="margin-bottom:4px">
+    <div id="timer-section" style="margin-bottom:4px">
       <label class="lbl">Timer (solo scelta multipla)</label>
       <div class="tag-group" id="tg-timer">
         <span class="tag" data-val="0" onclick="pickTag(this,'tg-timer')">Nessuno</span>
@@ -418,7 +462,7 @@ const ML = { mc:'Scelta Multipla', open:'Risposta Aperta', oral:'Orale', seconda
 
 // ---- UI HELPERS ----
 function showPanel(id) {
-  ['p-api','p-setup','p-exam','p-history'].forEach(function(pid) {
+  ['p-api','p-type','p-setup','p-exam','p-history'].forEach(function(pid) {
     document.getElementById(pid).classList.add('hidden');
   });
   document.getElementById(id).classList.remove('hidden');
@@ -479,7 +523,7 @@ function saveAndNext() {
     if (!k) { alert('Inserisci la tua API key.'); return; }
     if (document.getElementById('rem').checked) localStorage.setItem('k_' + prov, k);
   }
-  showPanel('p-setup');
+  showPanel('p-type');
 }
 
 // Init — pre-select saved provider if any
@@ -620,14 +664,58 @@ async function callAI(sys, user, maxTokens) {
 }
 
 // ---- EXAM ----
+var examType = 'colloquio';
+
+function pickExamType(type) {
+  examType = type;
+  ['prima','seconda','colloquio'].forEach(function(t) {
+    var el = document.getElementById('et-' + t);
+    if (el) el.classList.toggle('active', t === type);
+  });
+
+  // For prima and seconda, hide subject presets and mode/timer; show only materia+diff+indirizzo
+  var modeSection = document.getElementById('mode-section');
+  var timerSection = document.getElementById('timer-section');
+  var subjPresets = document.getElementById('subj-presets');
+
+  if (type === 'prima') {
+    // Prima prova: subject is always Italiano, hide materia presets, mode, timer
+    document.getElementById('subj').value = 'Italiano';
+    subjPresets.style.display = 'none';
+    modeSection.style.display = 'none';
+    timerSection.style.display = 'none';
+    st.mode = 'prima';
+  } else if (type === 'seconda') {
+    // Seconda prova: show materia, hide mode/timer
+    if (document.getElementById('subj').value === 'Italiano') document.getElementById('subj').value = '';
+    subjPresets.style.display = '';
+    modeSection.style.display = 'none';
+    timerSection.style.display = 'none';
+    st.mode = 'seconda';
+  } else {
+    // Colloquio: show everything, reset mode to mc
+    if (document.getElementById('subj').value === 'Italiano') document.getElementById('subj').value = '';
+    subjPresets.style.display = '';
+    modeSection.style.display = '';
+    timerSection.style.display = '';
+    st.mode = getTag('tg-mode') || 'mc';
+  }
+
+  showPanel('p-setup');
+}
+
 function startExam() {
   var s = document.getElementById('subj').value.trim();
   if (!s) { alert('Inserisci una materia.'); return; }
   st.subj = s;
   st.diff = document.getElementById('sel-diff').value;
   st.ind  = document.getElementById('sel-ind').value;
-  st.mode = getTag('tg-mode') || 'mc';
-  st.timer = parseInt(getTag('tg-timer') || '60');
+  if (examType === 'colloquio') {
+    st.mode = getTag('tg-mode') || 'mc';
+    st.timer = parseInt(getTag('tg-timer') || '60');
+  } else {
+    st.timer = 0;
+  }
   st.correct = 0; st.total = 0;
   document.getElementById('b-s').textContent = s;
   document.getElementById('b-m').textContent = ML[st.mode];
