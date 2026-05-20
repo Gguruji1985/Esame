@@ -57,6 +57,10 @@ input::placeholder{color:var(--text3);}
 .b-seconda{background:rgba(74,158,110,.12);color:var(--green);border:1px solid rgba(74,158,110,.3);}
 .b-valuta{background:rgba(201,79,79,.12);color:var(--red);border:1px solid rgba(201,79,79,.3);}
 .b-studio{background:rgba(143,106,191,.12);color:var(--purple);border:1px solid rgba(143,106,191,.3);}
+.b-vf{background:rgba(201,79,79,.12);color:var(--red);border:1px solid rgba(201,79,79,.3);}
+.b-fill{background:rgba(79,135,201,.12);color:var(--blue);border:1px solid rgba(79,135,201,.3);}
+.b-match{background:rgba(74,158,110,.12);color:var(--green);border:1px solid rgba(74,158,110,.3);}
+.b-prima{background:rgba(200,168,75,.12);color:var(--gold);border:1px solid rgba(200,168,75,.3);}
 
 .prompt-box{position:relative;margin:0 18px 14px;}
 .prompt-text{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:14px 50px 14px 14px;font-family:'DM Mono',monospace;font-size:12px;line-height:1.8;color:var(--text2);white-space:pre-wrap;word-break:break-word;max-height:180px;overflow-y:auto;}
@@ -315,6 +319,112 @@ hr.div{border:none;border-top:1px solid var(--border);margin:32px 0;}
 
   <hr class="div">
 
+  <!-- SECTION: PRIMA PROVA -->
+  <div class="section-head">
+    <div class="section-label">Modalità 5</div>
+    <h2 class="section-title">Prima prova <em>italiana</em></h2>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-top">
+      <div>
+        <div class="prompt-name">Tipologia A — Analisi del testo</div>
+        <div class="prompt-desc">L'AI genera un brano letterario italiano con consegne di analisi in stile ministeriale</div>
+      </div>
+      <span class="badge b-prima">1a Prova</span>
+    </div>
+    <div class="prompt-box">
+      <pre class="prompt-text" id="p-prima-a"></pre>
+      <button class="copy-btn" onclick="copyPrompt('p-prima-a', this)">Copia</button>
+    </div>
+    <button class="expand-btn" onclick="toggleExpand('p-prima-a', this)">▼ Mostra tutto</button>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-top">
+      <div>
+        <div class="prompt-name">Tipologia B — Testo argomentativo</div>
+        <div class="prompt-desc">L'AI genera un documento di riferimento e chiede un testo argomentativo</div>
+      </div>
+      <span class="badge b-prima">1a Prova</span>
+    </div>
+    <div class="prompt-box">
+      <pre class="prompt-text" id="p-prima-b"></pre>
+      <button class="copy-btn" onclick="copyPrompt('p-prima-b', this)">Copia</button>
+    </div>
+    <button class="expand-btn" onclick="toggleExpand('p-prima-b', this)">▼ Mostra tutto</button>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-top">
+      <div>
+        <div class="prompt-name">Tipologia C — Tema di attualità</div>
+        <div class="prompt-desc">L'AI genera uno spunto di attualità e chiede un elaborato espositivo-argomentativo</div>
+      </div>
+      <span class="badge b-prima">1a Prova</span>
+    </div>
+    <div class="prompt-box">
+      <pre class="prompt-text" id="p-prima-c"></pre>
+      <button class="copy-btn" onclick="copyPrompt('p-prima-c', this)">Copia</button>
+    </div>
+    <button class="expand-btn" onclick="toggleExpand('p-prima-c', this)">▼ Mostra tutto</button>
+  </div>
+
+  <hr class="div">
+
+  <!-- SECTION: QUIZ SEMPLICI -->
+  <div class="section-head">
+    <div class="section-label">Modalità 6</div>
+    <h2 class="section-title">Quiz <em>rapidi</em></h2>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-top">
+      <div>
+        <div class="prompt-name">Vero / Falso</div>
+        <div class="prompt-desc">L'AI genera 5 affermazioni da giudicare vere o false con spiegazione</div>
+      </div>
+      <span class="badge b-vf">Vero/Falso</span>
+    </div>
+    <div class="prompt-box">
+      <pre class="prompt-text" id="p-vf"></pre>
+      <button class="copy-btn" onclick="copyPrompt('p-vf', this)">Copia</button>
+    </div>
+    <button class="expand-btn" onclick="toggleExpand('p-vf', this)">▼ Mostra tutto</button>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-top">
+      <div>
+        <div class="prompt-name">Completa la frase</div>
+        <div class="prompt-desc">L'AI genera frasi con parola mancante — indovina e impara il termine corretto</div>
+      </div>
+      <span class="badge b-fill">Completa</span>
+    </div>
+    <div class="prompt-box">
+      <pre class="prompt-text" id="p-fill"></pre>
+      <button class="copy-btn" onclick="copyPrompt('p-fill', this)">Copia</button>
+    </div>
+    <button class="expand-btn" onclick="toggleExpand('p-fill', this)">▼ Mostra tutto</button>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-top">
+      <div>
+        <div class="prompt-name">Abbinamento termini e definizioni</div>
+        <div class="prompt-desc">L'AI genera coppie termine-definizione da abbinare — ottimo per ripasso veloce</div>
+      </div>
+      <span class="badge b-match">Abbinamento</span>
+    </div>
+    <div class="prompt-box">
+      <pre class="prompt-text" id="p-match"></pre>
+      <button class="copy-btn" onclick="copyPrompt('p-match', this)">Copia</button>
+    </div>
+    <button class="expand-btn" onclick="toggleExpand('p-match', this)">▼ Mostra tutto</button>
+  </div>
+
+  <hr class="div">
+
   <!-- SECTION: STUDIO -->
   <div class="section-head">
     <div class="section-label">Extra</div>
@@ -507,7 +617,69 @@ Dimmi:
 - Errori di contenuto o imprecisioni
 - Struttura e organizzazione del testo
 - Come migliorare l'esposizione
-- Voto provvisorio (1-10) e commento finale`
+- Voto provvisorio (1-10) e commento finale`,
+
+    'p-prima-a': `Sei un commissario ministeriale italiano per la prima prova scritta degli Esami di Stato.
+Genera una traccia realistica di Tipologia A — Analisi e interpretazione di un testo letterario italiano.
+
+Includi:
+1. Un brano autentico di un autore italiano del Novecento (Ungaretti, Montale, Pirandello, Svevo, Verga, Pascoli, D'Annunzio, Moravia, Calvino, Pavese o Primo Levi)
+2. Note contestuali sull'autore e sull'opera
+3. 5 consegne di analisi progressivamente più approfondite (metrica/struttura, figure retoriche, temi, contestualizzazione storico-letteraria, confronto con altre opere)
+
+Dopo che scrivo il mio elaborato, valutami da 1 a 10 con feedback su: pertinenza, linguistica, argomentazione e originalità.`,
+
+    'p-prima-b': `Sei un commissario ministeriale italiano per la prima prova scritta degli Esami di Stato.
+Genera una traccia realistica di Tipologia B — Analisi e produzione di un testo argomentativo.
+
+Scegli un ambito (artistico-letterario, scientifico-tecnologico, storico-politico o socio-economico) e fornisci:
+1. Un documento di riferimento (articolo, saggio o discorso) con autore e titolo
+2. 3 consegne: analisi del documento, sviluppo argomentativo, tesi personale
+
+Dopo che scrivo il mio elaborato, valutami da 1 a 10 con feedback su: pertinenza, linguistica, argomentazione e originalità.`,
+
+    'p-prima-c': `Sei un commissario ministeriale italiano per la prima prova scritta degli Esami di Stato.
+Genera una traccia realistica di Tipologia C — Riflessione critica di carattere espositivo-argomentativo su tematiche di attualità.
+
+Scegli un tema rilevante (tecnologia e società, ambiente, identità, lavoro, memoria storica, globalizzazione ecc.) e fornisci:
+1. Uno spunto di riflessione (breve citazione, dato statistico o notizia)
+2. Il tema da sviluppare
+3. 3 consegne per guidare l'elaborato
+
+Dopo che scrivo il mio elaborato, valutami da 1 a 10 con feedback su: pertinenza, linguistica, argomentazione e originalità.`,
+
+    'p-vf': `Sei un commissario d'esame di maturità italiana${v.indStr}.
+Generami 5 affermazioni Vero/Falso ${v.diff} sulla materia: ${v.subj}.
+
+Formato:
+1. [Affermazione] → VERO o FALSO
+2. [Affermazione] → VERO o FALSO
+...
+
+Dopo che rispondo (scrivo V o F per ciascuna), dimmi quante ne ho azzeccate e spiega quelle che ho sbagliato.
+
+Inizia subito con le 5 affermazioni.`,
+
+    'p-fill': `Sei un commissario d'esame di maturità italiana${v.indStr}.
+Generami 4 frasi incomplete ${v.diff} sulla materia: ${v.subj}.
+
+Ogni frase deve avere una parola o espressione mancante indicata con ___.
+Esempio: "Il protocollo ___ garantisce la consegna affidabile dei pacchetti TCP/IP."
+
+Dopo che scrivo le mie risposte, dimmi quali sono corrette, quale era la risposta giusta per quelle sbagliate e spiega brevemente il concetto.
+
+Inizia subito con le 4 frasi.`,
+
+    'p-match': `Sei un commissario d'esame di maturità italiana${v.indStr}.
+Generami 5 coppie termine-definizione ${v.diff} sulla materia: ${v.subj}.
+
+Presentale così:
+Termini: A) ... B) ... C) ... D) ... E) ...
+Definizioni (in ordine mescolato): 1) ... 2) ... 3) ... 4) ... 5) ...
+
+Dopo che scrivo i miei abbinamenti (es. A-3, B-1, ...) dimmi quanti sono corretti e spiega gli errori.
+
+Inizia subito.`
   };
 }
 

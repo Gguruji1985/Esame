@@ -141,3 +141,33 @@
 | US-13 | FR-34, FR-35, FR-36, FR-37 |
 | US-14 | FR-28, FR-29, FR-30 |
 | US-15 | FR-31, FR-32, FR-33 |
+
+---
+
+## 4. Change Log — v1.1 (May 2026)
+
+### 4.1 New Functional Requirements
+
+| ID | Requirement | Priority |
+|---|---|---|
+| FR-38 | The system shall provide a Prima Prova mode with three sub-types: Tipologia A (literary analysis), Tipologia B (argumentative), Tipologia C (current affairs) | High |
+| FR-39 | Prima Prova Tipologia A shall include an authentic Italian literary excerpt from a 20th-century author with contextual notes and 5 structured analysis tasks | High |
+| FR-40 | Prima Prova shall evaluate submissions on: pertinenza, linguistica, argomentazione, originalità with grade 1-10 | High |
+| FR-41 | The system shall provide a Vero/Falso mode generating 5 true/false statements with per-item explanation | High |
+| FR-42 | The system shall provide a Completa la Frase mode with fill-in-the-blank sentences and automatic answer verification | High |
+| FR-43 | The system shall provide an Abbinamento mode with 5 term-definition pairs, shuffled definitions, click-to-match UI | High |
+| FR-44 | The system shall present a session summary screen on exit showing: total questions, % correct, grade, subject | Medium |
+| FR-45 | The system shall allow export of full history as UTF-8 CSV file | Medium |
+| FR-46 | A retry button shall appear on AI errors instead of forcing a new question | Medium |
+| FR-47 | The exam flow shall be restructured into 3 steps: AI setup → exam type selection → configuration | High |
+| FR-48 | Exam type selection (Passo 2) shall offer three distinct paths: Prima Prova, Seconda Prova, Colloquio Orale | High |
+| FR-49 | Colloquio Orale shall expose all quiz modes: Scelta Multipla, Risposta Aperta, Simulazione Orale, Vero/Falso, Completa la Frase, Abbinamento | High |
+
+### 4.2 Updated Non-Functional Requirements
+
+| ID | Requirement |
+|---|---|
+| NFR-18 | AI provider logic is isolated in a single merged `callAI(sys, user, maxTokens, images?)` function |
+| NFR-21 | Gemini provider shall use `system_instruction` field for system prompts (not concatenation) |
+| NFR-22 | API key shall be stored in a JS variable at authentication time, not re-read from DOM on each call |
+| NFR-23 | Validation errors shall be displayed as inline DOM elements — no `alert()` calls |

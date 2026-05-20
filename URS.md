@@ -91,3 +91,35 @@ MaturaAI is a browser-based application that allows Italian high school students
 - Collaborative/multiplayer features
 - Teacher dashboard or class management
 - Offline mode (requires internet for AI API calls)
+
+---
+
+## 6. Change Log — v1.1 (May 2026)
+
+### New User Needs
+
+| ID | User Need |
+|---|---|
+| UN-11 | Students need to practice the Italian first written exam (prima prova) in all three official typologies |
+| UN-12 | Students need quick drill modes (true/false, fill-in-the-blank, matching) for fast revision |
+| UN-13 | Students need a clear exam-type selector to avoid configuring irrelevant options |
+| UN-14 | Students need a session summary at the end of each practice session |
+| UN-15 | Students need to export their history for offline review or sharing with a teacher |
+
+### New User Stories
+
+**US-16** — As a student, I want to receive a complete Prima Prova traccia in Tipologia A, B or C and get it evaluated with ministerial criteria so I can practice the full Italian written exam.
+
+**US-17** — As a student, I want to do a Vero/Falso quiz with 5 statements and instant explanations so I can quickly verify my factual knowledge.
+
+**US-18** — As a student, I want to complete fill-in-the-blank sentences and see the correct answers so I can memorize key terminology.
+
+**US-19** — As a student, I want to match terms with definitions by clicking so I can review vocabulary interactively.
+
+**US-20** — As a student, I want to see a summary of my session (questions done, score, grade) before leaving so I can track my progress.
+
+**US-21** — As a student, I want to export my history as a CSV so I can review it offline or share it with my teacher.
+
+**US-22** — As a student, I want a retry button when the AI fails instead of being forced to skip to the next question.
+
+**US-23** — As a student, I want the app to guide me through exam type selection first (Prima Prova / Seconda Prova / Colloquio) so the configuration screen only shows relevant options.
