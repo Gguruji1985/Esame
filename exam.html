@@ -300,6 +300,7 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
         <span class="tag" onclick="setS('TPSI')">TPSI</span>
         <span class="tag" onclick="setS('Sistemi e Reti')">Sistemi e Reti</span>
         <span class="tag" onclick="setS('Matematica')">Matematica</span>
+        <span class="tag" id="tag-italiano" onclick="setS('Italiano')">Italiano</span>
         <span class="tag" onclick="setS('Inglese')">Inglese</span>
         <span class="tag" onclick="setS('Storia')">Storia</span>
         <span class="tag" onclick="setS('Fisica')">Fisica</span>
@@ -711,23 +712,21 @@ function pickExamType(type) {
   var subjPresets = document.getElementById('subj-presets');
 
   if (type === 'prima') {
-    // Prima prova: subject is always Italiano, hide materia presets, mode, timer
     document.getElementById('subj').value = 'Italiano';
     subjPresets.style.display = 'none';
     modeSection.style.display = 'none';
     timerSection.style.display = 'none';
     st.mode = 'prima';
   } else if (type === 'seconda') {
-    // Seconda prova: show materia, hide mode/timer
     if (document.getElementById('subj').value === 'Italiano') document.getElementById('subj').value = '';
     subjPresets.style.display = '';
+    document.getElementById('tag-italiano').style.display = 'none';
     modeSection.style.display = 'none';
     timerSection.style.display = 'none';
     st.mode = 'seconda';
   } else {
-    // Colloquio: show everything, reset mode to mc
-    if (document.getElementById('subj').value === 'Italiano') document.getElementById('subj').value = '';
     subjPresets.style.display = '';
+    document.getElementById('tag-italiano').style.display = '';
     modeSection.style.display = '';
     timerSection.style.display = '';
     st.mode = getTag('tg-mode') || 'mc';
