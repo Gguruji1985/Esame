@@ -512,7 +512,7 @@ Difficoltà: ${v.diff}
 Inizia con la prima domanda.`,
 
     'p-open1': `Sei un commissario d'esame di maturità italiana${v.indStr}.
-Fami una domanda aperta ${v.diff} sulla materia: ${v.subj}.
+Fammi una domanda aperta ${v.diff} sulla materia: ${v.subj}.
 
 Dopo che rispondo, valutami con un voto da 1 a 10 e dammi un feedback dettagliato su:
 - Punti forti della mia risposta
@@ -535,11 +535,10 @@ Dammi: voto, commento generale, punti forti, punti deboli, e cosa avrei dovuto a
     'p-oral1': `Sei un commissario d'esame di maturità italiana (colloquio orale)${v.indStr}.
 Devi interrogarmi sulla materia: ${v.subj}.
 
-Simula una vera interrogazione orale:
-- Fai una domanda alla volta
-- Aspetta la mia risposta
-- Fai domande di approfondimento o collegamento basate su quello che dico
-- Alla fine (quando dico "fine" o "basta") dammi un voto da 1 a 10 con commento su esposizione e contenuto
+Simula un vero colloquio orale:
+- Fai una domanda alla volta e aspetta la mia risposta
+- Poni domande di approfondimento e, quando pertinente, chiedi collegamenti con altre discipline (come nel colloquio interdisciplinare reale)
+- Alla fine (quando dico "fine" o "basta") dammi un voto orientativo in ventesimi (/20) con commento su contenuto, esposizione e capacità di collegamento
 
 Difficoltà: ${v.diff}
 Inizia con la prima domanda come farebbe un vero commissario.`,
@@ -548,9 +547,9 @@ Inizia con la prima domanda come farebbe un vero commissario.`,
 Voglio esercitarmi sull'argomento specifico: [SCRIVI QUI L'ARGOMENTO]
 Materia: ${v.subj}
 
-Fai domande approfondite su questo argomento specifico, collega con altri argomenti della materia quando è naturale farlo. Aspetta sempre la mia risposta prima di fare la domanda successiva.
+Fai domande approfondite su questo argomento e collega con altri argomenti della materia (e con altre discipline quando è naturale farlo). Aspetta sempre la mia risposta prima della domanda successiva.
 
-Alla fine valutami da 1 a 10 con feedback su chiarezza, correttezza e completezza.`,
+Alla fine valutami con un voto orientativo in ventesimi (/20) e feedback su chiarezza, correttezza, completezza e collegamenti.`,
 
     'p-sec1': `Sei un membro della commissione ministeriale che predispone la seconda prova scritta dell'Esame di Stato italiano.
 Indirizzo: ${v.ind || 'Istituto Tecnico'} — Disciplina: ${v.subj} — Difficoltà richiesta: ${v.diff}.
@@ -671,22 +670,24 @@ Dopo che scrivo il mio elaborato, valutami secondo la griglia ministeriale (indi
     'p-vf': `Sei un commissario d'esame di maturità italiana${v.indStr}.
 Generami 5 affermazioni Vero/Falso ${v.diff} sulla materia: ${v.subj}.
 
-Formato:
-1. [Affermazione] → VERO o FALSO
-2. [Affermazione] → VERO o FALSO
-...
+Presenta le 5 affermazioni numerate, SENZA rivelare la soluzione:
+1. [affermazione]
+2. [affermazione]
+3. [affermazione]
+4. [affermazione]
+5. [affermazione]
 
-Dopo che rispondo (scrivo V o F per ciascuna), dimmi quante ne ho azzeccate e spiega quelle che ho sbagliato.
+Dopo che rispondo (scrivo V o F per ciascuna), dimmi quante ne ho azzeccate e, per quelle sbagliate, indica la risposta corretta e spiega brevemente il perché.
 
 Inizia subito con le 5 affermazioni.`,
 
     'p-fill': `Sei un commissario d'esame di maturità italiana${v.indStr}.
 Generami 4 frasi incomplete ${v.diff} sulla materia: ${v.subj}.
 
-Ogni frase deve avere una parola o espressione mancante indicata con ___.
-Esempio: "Il protocollo ___ garantisce la consegna affidabile dei pacchetti TCP/IP."
+Ogni frase deve avere una sola parola o espressione mancante, indicata con ___ (senza rivelare la soluzione).
+Esempio di formato (adatta il contenuto alla materia): "Il protocollo ___ assegna automaticamente gli indirizzi IP agli host di una rete."
 
-Dopo che scrivo le mie risposte, dimmi quali sono corrette, quale era la risposta giusta per quelle sbagliate e spiega brevemente il concetto.
+Dopo che scrivo le mie risposte, dimmi quali sono corrette, qual era la risposta giusta per quelle sbagliate e spiega brevemente il concetto.
 
 Inizia subito con le 4 frasi.`,
 
