@@ -552,36 +552,54 @@ Fai domande approfondite su questo argomento specifico, collega con altri argome
 
 Alla fine valutami da 1 a 10 con feedback su chiarezza, correttezza e completezza.`,
 
-    'p-sec1': `Sei un membro della commissione ministeriale italiana della seconda prova scritta degli Esami di Stato${v.indStr}.
-Generami un tema di seconda prova completo per la materia: ${v.subj}.
-Difficoltà: ${v.diff}
+    'p-sec1': `Sei un membro della commissione ministeriale che predispone la seconda prova scritta dell'Esame di Stato italiano.
+Indirizzo: ${v.ind || 'Istituto Tecnico'} — Disciplina: ${v.subj} — Difficoltà richiesta: ${v.diff}.
 
-Il tema deve seguire il formato ministeriale reale:
-1. PREMESSA — contesto tecnico/professionale con terminologia specifica (almeno 100 parole)
-2. CASO PROFESSIONALE — scenario reale con dati numerici, nomi fittizi di aziende/enti, requisiti specifici (almeno 200 parole)
-3. PRIMA PARTE — 5 punti obbligatori da svolgere, ciascuno con sotto-richieste precise
-4. SECONDA PARTE — 4 quesiti opzionali (il candidato ne sceglie 2)
-5. ALLEGATI — descrizione dei materiali forniti (dati, schemi, tabelle)
+Genera una traccia di seconda prova COMPLETA che rispetti ESATTAMENTE il formato ministeriale reale, in questo ordine e senza inventare sezioni inesistenti:
 
-Durata: 6 ore. Sii dettagliato e realistico come nei veri esami ministeriali.`,
+INTESTAZIONE (come nei documenti del Ministero)
+Ministero dell'istruzione e del merito
+ESAME DI STATO CONCLUSIVO DEL SECONDO CICLO DI ISTRUZIONE
+Indirizzo: ${v.ind || '[indirizzo]'}
+Disciplina: ${v.subj}
 
-    'p-sec2': `Sei un commissario della seconda prova scritta degli Esami di Stato italiani, materia: ${v.subj}${v.indStr}.
+CONSEGNA (riga fissa, riportala identica)
+"Il candidato svolga la prima parte della prova e risponda a due tra i quesiti proposti nella seconda parte."
 
-Valuta il seguente svolgimento con voto da 1 a 10 usando i criteri ministeriali reali.
+PRIMA PARTE (da svolgere per intero)
+- Presenta uno scenario reale e articolato (azienda, scuola, ente pubblico, struttura sanitaria, startup…) come UN UNICO testo discorsivo, con dati tecnici concreti: numero di utenti/postazioni, sedi, vincoli, requisiti, tecnologie o velocità coinvolte. NON usare etichette tipo "Premessa", "Caso professionale" o "Allegati": non esistono nelle tracce reali.
+- Chiudi con la frase: "Il candidato analizzi la realtà di riferimento e, formulate le opportune ipotesi aggiuntive, contribuisca alla stesura del progetto svolgendo i seguenti punti:" seguita da 4 punti numerati, ciascuno con richieste tecniche precise e legate allo scenario.
 
-TRACCIA:
+SECONDA PARTE
+Proponi 4 quesiti numerati (il candidato ne sceglierà 2). Almeno due quesiti devono iniziare con "In relazione al tema proposto nella prima parte, …" e approfondire aspetti tecnici della disciplina.
+
+PIÈ DI PAGINA (riportalo identico)
+____________________
+Durata massima della prova: da 6 a 8 ore.
+È consentito l'uso di manuali tecnici e di calcolatrici non programmabili.
+È consentito l'uso del dizionario bilingue (italiano-lingua del paese di provenienza) per i candidati di madrelingua non italiana.
+Non è consentito lasciare l'Istituto prima che siano trascorse 3 ore dalla consegna della traccia.
+
+Scrivi tutto in italiano con terminologia tecnica corretta. Inizia direttamente dall'intestazione, senza tue premesse o commenti.`,
+
+    'p-sec2': `Sei un commissario d'esame che valuta la seconda prova scritta dell'Esame di Stato italiano. Disciplina: ${v.subj}${v.indStr}.
+
+Valuta il mio svolgimento usando la griglia ministeriale reale (punteggio in ventesimi).
+
+TRACCIA (prima parte + i 2 quesiti che ho scelto):
 [INCOLLA QUI LA TRACCIA]
 
 MIO SVOLGIMENTO:
 [INCOLLA QUI IL TUO SVOLGIMENTO]
 
-Dammi:
-- Voto (1-10)
-- Pertinenza alla traccia
-- Completezza dei punti svolti
-- Correttezza tecnica/disciplinare
-- Qualità dell'esposizione
-- Suggerimento principale per migliorare`,
+Assegna un punteggio a ciascuno dei 4 indicatori ufficiali, con 1-2 righe di motivazione:
+1. Padronanza delle conoscenze disciplinari relative ai nuclei fondanti della disciplina (max 5)
+2. Padronanza delle competenze tecnico-professionali di indirizzo — analisi, progettazione, sviluppo (max 6)
+3. Completezza nello svolgimento della traccia, coerenza e correttezza dei risultati e degli elaborati prodotti (max 5)
+4. Capacità di argomentare, collegare e sintetizzare in modo chiaro ed esauriente, con uso corretto del linguaggio tecnico (max 4)
+
+Poi fornisci: TOTALE __/20 (con equivalente in decimi), un commento generale e il suggerimento più importante per migliorare.
+Controlla che io abbia svolto la prima parte per intero e risposto esattamente a 2 quesiti: se ho risposto a un numero diverso, segnalalo.`,
 
     'p-study1': `Sei un professore esperto di ${v.subj}${v.indStr} che prepara gli studenti alla maturità.
 
