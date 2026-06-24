@@ -1,0 +1,165 @@
+/* ===================================================================
+   AD MAIORA — Design System
+   "Esame di Stato as a literary magazine."
+   Paper · navy ink · scholarly blue · carmine seal.
+   =================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,300;1,6..72,400;1,6..72,500;1,6..72,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  /* paper */
+  --paper:    #F4EFE3;   /* page background, warm */
+  --paper-2:  #FBF8F0;   /* raised cards / panels */
+  --paper-3:  #EDE6D5;   /* sunken / inset */
+  --paper-edge:#E4DAC4;
+
+  /* ink */
+  --ink:    #182438;     /* primary text — deep navy ink */
+  --ink-2:  #4A5667;     /* secondary text */
+  --ink-3:  #8B8979;     /* meta / muted */
+  --ink-soft:#A9A593;
+
+  /* rules */
+  --rule:   #D8CFB9;
+  --rule-2: #C7BCA0;
+  --rule-ink: rgba(24,36,56,0.16);
+
+  /* accents */
+  --navy:    #1E3E6E;    /* scholarly blue */
+  --navy-2:  #2B538C;
+  --navy-deep:#13284A;
+  --seal:    #9D2B23;    /* official carmine stamp */
+  --seal-2:  #B23A30;
+  --seal-soft: rgba(157,43,35,0.10);
+
+  --maxw: 1180px;
+}
+
+*,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
+html{ scroll-behavior:smooth; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
+
+body{
+  font-family:'Newsreader', Georgia, serif;
+  background:var(--paper);
+  color:var(--ink);
+  font-size:18px;
+  line-height:1.6;
+  font-weight:400;
+}
+
+/* faint paper texture + vignette via background, no images */
+body.am-paper::before{
+  content:'';
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(255,255,255,0.5), transparent 60%),
+    radial-gradient(100% 100% at 50% 120%, rgba(24,36,56,0.05), transparent 55%);
+}
+
+::selection{ background:rgba(30,62,110,0.18); color:var(--ink); }
+
+/* ---------- type primitives ---------- */
+.am-mono{
+  font-family:'IBM Plex Mono', ui-monospace, monospace;
+  font-size:11px; letter-spacing:0.18em; text-transform:uppercase;
+  font-weight:500;
+}
+.am-eyebrow{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11px; letter-spacing:0.22em; text-transform:uppercase;
+  color:var(--seal); font-weight:500;
+  display:inline-flex; align-items:center; gap:10px;
+}
+.am-eyebrow::before{
+  content:''; width:22px; height:1px; background:var(--seal); display:inline-block;
+}
+.am-display{
+  font-weight:400; line-height:1.02; letter-spacing:-0.015em;
+  font-variation-settings:'opsz' 60;
+}
+.am-display em, .am-italic{ font-style:italic; }
+
+/* hairline rules */
+.am-rule{ border:none; border-top:1px solid var(--rule-2); }
+.am-rule-ink{ border:none; border-top:1px solid var(--rule-ink); }
+.am-rule-double{ border:none; border-top:3px double var(--rule-2); }
+
+/* ---------- buttons ---------- */
+.am-btn{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:12px; letter-spacing:0.12em; text-transform:uppercase; font-weight:500;
+  padding:13px 26px; border-radius:2px; border:1px solid var(--ink);
+  background:var(--ink); color:var(--paper);
+  cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:10px;
+  transition:background .18s, color .18s, transform .18s, box-shadow .18s;
+}
+.am-btn:hover{ background:var(--navy-deep); border-color:var(--navy-deep); transform:translateY(-1px); box-shadow:0 10px 26px -12px rgba(19,40,74,0.5); }
+.am-btn-ghost{
+  background:transparent; color:var(--ink); border:1px solid var(--rule-2);
+}
+.am-btn-ghost:hover{ background:transparent; color:var(--ink); border-color:var(--ink); box-shadow:none; transform:translateY(-1px); }
+.am-btn-seal{ background:var(--seal); border-color:var(--seal); color:#fff; }
+.am-btn-seal:hover{ background:var(--seal-2); border-color:var(--seal-2); }
+.am-btn .arr{ font-size:14px; }
+
+/* ---------- masthead / nav ---------- */
+.am-nav{
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 36px;
+  background:rgba(244,239,227,0.86);
+  backdrop-filter:blur(14px) saturate(1.2);
+  border-bottom:1px solid var(--rule-2);
+}
+.am-wordmark{
+  font-family:'Newsreader', serif; font-weight:500; font-size:24px;
+  letter-spacing:-0.01em; color:var(--ink); text-decoration:none; line-height:1;
+  display:inline-flex; align-items:baseline; gap:2px;
+}
+.am-wordmark em{ font-style:italic; color:var(--seal); }
+.am-wordmark .tld{ font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.15em; color:var(--ink-3); margin-left:8px; transform:translateY(-2px); }
+.am-navlinks{ display:flex; align-items:center; gap:30px; list-style:none; }
+.am-navlinks a{
+  font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.13em;
+  text-transform:uppercase; color:var(--ink-2); text-decoration:none; transition:color .18s;
+}
+.am-navlinks a:hover{ color:var(--seal); }
+.am-navlinks .am-nav-cta{ color:var(--paper); background:var(--ink); padding:9px 18px; border-radius:2px; }
+.am-navlinks .am-nav-cta:hover{ color:var(--paper); background:var(--navy-deep); }
+
+/* ---------- the seal (official stamp SVG wrapper) ---------- */
+.am-seal{ color:var(--seal); display:inline-block; }
+.am-seal--faint{ color:var(--rule-2); }
+
+/* ---------- layout helpers ---------- */
+.am-shell{ position:relative; z-index:1; }
+.am-wrap{ max-width:var(--maxw); margin:0 auto; padding:0 36px; }
+.am-section{ padding:96px 0; }
+
+.am-section-head{ max-width:720px; margin-bottom:52px; }
+.am-section-head h2{
+  font-family:'Newsreader',serif; font-weight:400; line-height:1.04;
+  font-size:clamp(2.2rem,5vw,3.6rem); letter-spacing:-0.015em; margin-top:14px;
+  font-variation-settings:'opsz' 50;
+}
+.am-section-head h2 em{ font-style:italic; color:var(--navy); }
+.am-section-head p{ font-size:18px; color:var(--ink-2); line-height:1.65; margin-top:18px; max-width:560px; }
+
+/* drop cap */
+.am-dropcap::first-letter{
+  font-family:'Newsreader',serif; font-weight:500; font-style:italic;
+  font-size:4.6em; line-height:0.78; float:left; margin:6px 14px 0 0; color:var(--seal);
+}
+
+/* footer colophon */
+.am-foot{ border-top:3px double var(--rule-2); padding:40px 0 56px; }
+.am-foot .am-wrap{ display:flex; align-items:flex-start; justify-content:space-between; gap:24px; flex-wrap:wrap; }
+.am-foot small{ font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; color:var(--ink-3); line-height:1.9; }
+
+@media (max-width:760px){
+  .am-nav{ padding:12px 18px; }
+  .am-navlinks{ display:none; }
+  .am-wrap{ padding:0 20px; }
+  .am-section{ padding:60px 0; }
+  body{ font-size:17px; }
+}
