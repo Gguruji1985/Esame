@@ -6,184 +6,241 @@
 <title>MaturaAI — Prompt per l'AI</title>
 <link rel="stylesheet" href="assets/system.css">
 <style>
-:root{--bg:#F4EFE3;--surface:#FBF8F0;--surface2:#EFE7D6;--border:#D8CFB9;--border2:#C7BCA0;--text:#182438;--text2:#4A5667;--text3:#8B8979;--gold:#1E3E6E;--gold2:#2B538C;--green:#3C7A53;--red:#9D2B23;--blue:#1E3E6E;--purple:#6B4FA0;}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-body{font-family:'Newsreader',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 40px;background:rgba(8,8,8,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
-.logo{font-family:'Newsreader',serif;font-size:20px;color:var(--text);text-decoration:none;}
-.logo em{color:var(--gold2);font-style:italic;}
-.nav-back{font-size:13px;color:var(--text2);text-decoration:none;transition:color .2s;}
-.nav-back:hover{color:var(--text);}
-.wrap{max-width:860px;margin:0 auto;padding:88px 24px 80px;}
+/* ===== PROMPTS PAGE — page-specific styles only; AM system handles base ===== */
 
-/* HERO */
-.hero{text-align:center;padding:40px 0 48px;}
-.hero-badge{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.15em;color:var(--gold);border:1px solid rgba(200,168,75,.3);border-radius:999px;padding:5px 14px;margin-bottom:18px;text-transform:uppercase;}
-.hero h1{font-family:'Newsreader',serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:400;line-height:1.1;margin-bottom:12px;}
-.hero h1 em{font-style:italic;color:var(--gold2);}
-.hero p{font-size:15px;color:var(--text2);max-width:540px;margin:0 auto 20px;line-height:1.7;}
+/* extra tokens not in system.css */
+:root{ --green:#3C7A53; --purple:#6B4FA0; }
 
-/* AI LINKS */
-.ai-links{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:8px;}
-.ai-link{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:7px 14px;border-radius:999px;border:1px solid var(--border2);color:var(--text2);text-decoration:none;transition:all .15s;}
-.ai-link:hover{border-color:var(--gold);color:var(--gold);}
-
-/* SUBJECT CUSTOMIZER */
-.customizer{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:28px;}
-.customizer-title{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;}
-.cust-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
-@media(max-width:500px){.cust-row{grid-template-columns:1fr;}}
-label.lbl{font-size:11px;color:var(--text3);margin-bottom:5px;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.08em;display:block;}
-input[type=text],select{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Newsreader',sans-serif;font-size:16px;padding:9px 12px;outline:none;transition:border-color .2s;appearance:none;}
-input:focus,select:focus{border-color:var(--gold);}
-input::placeholder{color:var(--text3);}
-
-/* SECTION HEADERS */
-.section-head{margin:32px 0 14px;}
-.section-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
-.section-title{font-family:'Newsreader',serif;font-size:1.6rem;font-weight:400;}
-.section-title em{font-style:italic;color:var(--gold2);}
-
-/* PROMPT CARDS */
-.prompt-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:12px;overflow:hidden;}
-.prompt-top{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px;}
-.prompt-name{font-size:15px;font-weight:700;color:var(--text);}
-.prompt-desc{font-size:12px;color:var(--text2);margin-top:2px;font-weight:400;}
-.badge{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:3px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}
-.b-mc{background:rgba(143,106,191,.15);color:var(--purple);border:1px solid rgba(143,106,191,.3);}
-.b-open{background:rgba(79,135,201,.15);color:var(--blue);border:1px solid rgba(79,135,201,.3);}
-.b-oral{background:rgba(200,168,75,.12);color:var(--gold);border:1px solid rgba(200,168,75,.25);}
-.b-seconda{background:rgba(74,158,110,.12);color:var(--green);border:1px solid rgba(74,158,110,.3);}
-.b-valuta{background:rgba(201,79,79,.12);color:var(--red);border:1px solid rgba(201,79,79,.3);}
-.b-studio{background:rgba(143,106,191,.12);color:var(--purple);border:1px solid rgba(143,106,191,.3);}
-.b-vf{background:rgba(201,79,79,.12);color:var(--red);border:1px solid rgba(201,79,79,.3);}
-.b-fill{background:rgba(79,135,201,.12);color:var(--blue);border:1px solid rgba(79,135,201,.3);}
-.b-match{background:rgba(74,158,110,.12);color:var(--green);border:1px solid rgba(74,158,110,.3);}
-.b-prima{background:rgba(200,168,75,.12);color:var(--gold);border:1px solid rgba(200,168,75,.3);}
-
-.prompt-box{position:relative;margin:0 18px 14px;}
-.prompt-text{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:14px 50px 14px 14px;font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.8;color:var(--text2);white-space:pre-wrap;word-break:break-word;max-height:180px;overflow-y:auto;}
-.prompt-text.expanded{max-height:none;}
-.copy-btn{position:absolute;top:10px;right:10px;background:var(--surface);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--text2);cursor:pointer;transition:all .15s;}
-.copy-btn:hover{background:var(--gold);border-color:var(--gold);color:#080808;}
-.copy-btn.copied{background:var(--green);border-color:var(--green);color:#080808;}
-.expand-btn{background:none;border:none;font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--text3);cursor:pointer;padding:0 18px 12px;display:block;transition:color .15s;}
-.expand-btn:hover{color:var(--text2);}
-
-/* TIPS BOX */
-.tip-box{background:rgba(200,168,75,0.06);border:1px solid rgba(200,168,75,0.2);border-radius:12px;padding:16px 20px;margin-bottom:28px;font-size:13px;color:var(--text2);line-height:1.7;}
-.tip-box strong{color:var(--gold2);}
-.tip-box ul{padding-left:16px;margin-top:6px;}
-.tip-box li{margin-bottom:4px;}
-
-hr.div{border:none;border-top:1px solid var(--border);margin:32px 0;}
-
-@media(max-width:600px){
-  nav{padding:12px 16px;}
-  .wrap{padding:72px 14px 60px;}
-  .hero{padding:24px 0 36px;}
-  .hero h1{font-size:1.8rem;}
-  .hero p{font-size:14px;}
-  .ai-links{gap:6px;}
-  .ai-link{font-size:11px;padding:5px 10px;}
-  .customizer{padding:14px;}
-  .cust-row{grid-template-columns:1fr;}
-  .section-title{font-size:1.4rem;}
-  .prompt-card{border-radius:10px;}
-  .prompt-top{flex-direction:column;align-items:flex-start;gap:8px;padding:12px 14px 8px;}
-  .prompt-name{font-size:14px;}
-  .prompt-box{margin:0 14px 10px;}
-  .prompt-text{font-size:11px;padding:12px 42px 12px 12px;max-height:140px;}
-  .copy-btn{top:8px;right:8px;font-size:10px;padding:4px 8px;}
-  .expand-btn{padding:0 14px 10px;}
-  .tip-box{font-size:12px;padding:12px 14px;}
-  .filter-row{gap:6px;}
-  .filter-btn{font-size:11px;padding:5px 10px;}
+/* ---- inner page hero (mirrors index masthead, slightly smaller) ---- */
+.page-hero{ padding:118px 0 20px; }
+.pg-masthead{ border-bottom:3px double var(--rule-2); padding-bottom:18px; margin-bottom:30px; }
+.pg-masthead-meta{
+  display:flex; align-items:center; justify-content:space-between;
+  font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.16em;
+  text-transform:uppercase; color:var(--ink-3); margin-bottom:14px;
 }
+.pg-masthead-meta .mc{ color:var(--seal); }
+.pg-title{
+  font-family:'Newsreader',serif; font-weight:400; line-height:1.02;
+  font-size:clamp(2.4rem,8vw,5.5rem); letter-spacing:-0.02em;
+  font-variation-settings:'opsz' 60; color:var(--ink);
+}
+.pg-title em{ font-style:italic; color:var(--seal); }
+.pg-subtitle{
+  font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.28em;
+  text-transform:uppercase; color:var(--ink-2); margin-top:8px;
+}
+.pg-deck{ font-size:18px; line-height:1.7; color:var(--ink-2); margin-top:22px; max-width:54ch; }
 
-/* ===== Ad Maiora — light-theme contrast & editorial overrides ===== */
-nav{background:rgba(244,239,227,0.9);border-bottom:1px solid var(--border2);}
-nav .logo em{color:#9D2B23;}
-nav .logo{white-space:nowrap;}
-.customizer,.prompt-card{border-radius:5px;}
-input[type=text],select,.prompt-text,.copy-btn,.tip-box,.hero-badge,.ai-link{border-radius:3px;}
-.ai-link{border-radius:999px;}
-.copy-btn:hover{background:var(--text);border-color:var(--text);color:#FBF8F0;}
-.copy-btn.copied{background:var(--green);border-color:var(--green);color:#FBF8F0;}
-.hero h1 em,.section-title em{color:var(--gold2);}
-.hero-badge{color:var(--seal,#9D2B23);border-color:rgba(157,43,35,0.3);}
-.section-label{color:var(--seal,#9D2B23);}
+/* ---- AI provider pill links ---- */
+.ai-links{ display:flex; flex-wrap:wrap; gap:8px; margin-top:22px; }
+.ai-link{
+  display:inline-flex; align-items:center; gap:6px;
+  font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em;
+  padding:7px 16px; border:1px solid var(--rule-2); color:var(--ink-2);
+  text-decoration:none; border-radius:999px; transition:all .15s;
+}
+.ai-link:hover{ border-color:var(--ink); color:var(--ink); }
+
+/* ---- customizer ---- */
+.customizer{
+  background:var(--paper-2); border:1px solid var(--rule-2);
+  border-radius:3px; padding:22px 26px; margin-bottom:28px;
+}
+.customizer-title{
+  font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--ink-3); margin-bottom:14px;
+}
+.cust-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+label.lbl{
+  font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink-3); margin-bottom:6px; display:block;
+}
+input[type=text], select{
+  width:100%; background:var(--paper-3); border:1px solid var(--rule-2);
+  color:var(--ink); font-family:'Newsreader',serif; font-size:16px;
+  padding:9px 12px; outline:none; transition:border-color .2s;
+  appearance:none; border-radius:2px;
+}
+input:focus, select:focus{ border-color:var(--navy); }
+input::placeholder{ color:var(--ink-3); }
+
+/* ---- tip box ---- */
+.tip-box{
+  border-left:3px solid var(--navy); padding:16px 20px;
+  background:rgba(30,62,110,0.05); border-radius:0 3px 3px 0;
+  font-size:15px; color:var(--ink-2); line-height:1.7; margin-bottom:36px;
+}
+.tip-box strong{ color:var(--navy); }
+.tip-box ul{ padding-left:18px; margin-top:8px; }
+.tip-box li{ margin-bottom:4px; }
+
+/* ---- prompt sections (tighter than landing am-section) ---- */
+.pm-section{ padding:36px 0 8px; }
+.pm-section .am-section-head{ margin-bottom:20px; }
+.pm-section .am-section-head h2{ font-size:clamp(1.7rem,3vw,2.4rem); margin-top:10px; }
+
+/* ---- prompt cards ---- */
+.prompt-card{
+  background:var(--paper-2); border:1px solid var(--rule-2);
+  border-radius:3px; margin-bottom:12px; overflow:hidden;
+  transition:background .15s;
+}
+.prompt-card:hover{ background:var(--paper); }
+.prompt-top{
+  display:flex; align-items:flex-start; justify-content:space-between;
+  gap:14px; padding:16px 20px 10px;
+}
+.prompt-name{ font-family:'Newsreader',serif; font-size:18px; font-weight:500; color:var(--ink); }
+.prompt-desc{ font-size:13px; color:var(--ink-2); margin-top:3px; }
+.badge{
+  font-family:'IBM Plex Mono',monospace; font-size:10px;
+  padding:4px 10px; border-radius:999px; text-transform:uppercase;
+  letter-spacing:.08em; white-space:nowrap; flex-shrink:0;
+}
+.b-mc    { background:rgba(107,79,160,.12); color:var(--purple); border:1px solid rgba(107,79,160,.3); }
+.b-open  { background:rgba(30,62,110,.10);  color:var(--navy);   border:1px solid rgba(30,62,110,.25); }
+.b-oral  { background:var(--seal-soft);     color:var(--seal);   border:1px solid rgba(157,43,35,.3); }
+.b-seconda{ background:rgba(60,122,83,.12); color:var(--green);  border:1px solid rgba(60,122,83,.3); }
+.b-valuta { background:var(--seal-soft);    color:var(--seal);   border:1px solid rgba(157,43,35,.3); }
+.b-studio { background:rgba(107,79,160,.12);color:var(--purple); border:1px solid rgba(107,79,160,.3); }
+.b-vf     { background:var(--seal-soft);    color:var(--seal);   border:1px solid rgba(157,43,35,.3); }
+.b-fill   { background:rgba(30,62,110,.10); color:var(--navy);   border:1px solid rgba(30,62,110,.25); }
+.b-match  { background:rgba(60,122,83,.12); color:var(--green);  border:1px solid rgba(60,122,83,.3); }
+.b-prima  { background:var(--seal-soft);    color:var(--seal);   border:1px solid rgba(157,43,35,.3); }
+
+.prompt-box{ position:relative; margin:0 20px 14px; }
+.prompt-text{
+  background:var(--paper-3); border:1px solid var(--rule-2); border-radius:2px;
+  padding:14px 56px 14px 16px;
+  font-family:'IBM Plex Mono',monospace; font-size:12px; line-height:1.8;
+  color:var(--ink-2); white-space:pre-wrap; word-break:break-word;
+  max-height:160px; overflow-y:auto;
+}
+.prompt-text.expanded{ max-height:none; }
+.copy-btn{
+  position:absolute; top:10px; right:10px;
+  background:var(--paper-2); border:1px solid var(--rule-2); border-radius:2px;
+  padding:5px 11px; font-size:11px; font-family:'IBM Plex Mono',monospace;
+  color:var(--ink-2); cursor:pointer; transition:all .15s;
+}
+.copy-btn:hover{ background:var(--ink); border-color:var(--ink); color:var(--paper); }
+.copy-btn.copied{ background:var(--green); border-color:var(--green); color:#fff; }
+.expand-btn{
+  background:none; border:none; font-family:'IBM Plex Mono',monospace;
+  font-size:11px; color:var(--ink-3); cursor:pointer;
+  padding:0 20px 12px; display:block; transition:color .15s;
+}
+.expand-btn:hover{ color:var(--ink-2); }
+
+/* ---- footer links ---- */
+.foot-links{ display:flex; gap:22px; }
+.foot-links a{
+  font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.1em;
+  text-transform:uppercase; color:var(--ink-2); text-decoration:none;
+}
+.foot-links a:hover{ color:var(--seal); }
+
+/* ---- responsive ---- */
+@media(max-width:760px){
+  .cust-row{ grid-template-columns:1fr; }
+  .prompt-top{ flex-direction:column; gap:8px; }
+}
+@media(max-width:560px){
+  .page-hero{ padding:96px 0 16px; }
+  .prompt-text{ font-size:11px; max-height:130px; }
+  .prompt-box{ margin:0 14px 10px; }
+}
 </style>
 </head>
-<body>
-<nav>
-  <a href="index.html" class="logo">Matura<em>AI</em></a>
-  <a href="index.html" class="nav-back">← Home</a>
+<body class="am-paper">
+
+<!-- ============ NAV (identical to index) ============ -->
+<nav class="am-nav">
+  <a href="index.html" class="am-wordmark">Matura<em>AI</em></a>
+  <ul class="am-navlinks">
+    <li><a href="index.html#indirizzi">Indirizzi</a></li>
+    <li><a href="index.html#funzioni">Funzionalità</a></li>
+    <li><a href="index.html#modalita">Modalità</a></li>
+    <li><a href="prompts.html">Prompt</a></li>
+    <li><a href="exam.html" class="am-nav-cta">Entra in aula →</a></li>
+  </ul>
 </nav>
 
-<div class="wrap">
+<div class="am-shell">
+<div class="am-wrap">
 
-  <div class="hero">
-    <div class="hero-badge">Prompt Library</div>
-    <h1>Usali su <em>ChatGPT, Claude,<br>Gemini</em> e tutti gli altri</h1>
-    <p>Prompt pronti per simulare l'esame di maturità su qualsiasi AI. Personalizza la materia e copia il prompt.</p>
-    <div class="ai-links">
-      <a class="ai-link" href="https://chat.openai.com" target="_blank">🟢 ChatGPT</a>
-      <a class="ai-link" href="https://claude.ai" target="_blank">🟡 Claude</a>
-      <a class="ai-link" href="https://gemini.google.com" target="_blank">🔵 Gemini</a>
-      <a class="ai-link" href="https://copilot.microsoft.com" target="_blank">🟣 Copilot</a>
-      <a class="ai-link" href="https://mistral.ai/chat" target="_blank">⚡ Le Chat</a>
+<!-- ============ PAGE HERO ============ -->
+<header class="page-hero">
+  <div class="pg-masthead">
+    <div class="pg-masthead-meta">
+      <span>Edizione · Studente</span>
+      <span class="mc">Prompt Library</span>
+      <span>Sessione MMXXVI</span>
+    </div>
+    <div class="pg-title">Usali su <em>ChatGPT,<br>Claude</em> e tutti gli altri</div>
+    <div class="pg-subtitle">Prompt pronti per la maturità</div>
+  </div>
+  <p class="pg-deck">Prompt pronti per simulare l'esame su qualsiasi AI. Personalizza la materia e copia il prompt direttamente in ChatGPT, Claude, Gemini o qualsiasi altra AI.</p>
+  <div class="ai-links">
+    <a class="ai-link" href="https://chat.openai.com" target="_blank">🟢 ChatGPT</a>
+    <a class="ai-link" href="https://claude.ai" target="_blank">🟡 Claude</a>
+    <a class="ai-link" href="https://gemini.google.com" target="_blank">🔵 Gemini</a>
+    <a class="ai-link" href="https://copilot.microsoft.com" target="_blank">🟣 Copilot</a>
+    <a class="ai-link" href="https://mistral.ai/chat" target="_blank">⚡ Le Chat</a>
+  </div>
+</header>
+
+<hr class="am-rule" style="margin:32px 0;">
+
+<!-- ============ CUSTOMIZER ============ -->
+<div class="customizer">
+  <div class="customizer-title">⚙ Personalizza i prompt con la tua materia e indirizzo</div>
+  <div class="cust-row">
+    <div>
+      <label class="lbl">Materia</label>
+      <input type="text" id="c-subj" placeholder="es. Informatica, Latino, Fisica..." value="Informatica" oninput="updateAll()">
+    </div>
+    <div>
+      <label class="lbl">Indirizzo scolastico</label>
+      <select id="c-ind" onchange="updateAll()">
+        <option value="Istituto Tecnico Informatica">Tecnico IT</option>
+        <option value="Liceo Scientifico">Liceo Scientifico</option>
+        <option value="Liceo Classico">Liceo Classico</option>
+        <option value="Liceo Linguistico">Liceo Linguistico</option>
+        <option value="Istituto Tecnico Economico">Tecnico Economico</option>
+        <option value="Liceo delle Scienze Umane">Scienze Umane</option>
+        <option value="Liceo Artistico">Liceo Artistico</option>
+        <option value="">Generico</option>
+      </select>
+    </div>
+    <div>
+      <label class="lbl">Difficoltà</label>
+      <select id="c-diff" onchange="updateAll()">
+        <option value="semplice, adatta al ripasso">Base</option>
+        <option value="di media difficoltà, tipica dell'esame reale" selected>Media</option>
+        <option value="difficile, da commissione severa">Avanzata</option>
+      </select>
     </div>
   </div>
+</div>
 
-  <!-- CUSTOMIZER -->
-  <div class="customizer">
-    <div class="customizer-title">⚙ Personalizza i prompt con la tua materia e indirizzo</div>
-    <div class="cust-row">
-      <div>
-        <label class="lbl">Materia</label>
-        <input type="text" id="c-subj" placeholder="es. Informatica, Latino, Fisica..." value="Informatica" oninput="updateAll()">
-      </div>
-      <div>
-        <label class="lbl">Indirizzo scolastico</label>
-        <select id="c-ind" onchange="updateAll()">
-          <option value="Istituto Tecnico Informatica">Tecnico IT</option>
-          <option value="Liceo Scientifico">Liceo Scientifico</option>
-          <option value="Liceo Classico">Liceo Classico</option>
-          <option value="Liceo Linguistico">Liceo Linguistico</option>
-          <option value="Istituto Tecnico Economico">Tecnico Economico</option>
-          <option value="Liceo delle Scienze Umane">Scienze Umane</option>
-          <option value="Liceo Artistico">Liceo Artistico</option>
-          <option value="">Generico</option>
-        </select>
-      </div>
-      <div>
-        <label class="lbl">Difficoltà</label>
-        <select id="c-diff" onchange="updateAll()">
-          <option value="semplice, adatta al ripasso">Base</option>
-          <option value="di media difficoltà, tipica dell'esame reale" selected>Media</option>
-          <option value="difficile, da commissione severa">Avanzata</option>
-        </select>
-      </div>
-    </div>
-  </div>
+<!-- TIP -->
+<div class="tip-box">
+  <strong>💡 Come usare questi prompt:</strong>
+  <ul>
+    <li>Copia il prompt con il pulsante <strong>Copia</strong></li>
+    <li>Aprilo in ChatGPT, Claude, Gemini o qualsiasi altra AI</li>
+    <li>Incollalo e premi invio — l'AI inizierà a simulare l'esame</li>
+    <li>Rispondi all'AI come se fossi davanti alla commissione</li>
+  </ul>
+</div>
 
-  <!-- TIP -->
-  <div class="tip-box">
-    <strong>💡 Come usare questi prompt:</strong>
-    <ul>
-      <li>Copia il prompt con il pulsante <strong>Copia</strong></li>
-      <li>Aprilo in ChatGPT, Claude, Gemini o qualsiasi altra AI</li>
-      <li>Incollalo e premi invio — l'AI inizierà a simulare l'esame</li>
-      <li>Rispondi all'AI come se fossi davanti alla commissione</li>
-    </ul>
-  </div>
-
-  <!-- SECTION: SCELTA MULTIPLA -->
-  <div class="section-head">
-    <div class="section-label">Modalità 1</div>
-    <h2 class="section-title">Domande a <em>scelta multipla</em></h2>
+<!-- ============ MODALITÀ 1 — SCELTA MULTIPLA ============ -->
+<section class="pm-section">
+  <div class="am-section-head">
+    <span class="am-eyebrow">Modalità 1</span>
+    <h2>Domande a <em>scelta multipla</em></h2>
   </div>
 
   <div class="prompt-card">
@@ -215,13 +272,15 @@ input[type=text],select,.prompt-text,.copy-btn,.tip-box,.hero-badge,.ai-link{bor
     </div>
     <button class="expand-btn" onclick="toggleExpand('p-mc2', this)">▼ Mostra tutto</button>
   </div>
+</section>
 
-  <hr class="div">
+<hr class="am-rule">
 
-  <!-- SECTION: RISPOSTA APERTA -->
-  <div class="section-head">
-    <div class="section-label">Modalità 2</div>
-    <h2 class="section-title">Domanda <em>aperta</em> con valutazione</h2>
+<!-- ============ MODALITÀ 2 — RISPOSTA APERTA ============ -->
+<section class="pm-section">
+  <div class="am-section-head">
+    <span class="am-eyebrow">Modalità 2</span>
+    <h2>Domanda <em>aperta</em> con valutazione</h2>
   </div>
 
   <div class="prompt-card">
@@ -253,13 +312,15 @@ input[type=text],select,.prompt-text,.copy-btn,.tip-box,.hero-badge,.ai-link{bor
     </div>
     <button class="expand-btn" onclick="toggleExpand('p-open2', this)">▼ Mostra tutto</button>
   </div>
+</section>
 
-  <hr class="div">
+<hr class="am-rule">
 
-  <!-- SECTION: ORALE -->
-  <div class="section-head">
-    <div class="section-label">Modalità 3</div>
-    <h2 class="section-title">Simulazione <em>orale</em></h2>
+<!-- ============ MODALITÀ 3 — ORALE ============ -->
+<section class="pm-section">
+  <div class="am-section-head">
+    <span class="am-eyebrow">Modalità 3</span>
+    <h2>Simulazione <em>orale</em></h2>
   </div>
 
   <div class="prompt-card">
@@ -291,13 +352,15 @@ input[type=text],select,.prompt-text,.copy-btn,.tip-box,.hero-badge,.ai-link{bor
     </div>
     <button class="expand-btn" onclick="toggleExpand('p-oral2', this)">▼ Mostra tutto</button>
   </div>
+</section>
 
-  <hr class="div">
+<hr class="am-rule">
 
-  <!-- SECTION: SECONDA PROVA -->
-  <div class="section-head">
-    <div class="section-label">Modalità 4</div>
-    <h2 class="section-title">Seconda prova <em>scritta</em></h2>
+<!-- ============ MODALITÀ 4 — SECONDA PROVA ============ -->
+<section class="pm-section">
+  <div class="am-section-head">
+    <span class="am-eyebrow">Modalità 4</span>
+    <h2>Seconda prova <em>scritta</em></h2>
   </div>
 
   <div class="prompt-card">
@@ -329,13 +392,15 @@ input[type=text],select,.prompt-text,.copy-btn,.tip-box,.hero-badge,.ai-link{bor
     </div>
     <button class="expand-btn" onclick="toggleExpand('p-sec2', this)">▼ Mostra tutto</button>
   </div>
+</section>
 
-  <hr class="div">
+<hr class="am-rule">
 
-  <!-- SECTION: PRIMA PROVA -->
-  <div class="section-head">
-    <div class="section-label">Modalità 5</div>
-    <h2 class="section-title">Prima prova <em>italiana</em></h2>
+<!-- ============ MODALITÀ 5 — PRIMA PROVA ============ -->
+<section class="pm-section">
+  <div class="am-section-head">
+    <span class="am-eyebrow">Modalità 5</span>
+    <h2>Prima prova <em>italiana</em></h2>
   </div>
 
   <div class="prompt-card">
@@ -382,13 +447,15 @@ input[type=text],select,.prompt-text,.copy-btn,.tip-box,.hero-badge,.ai-link{bor
     </div>
     <button class="expand-btn" onclick="toggleExpand('p-prima-c', this)">▼ Mostra tutto</button>
   </div>
+</section>
 
-  <hr class="div">
+<hr class="am-rule">
 
-  <!-- SECTION: QUIZ SEMPLICI -->
-  <div class="section-head">
-    <div class="section-label">Modalità 6</div>
-    <h2 class="section-title">Quiz <em>rapidi</em></h2>
+<!-- ============ MODALITÀ 6 — QUIZ RAPIDI ============ -->
+<section class="pm-section">
+  <div class="am-section-head">
+    <span class="am-eyebrow">Modalità 6</span>
+    <h2>Quiz <em>rapidi</em></h2>
   </div>
 
   <div class="prompt-card">
@@ -435,13 +502,15 @@ input[type=text],select,.prompt-text,.copy-btn,.tip-box,.hero-badge,.ai-link{bor
     </div>
     <button class="expand-btn" onclick="toggleExpand('p-match', this)">▼ Mostra tutto</button>
   </div>
+</section>
 
-  <hr class="div">
+<hr class="am-rule">
 
-  <!-- SECTION: STUDIO -->
-  <div class="section-head">
-    <div class="section-label">Extra</div>
-    <h2 class="section-title">Prompt per <em>studiare</em></h2>
+<!-- ============ EXTRA — STUDIO ============ -->
+<section class="pm-section">
+  <div class="am-section-head">
+    <span class="am-eyebrow">Extra</span>
+    <h2>Prompt per <em>studiare</em></h2>
   </div>
 
   <div class="prompt-card">
@@ -488,8 +557,28 @@ input[type=text],select,.prompt-text,.copy-btn,.tip-box,.hero-badge,.ai-link{bor
     </div>
     <button class="expand-btn" onclick="toggleExpand('p-study3', this)">▼ Mostra tutto</button>
   </div>
+</section>
 
-</div>
+</div><!-- /am-wrap -->
+
+<!-- ============ FOOTER (identical to index) ============ -->
+<footer class="am-foot">
+  <div class="am-wrap">
+    <div>
+      <a href="index.html" class="am-wordmark" style="font-size:20px;">Matura<em>AI</em></a>
+      <small style="display:block;margin-top:10px;">Pensato per gli studenti italiani.<br>L'AI gira nel tuo browser — privacy per costruzione.</small>
+    </div>
+    <div class="foot-links">
+      <a href="index.html#indirizzi">Indirizzi</a>
+      <a href="index.html#modalita">Modalità</a>
+      <a href="prompts.html">Prompt</a>
+      <a href="exam.html">Aula</a>
+    </div>
+    <small>Sessione MMXXVI · v2<br>MaturaAI</small>
+  </div>
+</footer>
+
+</div><!-- /am-shell -->
 
 <script>
 function getVars() {
@@ -503,223 +592,39 @@ function getVars() {
 function buildPrompts() {
   var v = getVars();
   return {
-    'p-mc1': `Sei un commissario d'esame di maturità italiana${v.indStr}.
-Generami UNA domanda a risposta multipla ${v.diff} sulla materia: ${v.subj}.
+    'p-mc1': `Sei un commissario d'esame di maturità italiana${v.indStr}.\nGenerami UNA domanda a risposta multipla ${v.diff} sulla materia: ${v.subj}.\n\nLa domanda deve avere esattamente 4 opzioni (A, B, C, D).\nDopo che rispondo, dimmi se ho sbagliato o indovinato e spiega perché la risposta corretta è quella giusta.\n\nInizia subito con la domanda, senza preamboli.`,
 
-La domanda deve avere esattamente 4 opzioni (A, B, C, D).
-Dopo che rispondo, dimmi se ho sbagliato o indovinato e spiega perché la risposta corretta è quella giusta.
+    'p-mc2': `Sei un commissario d'esame di maturità italiana${v.indStr}. Voglio fare un quiz di preparazione su: ${v.subj}.\n\nEcco le regole:\n- Fai una domanda a risposta multipla (A, B, C, D) alla volta\n- Aspetta la mia risposta\n- Dimmi se è corretta o sbagliata, spiega brevemente il perché\n- Aggiorna il punteggio (es. "Punteggio: 3/5")\n- Fai subito la domanda successiva\n- Quando dico "basta" o "stop", dammi il riepilogo finale\n\nDifficoltà: ${v.diff}\nInizia con la prima domanda.`,
 
-Inizia subito con la domanda, senza preamboli.`,
+    'p-open1': `Sei un commissario d'esame di maturità italiana${v.indStr}.\nFammi una domanda aperta ${v.diff} sulla materia: ${v.subj}.\n\nDopo che rispondo, valutami con un voto da 1 a 10 e dammi un feedback dettagliato su:\n- Punti forti della mia risposta\n- Punti deboli o mancanti\n- Cosa avrebbe voluto sentire la commissione\n\nInizia con la domanda.`,
 
-    'p-mc2': `Sei un commissario d'esame di maturità italiana${v.indStr}. Voglio fare un quiz di preparazione su: ${v.subj}.
+    'p-open2': `Sei un commissario d'esame di maturità italiana${v.indStr}, materia: ${v.subj}.\n\nValuta questa risposta con voto da 1 a 10 seguendo i criteri dell'esame di maturità.\n\n[INCOLLA QUI LA DOMANDA]\n\nLa mia risposta:\n[INCOLLA QUI LA TUA RISPOSTA]\n\nDammi: voto, commento generale, punti forti, punti deboli, e cosa avrei dovuto aggiungere.`,
 
-Ecco le regole:
-- Fai una domanda a risposta multipla (A, B, C, D) alla volta
-- Aspetta la mia risposta
-- Dimmi se è corretta o sbagliata, spiega brevemente il perché
-- Aggiorna il punteggio (es. "Punteggio: 3/5")
-- Fai subito la domanda successiva
-- Quando dico "basta" o "stop", dammi il riepilogo finale
+    'p-oral1': `Sei un commissario d'esame di maturità italiana (colloquio orale)${v.indStr}.\nDevi interrogarmi sulla materia: ${v.subj}.\n\nSimula un vero colloquio orale:\n- Fai una domanda alla volta e aspetta la mia risposta\n- Poni domande di approfondimento e, quando pertinente, chiedi collegamenti con altre discipline (come nel colloquio interdisciplinare reale)\n- Alla fine (quando dico "fine" o "basta") dammi un voto orientativo in ventesimi (/20) con commento su contenuto, esposizione e capacità di collegamento\n\nDifficoltà: ${v.diff}\nInizia con la prima domanda come farebbe un vero commissario.`,
 
-Difficoltà: ${v.diff}
-Inizia con la prima domanda.`,
+    'p-oral2': `Sei un commissario d'esame di maturità italiana (colloquio orale)${v.indStr}.\nVoglio esercitarmi sull'argomento specifico: [SCRIVI QUI L'ARGOMENTO]\nMateria: ${v.subj}\n\nFai domande approfondite su questo argomento e collega con altri argomenti della materia (e con altre discipline quando è naturale farlo). Aspetta sempre la mia risposta prima della domanda successiva.\n\nAlla fine valutami con un voto orientativo in ventesimi (/20) e feedback su chiarezza, correttezza, completezza e collegamenti.`,
 
-    'p-open1': `Sei un commissario d'esame di maturità italiana${v.indStr}.
-Fammi una domanda aperta ${v.diff} sulla materia: ${v.subj}.
+    'p-sec1': `Sei un membro della commissione ministeriale che predispone la seconda prova scritta dell'Esame di Stato italiano.\nIndirizzo: ${v.ind || 'Istituto Tecnico'} — Disciplina: ${v.subj} — Difficoltà richiesta: ${v.diff}.\n\nGenera una traccia di seconda prova COMPLETA che rispetti ESATTAMENTE il formato ministeriale reale, in questo ordine e senza inventare sezioni inesistenti:\n\nINTESTAZIONE (come nei documenti del Ministero)\nMinistero dell'istruzione e del merito\nESAME DI STATO CONCLUSIVO DEL SECONDO CICLO DI ISTRUZIONE\nIndirizzo: ${v.ind || '[indirizzo]'}\nDisciplina: ${v.subj}\n\nCONSEGNA (riga fissa, riportala identica)\n"Il candidato svolga la prima parte della prova e risponda a due tra i quesiti proposti nella seconda parte."\n\nPRIMA PARTE (da svolgere per intero)\n- Presenta uno scenario reale e articolato (azienda, scuola, ente pubblico, struttura sanitaria, startup…) come UN UNICO testo discorsivo, con dati tecnici concreti: numero di utenti/postazioni, sedi, vincoli, requisiti, tecnologie o velocità coinvolte. NON usare etichette tipo "Premessa", "Caso professionale" o "Allegati": non esistono nelle tracce reali.\n- Chiudi con la frase: "Il candidato analizzi la realtà di riferimento e, formulate le opportune ipotesi aggiuntive, contribuisca alla stesura del progetto svolgendo i seguenti punti:" seguita da 4 punti numerati, ciascuno con richieste tecniche precise e legate allo scenario.\n\nSECONDA PARTE\nProponi 4 quesiti numerati (il candidato ne sceglierà 2). Almeno due quesiti devono iniziare con "In relazione al tema proposto nella prima parte, …" e approfondire aspetti tecnici della disciplina.\n\nPIÈ DI PAGINA (riportalo identico)\n____________________\nDurata massima della prova: da 6 a 8 ore.\nÈ consentito l'uso di manuali tecnici e di calcolatrici non programmabili.\nÈ consentito l'uso del dizionario bilingue (italiano-lingua del paese di provenienza) per i candidati di madrelingua non italiana.\nNon è consentito lasciare l'Istituto prima che siano trascorse 3 ore dalla consegna della traccia.\n\nScrivi tutto in italiano con terminologia tecnica corretta. Inizia direttamente dall'intestazione, senza tue premesse o commenti.`,
 
-Dopo che rispondo, valutami con un voto da 1 a 10 e dammi un feedback dettagliato su:
-- Punti forti della mia risposta
-- Punti deboli o mancanti
-- Cosa avrebbe voluto sentire la commissione
+    'p-sec2': `Sei un commissario d'esame che valuta la seconda prova scritta dell'Esame di Stato italiano. Disciplina: ${v.subj}${v.indStr}.\n\nValuta il mio svolgimento usando la griglia ministeriale reale (punteggio in ventesimi).\n\nTRACCIA (prima parte + i 2 quesiti che ho scelto):\n[INCOLLA QUI LA TRACCIA]\n\nMIO SVOLGIMENTO:\n[INCOLLA QUI IL TUO SVOLGIMENTO]\n\nAssegna un punteggio a ciascuno dei 4 indicatori ufficiali, con 1-2 righe di motivazione:\n1. Padronanza delle conoscenze disciplinari relative ai nuclei fondanti della disciplina (max 5)\n2. Padronanza delle competenze tecnico-professionali di indirizzo — analisi, progettazione, sviluppo (max 6)\n3. Completezza nello svolgimento della traccia, coerenza e correttezza dei risultati e degli elaborati prodotti (max 5)\n4. Capacità di argomentare, collegare e sintetizzare in modo chiaro ed esauriente, con uso corretto del linguaggio tecnico (max 4)\n\nPoi fornisci: TOTALE __/20 (con equivalente in decimi), un commento generale e il suggerimento più importante per migliorare.\nControlla che io abbia svolto la prima parte per intero e risposto esattamente a 2 quesiti: se ho risposto a un numero diverso, segnalalo.`,
 
-Inizia con la domanda.`,
+    'p-study1': `Sei un professore esperto di ${v.subj}${v.indStr} che prepara gli studenti alla maturità.\n\nSpiegami questo argomento: [SCRIVI QUI L'ARGOMENTO]\n\nLa spiegazione deve:\n- Essere chiara e adatta a un esame di maturità\n- Includere esempi pratici e concreti\n- Evidenziare i concetti chiave da sapere per l'esame\n- Indicare possibili domande che potrebbe fare la commissione su questo argomento\n- Essere completa ma non eccessivamente lunga`,
 
-    'p-open2': `Sei un commissario d'esame di maturità italiana${v.indStr}, materia: ${v.subj}.
+    'p-study2': `Sei un professore esperto di ${v.subj}${v.indStr} che prepara gli studenti alla maturità.\n\nCrea uno schema riassuntivo completo per l'argomento: [SCRIVI QUI L'ARGOMENTO]\n\nLo schema deve includere:\n- Concetti principali con definizioni chiare\n- Punti chiave da ricordare per l'esame\n- Possibili collegamenti con altri argomenti della materia\n- 3-5 domande tipiche che potrebbe fare la commissione\n\nFormato: usa titoli, sottotitoli e punti elenco per renderlo facile da studiare.`,
 
-Valuta questa risposta con voto da 1 a 10 seguendo i criteri dell'esame di maturità.
+    'p-study3': `Sei un professore correttore di ${v.subj}${v.indStr} che valuta elaborati per la maturità.\n\nCorreggi e migliora questo mio testo/elaborato:\n\n[INCOLLA QUI IL TUO TESTO]\n\nDimmi:\n- Errori grammaticali o di forma\n- Errori di contenuto o imprecisioni\n- Struttura e organizzazione del testo\n- Come migliorare l'esposizione\n- Voto provvisorio (1-10) e commento finale`,
 
-[INCOLLA QUI LA DOMANDA]
+    'p-prima-a': `Sei un commissario ministeriale italiano per la prima prova scritta dell'Esame di Stato.\nGenera una traccia realistica di Tipologia A — Analisi e interpretazione di un testo letterario italiano.\n\nIncludi, nell'ordine:\n1. Un testo autentico (poesia o prosa) di un autore italiano dall'Unità d'Italia a oggi (es. Verga, Pascoli, D'Annunzio, Pirandello, Svevo, Ungaretti, Montale, Saba, Moravia, Calvino, Pavese, Levi…), con autore, opera e anno\n2. Un breve cappello introduttivo che contestualizzi autore e brano\n3. La sezione "Comprensione e analisi" — 4-6 domande numerate (contenuto, parafrasi/sintesi, aspetti metrici o sintattici, figure retoriche, stile, temi). Aggiungi la nota: «Puoi rispondere punto per punto o con un unico discorso.»\n4. La sezione "Interpretazione" — una richiesta di interpretazione complessiva con collegamenti al contesto storico-culturale o ad altri testi/autori\n\nVINCOLO DI FORMATO: usa esattamente e solo le due intestazioni "Comprensione e analisi" e "Interpretazione", in quest'ordine.\n\nDopo che scrivo il mio elaborato, valutami secondo la griglia ministeriale (indicatori generali + specifici) con punteggio in ventesimi (/20) e feedback su: padronanza linguistica, comprensione e analisi del testo, qualità dell'interpretazione, ricchezza dei riferimenti culturali.`,
 
-La mia risposta:
-[INCOLLA QUI LA TUA RISPOSTA]
+    'p-prima-b': `Sei un commissario ministeriale italiano per la prima prova scritta dell'Esame di Stato.\nGenera una traccia realistica di Tipologia B — Analisi e produzione di un testo argomentativo.\n\nScegli uno degli ambiti ministeriali (artistico, letterario, storico, filosofico, scientifico, tecnologico, economico, sociale) e fornisci, nell'ordine:\n1. Un testo di riferimento (estratto da articolo, saggio o discorso) con autore, titolo e fonte.\n2. La sezione intitolata "Comprensione e analisi" con 4 domande numerate sul testo: comprensione/sintesi del contenuto; tesi e argomenti dell'autore; struttura e connettivi del ragionamento; scelte lessicali e stilistiche. Aggiungi la nota: «Puoi rispondere punto per punto o con un unico discorso.»\n3. La sezione intitolata "Produzione" con UNA sola consegna: scrivere un testo argomentativo in cui esprimo e sostengo la mia posizione sul tema, con argomenti coerenti e riferimenti culturali.\n\nVINCOLO DI FORMATO: usa esattamente e solo le due intestazioni "Comprensione e analisi" e "Produzione". NON usare altri schemi (es. "Analisi del documento", "Sviluppo argomentativo", "Presa di posizione personale"): non corrispondono al formato ministeriale reale.\n\nDopo che scrivo il mio elaborato, valutami secondo la griglia ministeriale (indicatori generali + specifici) con punteggio in ventesimi (/20) e feedback su: padronanza linguistica, individuazione di tesi e argomenti del testo, coerenza del percorso argomentativo, congruenza dei riferimenti culturali.`,
 
-Dammi: voto, commento generale, punti forti, punti deboli, e cosa avrei dovuto aggiungere.`,
+    'p-prima-c': `Sei un commissario ministeriale italiano per la prima prova scritta dell'Esame di Stato.\nGenera una traccia realistica di Tipologia C — Riflessione critica di carattere espositivo-argomentativo su tematiche di attualità.\n\nFornisci, nell'ordine:\n1. Un breve testo o spunto (citazione, brano d'autore, dato o notizia) con la relativa fonte, su un tema attuale (tecnologia e società, ambiente, identità, lavoro, memoria storica, globalizzazione, ecc.)\n2. Una consegna unica che mi chieda di riflettere sul tema sviluppando una trattazione personale, ordinata e coerente\n3. L'invito a dare un titolo complessivo all'elaborato e, se voglio, ad articolarlo in paragrafi opportunamente titolati\n\nVINCOLO DI FORMATO: la Tipologia C ha un'UNICA consegna aperta, NON una lista di domande come nelle Tipologie A e B. Proponi quindi un solo invito alla riflessione, non quesiti separati.\n\nDopo che scrivo il mio elaborato, valutami secondo la griglia ministeriale (indicatori generali + specifici) con punteggio in ventesimi (/20) e feedback su: padronanza linguistica, pertinenza rispetto alla traccia, coerenza e ordine dell'esposizione, ricchezza dei riferimenti culturali.`,
 
-    'p-oral1': `Sei un commissario d'esame di maturità italiana (colloquio orale)${v.indStr}.
-Devi interrogarmi sulla materia: ${v.subj}.
+    'p-vf': `Sei un commissario d'esame di maturità italiana${v.indStr}.\nGenerami 5 affermazioni Vero/Falso ${v.diff} sulla materia: ${v.subj}.\n\nPresenta le 5 affermazioni numerate, SENZA rivelare la soluzione:\n1. [affermazione]\n2. [affermazione]\n3. [affermazione]\n4. [affermazione]\n5. [affermazione]\n\nDopo che rispondo (scrivo V o F per ciascuna), dimmi quante ne ho azzeccate e, per quelle sbagliate, indica la risposta corretta e spiega brevemente il perché.\n\nInizia subito con le 5 affermazioni.`,
 
-Simula un vero colloquio orale:
-- Fai una domanda alla volta e aspetta la mia risposta
-- Poni domande di approfondimento e, quando pertinente, chiedi collegamenti con altre discipline (come nel colloquio interdisciplinare reale)
-- Alla fine (quando dico "fine" o "basta") dammi un voto orientativo in ventesimi (/20) con commento su contenuto, esposizione e capacità di collegamento
+    'p-fill': `Sei un commissario d'esame di maturità italiana${v.indStr}.\nGenerami 4 frasi incomplete ${v.diff} sulla materia: ${v.subj}.\n\nOgni frase deve avere una sola parola o espressione mancante, indicata con ___ (senza rivelare la soluzione).\nEsempio di formato (adatta il contenuto alla materia): "Il protocollo ___ assegna automaticamente gli indirizzi IP agli host di una rete."\n\nDopo che scrivo le mie risposte, dimmi quali sono corrette, qual era la risposta giusta per quelle sbagliate e spiega brevemente il concetto.\n\nInizia subito con le 4 frasi.`,
 
-Difficoltà: ${v.diff}
-Inizia con la prima domanda come farebbe un vero commissario.`,
-
-    'p-oral2': `Sei un commissario d'esame di maturità italiana (colloquio orale)${v.indStr}.
-Voglio esercitarmi sull'argomento specifico: [SCRIVI QUI L'ARGOMENTO]
-Materia: ${v.subj}
-
-Fai domande approfondite su questo argomento e collega con altri argomenti della materia (e con altre discipline quando è naturale farlo). Aspetta sempre la mia risposta prima della domanda successiva.
-
-Alla fine valutami con un voto orientativo in ventesimi (/20) e feedback su chiarezza, correttezza, completezza e collegamenti.`,
-
-    'p-sec1': `Sei un membro della commissione ministeriale che predispone la seconda prova scritta dell'Esame di Stato italiano.
-Indirizzo: ${v.ind || 'Istituto Tecnico'} — Disciplina: ${v.subj} — Difficoltà richiesta: ${v.diff}.
-
-Genera una traccia di seconda prova COMPLETA che rispetti ESATTAMENTE il formato ministeriale reale, in questo ordine e senza inventare sezioni inesistenti:
-
-INTESTAZIONE (come nei documenti del Ministero)
-Ministero dell'istruzione e del merito
-ESAME DI STATO CONCLUSIVO DEL SECONDO CICLO DI ISTRUZIONE
-Indirizzo: ${v.ind || '[indirizzo]'}
-Disciplina: ${v.subj}
-
-CONSEGNA (riga fissa, riportala identica)
-"Il candidato svolga la prima parte della prova e risponda a due tra i quesiti proposti nella seconda parte."
-
-PRIMA PARTE (da svolgere per intero)
-- Presenta uno scenario reale e articolato (azienda, scuola, ente pubblico, struttura sanitaria, startup…) come UN UNICO testo discorsivo, con dati tecnici concreti: numero di utenti/postazioni, sedi, vincoli, requisiti, tecnologie o velocità coinvolte. NON usare etichette tipo "Premessa", "Caso professionale" o "Allegati": non esistono nelle tracce reali.
-- Chiudi con la frase: "Il candidato analizzi la realtà di riferimento e, formulate le opportune ipotesi aggiuntive, contribuisca alla stesura del progetto svolgendo i seguenti punti:" seguita da 4 punti numerati, ciascuno con richieste tecniche precise e legate allo scenario.
-
-SECONDA PARTE
-Proponi 4 quesiti numerati (il candidato ne sceglierà 2). Almeno due quesiti devono iniziare con "In relazione al tema proposto nella prima parte, …" e approfondire aspetti tecnici della disciplina.
-
-PIÈ DI PAGINA (riportalo identico)
-____________________
-Durata massima della prova: da 6 a 8 ore.
-È consentito l'uso di manuali tecnici e di calcolatrici non programmabili.
-È consentito l'uso del dizionario bilingue (italiano-lingua del paese di provenienza) per i candidati di madrelingua non italiana.
-Non è consentito lasciare l'Istituto prima che siano trascorse 3 ore dalla consegna della traccia.
-
-Scrivi tutto in italiano con terminologia tecnica corretta. Inizia direttamente dall'intestazione, senza tue premesse o commenti.`,
-
-    'p-sec2': `Sei un commissario d'esame che valuta la seconda prova scritta dell'Esame di Stato italiano. Disciplina: ${v.subj}${v.indStr}.
-
-Valuta il mio svolgimento usando la griglia ministeriale reale (punteggio in ventesimi).
-
-TRACCIA (prima parte + i 2 quesiti che ho scelto):
-[INCOLLA QUI LA TRACCIA]
-
-MIO SVOLGIMENTO:
-[INCOLLA QUI IL TUO SVOLGIMENTO]
-
-Assegna un punteggio a ciascuno dei 4 indicatori ufficiali, con 1-2 righe di motivazione:
-1. Padronanza delle conoscenze disciplinari relative ai nuclei fondanti della disciplina (max 5)
-2. Padronanza delle competenze tecnico-professionali di indirizzo — analisi, progettazione, sviluppo (max 6)
-3. Completezza nello svolgimento della traccia, coerenza e correttezza dei risultati e degli elaborati prodotti (max 5)
-4. Capacità di argomentare, collegare e sintetizzare in modo chiaro ed esauriente, con uso corretto del linguaggio tecnico (max 4)
-
-Poi fornisci: TOTALE __/20 (con equivalente in decimi), un commento generale e il suggerimento più importante per migliorare.
-Controlla che io abbia svolto la prima parte per intero e risposto esattamente a 2 quesiti: se ho risposto a un numero diverso, segnalalo.`,
-
-    'p-study1': `Sei un professore esperto di ${v.subj}${v.indStr} che prepara gli studenti alla maturità.
-
-Spiegami questo argomento: [SCRIVI QUI L'ARGOMENTO]
-
-La spiegazione deve:
-- Essere chiara e adatta a un esame di maturità
-- Includere esempi pratici e concreti
-- Evidenziare i concetti chiave da sapere per l'esame
-- Indicare possibili domande che potrebbe fare la commissione su questo argomento
-- Essere completa ma non eccessivamente lunga`,
-
-    'p-study2': `Sei un professore esperto di ${v.subj}${v.indStr} che prepara gli studenti alla maturità.
-
-Crea uno schema riassuntivo completo per l'argomento: [SCRIVI QUI L'ARGOMENTO]
-
-Lo schema deve includere:
-- Concetti principali con definizioni chiare
-- Punti chiave da ricordare per l'esame
-- Possibili collegamenti con altri argomenti della materia
-- 3-5 domande tipiche che potrebbe fare la commissione
-
-Formato: usa titoli, sottotitoli e punti elenco per renderlo facile da studiare.`,
-
-    'p-study3': `Sei un professore correttore di ${v.subj}${v.indStr} che valuta elaborati per la maturità.
-
-Correggi e migliora questo mio testo/elaborato:
-
-[INCOLLA QUI IL TUO TESTO]
-
-Dimmi:
-- Errori grammaticali o di forma
-- Errori di contenuto o imprecisioni
-- Struttura e organizzazione del testo
-- Come migliorare l'esposizione
-- Voto provvisorio (1-10) e commento finale`,
-
-    'p-prima-a': `Sei un commissario ministeriale italiano per la prima prova scritta dell'Esame di Stato.
-Genera una traccia realistica di Tipologia A — Analisi e interpretazione di un testo letterario italiano.
-
-Includi, nell'ordine:
-1. Un testo autentico (poesia o prosa) di un autore italiano dall'Unità d'Italia a oggi (es. Verga, Pascoli, D'Annunzio, Pirandello, Svevo, Ungaretti, Montale, Saba, Moravia, Calvino, Pavese, Levi…), con autore, opera e anno
-2. Un breve cappello introduttivo che contestualizzi autore e brano
-3. La sezione "Comprensione e analisi" — 4-6 domande numerate (contenuto, parafrasi/sintesi, aspetti metrici o sintattici, figure retoriche, stile, temi). Aggiungi la nota: «Puoi rispondere punto per punto o con un unico discorso.»
-4. La sezione "Interpretazione" — una richiesta di interpretazione complessiva con collegamenti al contesto storico-culturale o ad altri testi/autori
-
-VINCOLO DI FORMATO: usa esattamente e solo le due intestazioni "Comprensione e analisi" e "Interpretazione", in quest'ordine.
-
-Dopo che scrivo il mio elaborato, valutami secondo la griglia ministeriale (indicatori generali + specifici) con punteggio in ventesimi (/20) e feedback su: padronanza linguistica, comprensione e analisi del testo, qualità dell'interpretazione, ricchezza dei riferimenti culturali.`,
-
-    'p-prima-b': `Sei un commissario ministeriale italiano per la prima prova scritta dell'Esame di Stato.
-Genera una traccia realistica di Tipologia B — Analisi e produzione di un testo argomentativo.
-
-Scegli uno degli ambiti ministeriali (artistico, letterario, storico, filosofico, scientifico, tecnologico, economico, sociale) e fornisci, nell'ordine:
-1. Un testo di riferimento (estratto da articolo, saggio o discorso) con autore, titolo e fonte.
-2. La sezione intitolata "Comprensione e analisi" con 4 domande numerate sul testo: comprensione/sintesi del contenuto; tesi e argomenti dell'autore; struttura e connettivi del ragionamento; scelte lessicali e stilistiche. Aggiungi la nota: «Puoi rispondere punto per punto o con un unico discorso.»
-3. La sezione intitolata "Produzione" con UNA sola consegna: scrivere un testo argomentativo in cui esprimo e sostengo la mia posizione sul tema, con argomenti coerenti e riferimenti culturali.
-
-VINCOLO DI FORMATO: usa esattamente e solo le due intestazioni "Comprensione e analisi" e "Produzione". NON usare altri schemi (es. "Analisi del documento", "Sviluppo argomentativo", "Presa di posizione personale"): non corrispondono al formato ministeriale reale.
-
-Dopo che scrivo il mio elaborato, valutami secondo la griglia ministeriale (indicatori generali + specifici) con punteggio in ventesimi (/20) e feedback su: padronanza linguistica, individuazione di tesi e argomenti del testo, coerenza del percorso argomentativo, congruenza dei riferimenti culturali.`,
-
-    'p-prima-c': `Sei un commissario ministeriale italiano per la prima prova scritta dell'Esame di Stato.
-Genera una traccia realistica di Tipologia C — Riflessione critica di carattere espositivo-argomentativo su tematiche di attualità.
-
-Fornisci, nell'ordine:
-1. Un breve testo o spunto (citazione, brano d'autore, dato o notizia) con la relativa fonte, su un tema attuale (tecnologia e società, ambiente, identità, lavoro, memoria storica, globalizzazione, ecc.)
-2. Una consegna unica che mi chieda di riflettere sul tema sviluppando una trattazione personale, ordinata e coerente
-3. L'invito a dare un titolo complessivo all'elaborato e, se voglio, ad articolarlo in paragrafi opportunamente titolati
-
-VINCOLO DI FORMATO: la Tipologia C ha un'UNICA consegna aperta, NON una lista di domande come nelle Tipologie A e B. Proponi quindi un solo invito alla riflessione, non quesiti separati.
-
-Dopo che scrivo il mio elaborato, valutami secondo la griglia ministeriale (indicatori generali + specifici) con punteggio in ventesimi (/20) e feedback su: padronanza linguistica, pertinenza rispetto alla traccia, coerenza e ordine dell'esposizione, ricchezza dei riferimenti culturali.`,
-
-    'p-vf': `Sei un commissario d'esame di maturità italiana${v.indStr}.
-Generami 5 affermazioni Vero/Falso ${v.diff} sulla materia: ${v.subj}.
-
-Presenta le 5 affermazioni numerate, SENZA rivelare la soluzione:
-1. [affermazione]
-2. [affermazione]
-3. [affermazione]
-4. [affermazione]
-5. [affermazione]
-
-Dopo che rispondo (scrivo V o F per ciascuna), dimmi quante ne ho azzeccate e, per quelle sbagliate, indica la risposta corretta e spiega brevemente il perché.
-
-Inizia subito con le 5 affermazioni.`,
-
-    'p-fill': `Sei un commissario d'esame di maturità italiana${v.indStr}.
-Generami 4 frasi incomplete ${v.diff} sulla materia: ${v.subj}.
-
-Ogni frase deve avere una sola parola o espressione mancante, indicata con ___ (senza rivelare la soluzione).
-Esempio di formato (adatta il contenuto alla materia): "Il protocollo ___ assegna automaticamente gli indirizzi IP agli host di una rete."
-
-Dopo che scrivo le mie risposte, dimmi quali sono corrette, qual era la risposta giusta per quelle sbagliate e spiega brevemente il concetto.
-
-Inizia subito con le 4 frasi.`,
-
-    'p-match': `Sei un commissario d'esame di maturità italiana${v.indStr}.
-Generami 5 coppie termine-definizione ${v.diff} sulla materia: ${v.subj}.
-
-Presentale così:
-Termini: A) ... B) ... C) ... D) ... E) ...
-Definizioni (in ordine mescolato): 1) ... 2) ... 3) ... 4) ... 5) ...
-
-Dopo che scrivo i miei abbinamenti (es. A-3, B-1, ...) dimmi quanti sono corretti e spiega gli errori.
-
-Inizia subito.`
+    'p-match': `Sei un commissario d'esame di maturità italiana${v.indStr}.\nGenerami 5 coppie termine-definizione ${v.diff} sulla materia: ${v.subj}.\n\nPresentale così:\nTermini: A) ... B) ... C) ... D) ... E) ...\nDefinizioni (in ordine mescolato): 1) ... 2) ... 3) ... 4) ... 5) ...\n\nDopo che scrivo i miei abbinamenti (es. A-3, B-1, ...) dimmi quanti sono corretti e spiega gli errori.\n\nInizia subito.`
   };
 }
 
@@ -749,7 +654,6 @@ function toggleExpand(id, btn) {
   btn.textContent = expanded ? '▲ Comprimi' : '▼ Mostra tutto';
 }
 
-// Init
 updateAll();
 </script>
 </body>
