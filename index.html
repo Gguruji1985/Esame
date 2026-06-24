@@ -3,834 +3,456 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MaturaAI — Preparati alla Maturità</title>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Ad Maiora — Simulatore dell'Esame di Stato</title>
+<link rel="stylesheet" href="assets/system.css">
 <style>
-:root {
-  --bg: #080808;
-  --bg2: #0f0f0f;
-  --surface: #141414;
-  --surface2: #1c1c1c;
-  --border: #232323;
-  --border2: #2e2e2e;
-  --text: #f2ede4;
-  --text2: #7a756d;
-  --text3: #3d3a36;
-  --gold: #c8a84b;
-  --gold2: #e6c96e;
-  --gold3: #f5e0a0;
-  --green: #4a9e6e;
-  --red: #c94f4f;
-  --blue: #4f87c9;
-  --purple: #8f6abf;
+/* ============ LANDING-SPECIFIC ============ */
+
+/* ---- masthead / hero ---- */
+.hero{ padding:118px 0 30px; }
+.masthead{ text-align:center; border-bottom:3px double var(--rule-2); padding-bottom:18px; }
+.masthead-top{
+  display:flex; align-items:center; justify-content:space-between;
+  font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.16em;
+  text-transform:uppercase; color:var(--ink-3); padding-bottom:14px;
+}
+.masthead-top span{ flex:1; }
+.masthead-top .mt-c{ text-align:center; color:var(--seal); }
+.masthead-top .mt-r{ text-align:right; }
+.masthead-title{
+  font-family:'Newsreader',serif; font-weight:400; line-height:0.9;
+  font-size:clamp(3.4rem, 13vw, 10rem); letter-spacing:-0.02em;
+  font-variation-settings:'opsz' 72; color:var(--ink);
+}
+.masthead-title em{ font-style:italic; color:var(--seal); }
+.masthead-sub{
+  font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.34em;
+  text-transform:uppercase; color:var(--ink-2); margin-top:6px;
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: 'Syne', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  overflow-x: hidden;
-  cursor: default;
+/* ---- editorial lede ---- */
+.lede{
+  display:grid; grid-template-columns:1.15fr 0.85fr; gap:54px;
+  padding:54px 0 12px; align-items:start;
 }
-
-/* GRAIN OVERLAY */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 9999;
+.lede-main h1{
+  font-family:'Newsreader',serif; font-weight:400; font-style:italic;
+  font-size:clamp(2rem,4.4vw,3.4rem); line-height:1.08; letter-spacing:-0.015em;
+  color:var(--ink);
 }
+.lede-main h1 .roman{ font-style:normal; }
+.lede-main .deck{
+  font-size:19px; line-height:1.7; color:var(--ink-2); margin-top:22px; max-width:46ch;
+}
+.lede-actions{ display:flex; gap:12px; flex-wrap:wrap; margin-top:30px; }
 
-/* NAV */
-nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 48px;
-  background: rgba(8,8,8,0.85);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
+.lede-side{ position:relative; }
+.seal-stage{ display:flex; justify-content:center; padding-top:6px; }
+.seal-stage svg{ width:210px; height:210px; animation:sealspin 80s linear infinite; transform-origin:50% 50%; }
+@keyframes sealspin{ to{ transform:rotate(360deg);} }
+.seal-caption{
+  text-align:center; font-family:'IBM Plex Mono',monospace; font-size:10px;
+  letter-spacing:0.2em; text-transform:uppercase; color:var(--ink-3); margin-top:16px;
 }
 
-.logo {
-  font-family: 'Instrument Serif', serif;
-  font-size: 22px;
-  color: var(--text);
-  text-decoration: none;
-  letter-spacing: -0.02em;
+/* ---- dateline strip (stats) ---- */
+.dateline{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:0;
+  border-top:1px solid var(--rule-2); border-bottom:1px solid var(--rule-2);
+  margin-top:40px;
 }
-.logo em { color: var(--gold2); font-style: italic; }
+.dl-cell{ padding:22px 24px; text-align:center; }
+.dl-cell + .dl-cell{ border-left:1px solid var(--rule-2); }
+.dl-num{ font-family:'Newsreader',serif; font-style:italic; font-size:42px; line-height:1; color:var(--navy); }
+.dl-lbl{ font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:var(--ink-3); margin-top:8px; }
 
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-  list-style: none;
+/* ---- indice / tracks ---- */
+.indice{ display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--rule-2); border-left:1px solid var(--rule-2); }
+.indice-item{
+  border-right:1px solid var(--rule-2); border-bottom:1px solid var(--rule-2);
+  padding:26px 26px 30px; position:relative; transition:background .2s; min-height:150px;
 }
-.nav-links a {
-  font-size: 13px;
-  color: var(--text2);
-  text-decoration: none;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  transition: color 0.2s;
-}
-.nav-links a:hover { color: var(--text); }
+.indice-item:hover{ background:var(--paper-2); }
+.indice-item .ii-no{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-3); letter-spacing:0.1em; }
+.indice-item .ii-name{ font-family:'Newsreader',serif; font-size:23px; line-height:1.15; margin-top:14px; color:var(--ink); }
+.indice-item .ii-subj{ font-size:14.5px; color:var(--ink-2); line-height:1.55; margin-top:8px; font-style:italic; }
+.indice-item.is-free{ background:var(--ink); }
+.indice-item.is-free:hover{ background:var(--navy-deep); }
+.indice-item.is-free .ii-no{ color:var(--seal-2); }
+.indice-item.is-free .ii-name{ color:var(--paper); }
+.indice-item.is-free .ii-subj{ color:var(--ink-soft); }
 
-.nav-cta {
-  background: var(--gold);
-  color: #080808 !important;
-  padding: 8px 20px;
-  border-radius: 6px;
-  font-weight: 700 !important;
-  transition: background 0.2s !important;
-}
-.nav-cta:hover { background: var(--gold2) !important; color: #080808 !important; }
+/* ---- funzionalità (magazine blocks) ---- */
+.feat-grid{ display:grid; grid-template-columns:repeat(12,1fr); gap:1px; background:var(--rule-2); border:1px solid var(--rule-2); }
+.feat{ background:var(--paper); padding:34px 32px; }
+.feat .f-no{ font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.16em; color:var(--seal); }
+.feat h3{ font-family:'Newsreader',serif; font-weight:400; font-size:25px; line-height:1.12; margin-top:16px; color:var(--ink); }
+.feat p{ font-size:16px; line-height:1.65; color:var(--ink-2); margin-top:12px; }
+.feat-a{ grid-column:span 7; }
+.feat-b{ grid-column:span 5; }
+.feat-c{ grid-column:span 4; }
+.feat-d{ grid-column:span 4; }
+.feat-e{ grid-column:span 4; }
+.feat.dark{ background:var(--navy-deep); }
+.feat.dark .f-no{ color:#E7B14A; }
+.feat.dark h3{ color:#fff; }
+.feat.dark p{ color:#B9C4D6; }
 
-/* HERO */
-.hero {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 120px 48px 80px;
-  position: relative;
-  overflow: hidden;
+/* ---- modalità (decree articles) ---- */
+.articles{ border-top:1px solid var(--rule-2); }
+.article{
+  display:grid; grid-template-columns:118px 1fr auto; gap:28px; align-items:baseline;
+  padding:30px 6px; border-bottom:1px solid var(--rule-2); transition:padding-left .25s;
 }
+.article:hover{ padding-left:18px; background:var(--paper-2); }
+.art-mark{ font-family:'Newsreader',serif; font-style:italic; font-size:30px; color:var(--seal); line-height:1; }
+.art-mark small{ display:block; font-family:'IBM Plex Mono',monospace; font-size:9px; font-style:normal; letter-spacing:0.18em; color:var(--ink-3); margin-top:6px; }
+.art-body h3{ font-family:'Newsreader',serif; font-weight:500; font-size:25px; color:var(--ink); }
+.art-body p{ font-size:16px; color:var(--ink-2); line-height:1.6; margin-top:6px; max-width:62ch; }
+.art-tag{ font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-3); border:1px solid var(--rule-2); border-radius:999px; padding:5px 13px; white-space:nowrap; }
 
-/* Radial glow behind hero */
-.hero::before {
-  content: '';
-  position: absolute;
-  top: 20%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 800px;
-  height: 500px;
-  background: radial-gradient(ellipse, rgba(200,168,75,0.07) 0%, transparent 70%);
-  pointer-events: none;
+/* ---- providers / motori ---- */
+.motori{ display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--rule-2); }
+.motore{ padding:26px 24px; border-right:1px solid var(--rule-2); }
+.motore:last-child{ border-right:none; }
+.motore .m-dot{ width:9px; height:9px; border-radius:50%; display:inline-block; }
+.motore .m-name{ font-family:'Newsreader',serif; font-size:22px; margin-top:14px; color:var(--ink); }
+.motore .m-model{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-3); margin-top:6px; letter-spacing:0.04em; }
+.motore .m-cap{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink-2); margin-top:14px; letter-spacing:0.05em; line-height:1.7; }
+.motore .m-cap .yes{ color:var(--navy); } .motore .m-cap .no{ color:var(--ink-3); }
+.motori-note{
+  margin-top:18px; font-size:15px; color:var(--ink-2); line-height:1.7;
+  border-left:2px solid var(--seal); padding-left:18px; max-width:760px; font-style:italic;
 }
+.motori-fine{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink-3); margin-top:14px; letter-spacing:0.06em; }
 
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--gold);
-  border: 1px solid rgba(200,168,75,0.3);
-  border-radius: 999px;
-  padding: 6px 16px;
-  margin-bottom: 32px;
-  animation: fadeUp 0.8s ease both;
-}
-.hero-badge::before {
-  content: '';
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--gold);
-  animation: blink 2s infinite;
-}
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+/* ---- CTA ---- */
+.colophon-cta{ text-align:center; padding:30px 0 0; }
+.colophon-cta .cc-seal{ display:flex; justify-content:center; margin-bottom:26px; }
+.colophon-cta .cc-seal svg{ width:96px; height:96px; }
+.colophon-cta h2{ font-family:'Newsreader',serif; font-weight:400; font-size:clamp(2.2rem,5vw,3.8rem); line-height:1.06; letter-spacing:-0.02em; }
+.colophon-cta h2 em{ font-style:italic; color:var(--seal); }
+.colophon-cta p{ font-size:18px; color:var(--ink-2); margin:18px auto 32px; max-width:48ch; }
 
-.hero h1 {
-  font-family: 'Instrument Serif', serif;
-  font-size: clamp(3rem, 8vw, 7rem);
-  font-weight: 400;
-  line-height: 1.0;
-  letter-spacing: -0.02em;
-  margin-bottom: 24px;
-  animation: fadeUp 0.8s 0.1s ease both;
-}
-.hero h1 em {
-  font-style: italic;
-  color: var(--gold2);
-}
-.hero h1 .outline {
-  -webkit-text-stroke: 1px var(--text3);
-  color: transparent;
-}
+/* footer link list */
+.foot-links{ display:flex; gap:22px; }
+.foot-links a{ font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-2); text-decoration:none; }
+.foot-links a:hover{ color:var(--seal); }
 
-.hero-sub {
-  font-size: clamp(16px, 2vw, 20px);
-  color: var(--text2);
-  max-width: 560px;
-  line-height: 1.7;
-  font-weight: 400;
-  margin-bottom: 40px;
-  animation: fadeUp 0.8s 0.2s ease both;
-}
+/* reveal — only hides when JS confirms it will animate (progressive enhancement) */
+.reveal{ transition:opacity .8s ease, transform .8s ease; }
+.js-reveal .reveal{ opacity:0; transform:translateY(22px); }
+.js-reveal .reveal.in{ opacity:1; transform:none; }
 
-.hero-actions {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
-  animation: fadeUp 0.8s 0.3s ease both;
+@media (max-width:860px){
+  .lede{ grid-template-columns:1fr; gap:30px; }
+  .lede-side{ order:-1; }
+  .seal-stage svg{ width:150px; height:150px; }
+  .feat-a,.feat-b,.feat-c,.feat-d,.feat-e{ grid-column:span 12; }
+  .indice{ grid-template-columns:1fr 1fr; }
+  .motori{ grid-template-columns:1fr 1fr; }
+  .motore:nth-child(2){ border-right:none; }
+  .motore{ border-bottom:1px solid var(--rule-2); }
 }
-
-.btn-primary {
-  background: var(--gold);
-  color: #080808;
-  font-family: 'Syne', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  padding: 14px 32px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-  transition: all 0.2s;
-  letter-spacing: 0.02em;
-}
-.btn-primary:hover { background: var(--gold2); transform: translateY(-1px); box-shadow: 0 8px 32px rgba(200,168,75,0.25); }
-
-.btn-secondary {
-  background: transparent;
-  color: var(--text);
-  font-family: 'Syne', sans-serif;
-  font-size: 15px;
-  font-weight: 500;
-  padding: 14px 32px;
-  border-radius: 8px;
-  border: 1px solid var(--border2);
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-  transition: all 0.2s;
-}
-.btn-secondary:hover { border-color: var(--text2); background: var(--surface); }
-
-/* HERO STATS */
-.hero-stats {
-  display: flex;
-  gap: 48px;
-  margin-top: 64px;
-  animation: fadeUp 0.8s 0.4s ease both;
-}
-.stat { text-align: center; }
-.stat-num {
-  font-family: 'Instrument Serif', serif;
-  font-size: 36px;
-  color: var(--gold2);
-  font-style: italic;
-  line-height: 1;
-}
-.stat-lbl {
-  font-size: 12px;
-  color: var(--text3);
-  margin-top: 4px;
-  font-family: 'DM Mono', monospace;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-/* SCROLL INDICATOR */
-.scroll-hint {
-  position: absolute;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  color: var(--text3);
-  font-size: 11px;
-  font-family: 'DM Mono', monospace;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  animation: fadeUp 1s 0.6s ease both;
-}
-.scroll-line {
-  width: 1px;
-  height: 48px;
-  background: linear-gradient(to bottom, var(--text3), transparent);
-  animation: scrollPulse 2s infinite;
-}
-@keyframes scrollPulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
-
-/* TRACKS SECTION */
-.section {
-  padding: 100px 48px;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.section-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 16px;
-}
-
-.section-title {
-  font-family: 'Instrument Serif', serif;
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  font-weight: 400;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-  margin-bottom: 16px;
-}
-.section-title em { font-style: italic; color: var(--gold2); }
-
-.section-sub {
-  font-size: 16px;
-  color: var(--text2);
-  max-width: 520px;
-  line-height: 1.7;
-  font-weight: 400;
-  margin-bottom: 56px;
-}
-
-/* TRACKS GRID */
-.tracks-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-.track-card {
-  background: var(--surface);
-  padding: 28px;
-  transition: background 0.2s;
-  position: relative;
-}
-.track-card:hover { background: var(--surface2); }
-.track-card::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--gold), transparent);
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-.track-card:hover::after { opacity: 1; }
-
-.track-icon {
-  font-size: 28px;
-  margin-bottom: 12px;
-  display: block;
-}
-.track-name {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 6px;
-}
-.track-subjects {
-  font-size: 12px;
-  color: var(--text2);
-  line-height: 1.6;
-  font-weight: 400;
-}
-
-/* FEATURES */
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-}
-
-.feature-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 32px;
-  transition: border-color 0.2s, transform 0.2s;
-  position: relative;
-  overflow: hidden;
-}
-.feature-card::before {
-  content: '';
-  position: absolute;
-  top: -60px; right: -60px;
-  width: 180px; height: 180px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(200,168,75,0.05) 0%, transparent 70%);
-  pointer-events: none;
-}
-.feature-card:hover { border-color: var(--border2); transform: translateY(-2px); }
-
-.feature-card.wide { grid-column: span 2; }
-
-.feature-icon {
-  width: 44px; height: 44px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  margin-bottom: 20px;
-  border: 1px solid var(--border2);
-  background: var(--surface2);
-}
-
-.feature-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 8px;
-}
-.feature-desc {
-  font-size: 14px;
-  color: var(--text2);
-  line-height: 1.7;
-  font-weight: 400;
-}
-
-/* PROVIDERS SECTION */
-.providers-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.prov-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
-  text-align: center;
-  transition: all 0.2s;
-}
-.prov-card:hover { border-color: var(--border2); background: var(--surface2); }
-.prov-dot { width: 14px; height: 14px; border-radius: 50%; margin: 0 auto 10px; }
-.prov-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
-.prov-model { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); }
-
-/* MODES SECTION */
-.modes-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-.mode-item {
-  background: var(--surface);
-  padding: 24px 28px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  transition: background 0.15s;
-}
-.mode-item:hover { background: var(--surface2); }
-.mode-num {
-  font-family: 'Instrument Serif', serif;
-  font-size: 32px;
-  font-style: italic;
-  color: var(--text3);
-  width: 40px;
-  flex-shrink: 0;
-  line-height: 1;
-}
-.mode-info { flex: 1; }
-.mode-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
-.mode-desc { font-size: 13px; color: var(--text2); font-weight: 400; }
-.mode-tag {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--border2);
-  color: var(--text3);
-  white-space: nowrap;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-/* CTA SECTION */
-.cta-section {
-  margin: 0 48px 100px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  padding: 80px 48px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-.cta-section::before {
-  content: '';
-  position: absolute;
-  top: -100px; left: 50%;
-  transform: translateX(-50%);
-  width: 600px; height: 400px;
-  background: radial-gradient(ellipse, rgba(200,168,75,0.08) 0%, transparent 70%);
-  pointer-events: none;
-}
-.cta-section h2 {
-  font-family: 'Instrument Serif', serif;
-  font-size: clamp(2rem, 4vw, 3.2rem);
-  font-weight: 400;
-  line-height: 1.15;
-  margin-bottom: 16px;
-}
-.cta-section h2 em { font-style: italic; color: var(--gold2); }
-.cta-section p { font-size: 16px; color: var(--text2); margin-bottom: 36px; font-weight: 400; }
-
-/* FOOTER */
-footer {
-  border-top: 1px solid var(--border);
-  padding: 32px 48px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.footer-logo {
-  font-family: 'Instrument Serif', serif;
-  font-size: 18px;
-  color: var(--text2);
-}
-.footer-logo em { color: var(--gold); font-style: italic; }
-.footer-note {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  color: var(--text3);
-  letter-spacing: 0.08em;
-}
-
-/* DIVIDER LINE */
-.section-divider {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 0 48px;
-}
-
-/* ANIMATIONS */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.reveal {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
-}
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* RESPONSIVE */
-@media (max-width: 768px) {
-  nav { padding: 14px 20px; }
-  .nav-links { display: none; }
-  .hero { padding: 90px 20px 50px; }
-  .hero-stats { gap: 20px; flex-wrap: wrap; justify-content: center; }
-  .stat-num { font-size: 28px; }
-  .section { padding: 52px 20px; }
-  .section-title { font-size: 1.8rem; }
-  .tracks-grid { grid-template-columns: 1fr 1fr; }
-  .features-grid { grid-template-columns: 1fr; }
-  .feature-card.wide { grid-column: span 1; }
-  .providers-row { grid-template-columns: 1fr 1fr; }
-  .modes-list .mode-item { gap: 12px; padding: 18px 20px; }
-  .mode-num { font-size: 24px; width: 30px; }
-  .mode-tag { display: none; }
-  .cta-section { margin: 0 16px 50px; padding: 40px 20px; }
-  footer { flex-direction: column; gap: 10px; text-align: center; padding: 20px; }
-  .section-divider { margin: 0 16px; }
-  .btn-primary, .btn-secondary { padding: 12px 24px; font-size: 14px; }
-}
-
-@media (max-width: 480px) {
-  nav { padding: 12px 16px; }
-  .hero { padding: 80px 16px 40px; }
-  .hero h1 { font-size: 2.2rem; }
-  .hero-sub { font-size: 14px; }
-  .hero-actions { flex-direction: column; align-items: stretch; }
-  .hero-actions a { text-align: center; }
-  .hero-stats { gap: 16px; }
-  .stat-num { font-size: 24px; }
-  .section { padding: 40px 16px; }
-  .section-title { font-size: 1.6rem; }
-  .tracks-grid { grid-template-columns: 1fr; }
-  .track-card { padding: 20px; }
-  .providers-row { grid-template-columns: 1fr 1fr; }
-  .cta-section { margin: 0 12px 40px; padding: 32px 16px; }
-  .cta-section h2 { font-size: 1.6rem; }
-  .ai-links { gap: 6px; }
-  .ai-link { font-size: 11px; padding: 5px 10px; }
+@media (max-width:560px){
+  .masthead-top{ font-size:9px; letter-spacing:0.08em; }
+  .lede-main h1{ font-size:1.9rem; }
+  .dateline{ grid-template-columns:1fr; }
+  .dl-cell + .dl-cell{ border-left:none; border-top:1px solid var(--rule-2); }
+  .indice{ grid-template-columns:1fr; }
+  .article{ grid-template-columns:1fr; gap:10px; }
+  .art-tag{ justify-self:start; }
+  .motori{ grid-template-columns:1fr; }
+  .motore{ border-right:none; }
+  .lede-actions{ flex-direction:column; }
+  .lede-actions .am-btn{ justify-content:center; }
 }
 </style>
 </head>
-<body>
+<body class="am-paper">
 
-<!-- NAV -->
-<nav>
-  <a href="#" class="logo">Matura<em>AI</em></a>
-  <ul class="nav-links">
-    <li><a href="#tracks">Indirizzi</a></li>
-    <li><a href="#features">Funzionalità</a></li>
-    <li><a href="#modes">Modalità</a></li>
-    <li><a href="prompts.html">💬 Prompt per ChatGPT</a></li><li><a href="exam.html" class="nav-cta">Inizia Gratis →</a></li>
+<!-- ============ NAV ============ -->
+<nav class="am-nav">
+  <a href="index.html" class="am-wordmark">Ad <em>Maiora</em></a>
+  <ul class="am-navlinks">
+    <li><a href="#indirizzi">Indirizzi</a></li>
+    <li><a href="#funzioni">Funzionalità</a></li>
+    <li><a href="#modalita">Modalità</a></li>
+    <li><a href="prompts.html">Prompt</a></li>
+    <li><a href="exam.html" class="am-nav-cta">Entra in aula →</a></li>
   </ul>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-badge">Il Simulatore dell'Esame di Maturità</div>
-  <h1>
-    Preparati alla<br>
-    <em>Maturità</em><br>
-    <span class="outline">con l'AI</span>
-  </h1>
-  <p class="hero-sub">
-    Esercitati con domande scritte, orali e seconda prova per qualsiasi materia e qualsiasi indirizzo scolastico — powered by AI.
-  </p>
-  <div class="hero-actions">
-    <a href="exam.html" class="btn-primary">Inizia gratis →</a>
-    <a href="#features" class="btn-secondary">Come funziona</a>
+<div class="am-shell">
+<div class="am-wrap">
+
+<!-- ============ HERO / MASTHEAD ============ -->
+<header class="hero">
+  <div class="masthead">
+    <div class="masthead-top">
+      <span class="mt-l">Edizione · Studente</span>
+      <span class="mt-c">Ad Maiora Semper</span>
+      <span class="mt-r">Sessione MMXXVI</span>
+    </div>
+    <div class="masthead-title">Ad <em>Maiora</em></div>
+    <div class="masthead-sub">Simulatore dell'Esame di Stato</div>
   </div>
-  <div class="hero-stats">
-    <div class="stat">
-      <div class="stat-num">20+</div>
-      <div class="stat-lbl">Indirizzi scolastici</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">4</div>
-      <div class="stat-lbl">Modalità esame</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">4</div>
-      <div class="stat-lbl">Provider AI</div>
-    </div>
-  </div>
-  <div class="scroll-hint">
-    <div class="scroll-line"></div>
-    scorri
-  </div>
-</section>
 
-<hr class="section-divider">
-
-<!-- TRACKS -->
-<section class="section" id="tracks">
-  <div class="section-label">Indirizzi Scolastici</div>
-  <h2 class="section-title">Tutti gli<br><em>indirizzi scolastici</em></h2>
-  <p class="section-sub">Dal Liceo Classico all'Istituto Tecnico. Scrivi qualsiasi materia o scegli dai preset.</p>
-
-  <div class="tracks-grid reveal">
-    <div class="track-card">
-      <span class="track-icon">🏛️</span>
-      <div class="track-name">Liceo Classico</div>
-      <div class="track-subjects">Latino · Greco · Filosofia · Storia · Italiano</div>
-    </div>
-    <div class="track-card">
-      <span class="track-icon">🔬</span>
-      <div class="track-name">Liceo Scientifico</div>
-      <div class="track-subjects">Matematica · Fisica · Chimica · Biologia · Italiano</div>
-    </div>
-    <div class="track-card">
-      <span class="track-icon">🌍</span>
-      <div class="track-name">Liceo Linguistico</div>
-      <div class="track-subjects">Inglese · Francese · Spagnolo · Tedesco · Italiano</div>
-    </div>
-    <div class="track-card">
-      <span class="track-icon">💻</span>
-      <div class="track-name">Tecnico Informatica</div>
-      <div class="track-subjects">Informatica · TPSI · Sistemi e Reti · GPOI</div>
-    </div>
-    <div class="track-card">
-      <span class="track-icon">📊</span>
-      <div class="track-name">Tecnico Economico</div>
-      <div class="track-subjects">Economia · Diritto · Matematica · Inglese</div>
-    </div>
-    <div class="track-card">
-      <span class="track-icon">🎨</span>
-      <div class="track-name">Liceo Artistico</div>
-      <div class="track-subjects">Storia dell'Arte · Discipline Grafiche · Italian</div>
-    </div>
-    <div class="track-card">
-      <span class="track-icon">🧬</span>
-      <div class="track-name">Scienze Applicate</div>
-      <div class="track-subjects">Biology · Chemistry · Earth Sciences · Physics</div>
-    </div>
-    <div class="track-card">
-      <span class="track-icon">⚡</span>
-      <div class="track-name">Tecnico Elettronica</div>
-      <div class="track-subjects">Elettronica · Sistemi · Matematica · Fisica</div>
-    </div>
-    <div class="track-card">
-      <span class="track-icon">✏️</span>
-      <div class="track-name">Any Subject</div>
-      <div class="track-subjects">Scrivi qualsiasi materia — l'AI si adatta al tuo programma</div>
-    </div>
-  </div>
-</section>
-
-<hr class="section-divider">
-
-<!-- FEATURES -->
-<section class="section" id="features">
-  <div class="section-label">Funzionalità</div>
-  <h2 class="section-title">Tutto quello che ti serve<br><em>per prepararti</em></h2>
-  <p class="section-sub">Struttura reale dell'esame. Feedback AI reale. Nessun account richiesto.</p>
-
-  <div class="features-grid">
-    <div class="feature-card reveal">
-      <div class="feature-icon">🤖</div>
-      <div class="feature-title">Il tuo AI, la tua key</div>
-      <div class="feature-desc">Usa Anthropic, OpenAI, Gemini o Groq (gratuito). La tua API key va direttamente dal browser all'AI — mai salvata su server.</div>
-    </div>
-    <div class="feature-card reveal">
-      <div class="feature-icon">⏱️</div>
-      <div class="feature-title">Pratica cronometrata</div>
-      <div class="feature-desc">Imposta un timer per le domande a scelta multipla — 60s, 120s o 5 minuti. Domande aperte e orali non hanno timer.</div>
-    </div>
-    <div class="feature-card reveal">
-      <div class="feature-icon">📊</div>
-      <div class="feature-title">Valutazione immediata</div>
-      <div class="feature-desc">Ogni risposta riceve un voto da 1 a 10 con feedback dettagliato — punti forti, deboli e cosa vuole sentire la commissione.</div>
-    </div>
-    <div class="feature-card reveal">
-      <div class="feature-icon">📚</div>
-      <div class="feature-title">Storico sessioni</div>
-      <div class="feature-desc">Tutte le domande e i voti vengono salvati localmente nel browser. Tieni traccia del tuo voto medio e scopri dove migliorare.</div>
-    </div>
-    <div class="feature-card wide reveal">
-      <div class="feature-icon">🎓</div>
-      <div class="feature-title">Struttura reale dell'esame</div>
-      <div class="feature-desc">Le domande seguono il formato reale della maturità italiana — l'AI agisce come un vero membro della commissione, adattando difficoltà e stile al tuo indirizzo e materia. Dal Latino del Liceo Classico ai problemi di database del Tecnico Informatico.</div>
-    </div>
-  </div>
-</section>
-
-<hr class="section-divider">
-
-<!-- AI PROVIDERS -->
-<section class="section">
-  <div class="section-label">AI Providers</div>
-  <h2 class="section-title">Scegli il tuo<br><em>motore AI</em></h2>
-  <p class="section-sub">Connetti qualsiasi provider con la tua API key. Cambia quando vuoi.</p>
-
-  <div class="providers-row reveal">
-    <div class="prov-card">
-      <div class="prov-dot" style="background:#c9a84c"></div>
-      <div class="prov-name">Anthropic</div>
-      <div class="prov-model">claude-sonnet-4</div>
-      <div style="font-size:11px;margin-top:8px;color:#4a9e6e">✅ Testo &nbsp;📷 Foto quaderno</div>
-    </div>
-    <div class="prov-card">
-      <div class="prov-dot" style="background:#4caf7d"></div>
-      <div class="prov-name">OpenAI</div>
-      <div class="prov-model">gpt-4o-mini / gpt-4o</div>
-      <div style="font-size:11px;margin-top:8px;color:#4a9e6e">✅ Testo &nbsp;📷 Foto quaderno</div>
-    </div>
-    <div class="prov-card">
-      <div class="prov-dot" style="background:#5b9bd5"></div>
-      <div class="prov-name">Gemini</div>
-      <div class="prov-model">gemini-1.5-flash</div>
-      <div style="font-size:11px;margin-top:8px;color:#4a9e6e">✅ Testo &nbsp;📷 Foto quaderno</div>
-    </div>
-    <div class="prov-card">
-      <div class="prov-dot" style="background:#9b72cf"></div>
-      <div class="prov-name">Groq</div>
-      <div class="prov-model">llama-3.3-70b · gratuito</div>
-      <div style="font-size:11px;margin-top:8px;color:var(--text3)">✅ Testo &nbsp;❌ Foto quaderno</div>
-    </div>
-  </div>
-  <div style="background:rgba(200,168,75,0.06);border:1px solid rgba(200,168,75,0.18);border-radius:10px;padding:12px 16px;margin-bottom:10px;font-size:13px;color:var(--text2);line-height:1.6;text-align:center">
-    <strong style="color:var(--gold2)">📷 Foto quaderno</strong> — carica le foto della seconda prova svolta a mano e l'AI la valuta come un commissario reale. Richiede Anthropic, OpenAI o Gemini.
-  </div>
-  <p style="font-size:12px;color:var(--text3);font-family:'DM Mono',monospace;text-align:center">Le key vengono salvate solo nel localStorage del browser — mai inviate a server esterni</p>
-</section>
-
-<hr class="section-divider">
-
-<!-- EXAM MODES -->
-<section class="section" id="modes">
-  <div class="section-label">Modalità</div>
-  <h2 class="section-title">Quattro modalità<br><em>per esercitarti</em></h2>
-  <p class="section-sub">Simula ogni parte dell'esame di maturità.</p>
-
-  <div class="modes-list reveal">
-    <div class="mode-item">
-      <div class="mode-num">1</div>
-      <div class="mode-info">
-        <div class="mode-name">Scelta Multipla</div>
-        <div class="mode-desc">Domande a 4 opzioni con feedback immediato e spiegazione. Timer opzionale.</div>
+  <div class="lede">
+    <div class="lede-main">
+      <h1><span class="roman">Affronta la</span> Maturità <span class="roman">prima della Maturità.</span></h1>
+      <p class="deck">
+        Prima prova, seconda prova e colloquio orale — simulati con l'intelligenza
+        artificiale per qualsiasi materia e qualsiasi indirizzo. La commissione ti
+        interroga, ti valuta da 1 a 10 e ti dice esattamente cosa migliorare.
+      </p>
+      <div class="lede-actions">
+        <a href="exam.html" class="am-btn"><span>Entra in aula</span><span class="arr">→</span></a>
+        <a href="#funzioni" class="am-btn am-btn-ghost">Come funziona</a>
       </div>
-      <div class="mode-tag">Timer disponibile</div>
     </div>
-    <div class="mode-item">
-      <div class="mode-num">2</div>
-      <div class="mode-info">
-        <div class="mode-name">Risposta Aperta</div>
-        <div class="mode-desc">Scrivi una risposta completa. L'AI la valuta da 1 a 10 con punti forti, deboli e commento. Senza timer.</div>
-      </div>
-      <div class="mode-tag">Valutazione AI</div>
+    <div class="lede-side">
+      <div class="seal-stage" id="sealStage"></div>
+      <div class="seal-caption">Verbale d'esame · nessun account</div>
     </div>
-    <div class="mode-item">
-      <div class="mode-num">3</div>
-      <div class="mode-info">
-        <div class="mode-name">Simulazione Orale</div>
-        <div class="mode-desc">L'AI interpreta la commissione. Rispondi come se fossi in aula. Valutato su contenuto ed esposizione.</div>
-      </div>
-      <div class="mode-tag">Ruolo commissione</div>
+  </div>
+
+  <div class="dateline">
+    <div class="dl-cell"><div class="dl-num">20+</div><div class="dl-lbl">Indirizzi scolastici</div></div>
+    <div class="dl-cell"><div class="dl-num">6</div><div class="dl-lbl">Modalità di prova</div></div>
+    <div class="dl-cell"><div class="dl-num">4</div><div class="dl-lbl">Motori AI</div></div>
+  </div>
+</header>
+
+<!-- ============ INDIRIZZI ============ -->
+<section class="am-section" id="indirizzi">
+  <div class="am-section-head">
+    <span class="am-eyebrow">01 — Indirizzi</span>
+    <h2>Dal Liceo Classico<br>al <em>Tecnico Informatico</em>.</h2>
+    <p>Scegli un indirizzo dal registro o scrivi liberamente qualsiasi materia: la commissione adatta domande, lessico e difficoltà al tuo programma.</p>
+  </div>
+
+  <div class="indice reveal">
+    <div class="indice-item"><div class="ii-no">i.</div><div class="ii-name">Liceo Classico</div><div class="ii-subj">Latino · Greco · Filosofia · Storia · Italiano</div></div>
+    <div class="indice-item"><div class="ii-no">ii.</div><div class="ii-name">Liceo Scientifico</div><div class="ii-subj">Matematica · Fisica · Scienze · Italiano</div></div>
+    <div class="indice-item"><div class="ii-no">iii.</div><div class="ii-name">Liceo Linguistico</div><div class="ii-subj">Inglese · Francese · Spagnolo · Tedesco</div></div>
+    <div class="indice-item"><div class="ii-no">iv.</div><div class="ii-name">Tecnico Informatica</div><div class="ii-subj">Informatica · Sistemi e Reti · TPSIT · GPOI</div></div>
+    <div class="indice-item"><div class="ii-no">v.</div><div class="ii-name">Tecnico Economico</div><div class="ii-subj">Economia aziendale · Diritto · Matematica</div></div>
+    <div class="indice-item"><div class="ii-no">vi.</div><div class="ii-name">Liceo Artistico</div><div class="ii-subj">Storia dell'arte · Discipline grafiche · Italiano</div></div>
+    <div class="indice-item"><div class="ii-no">vii.</div><div class="ii-name">Scienze Umane</div><div class="ii-subj">Pedagogia · Psicologia · Sociologia · Filosofia</div></div>
+    <div class="indice-item"><div class="ii-no">viii.</div><div class="ii-name">Tecnico Elettronica</div><div class="ii-subj">Elettronica · Sistemi automatici · Fisica</div></div>
+    <div class="indice-item is-free"><div class="ii-no">ix.</div><div class="ii-name">Qualsiasi materia</div><div class="ii-subj">Campo libero — scrivi e la commissione si adatta.</div></div>
+  </div>
+</section>
+
+<hr class="am-rule">
+
+<!-- ============ FUNZIONALITÀ ============ -->
+<section class="am-section" id="funzioni">
+  <div class="am-section-head">
+    <span class="am-eyebrow">02 — Funzionalità</span>
+    <h2>Struttura reale d'esame,<br><em>feedback reale</em>.</h2>
+    <p class="am-dropcap">Niente quiz generici. Ogni prova segue il formato ministeriale e la commissione AI ti risponde come in aula: cosa hai centrato, cosa manca, cosa voleva sentire.</p>
+  </div>
+
+  <div class="feat-grid reveal">
+    <div class="feat feat-a">
+      <div class="f-no">§ 01</div>
+      <h3>La commissione interroga, e poi valuta</h3>
+      <p>L'AI interpreta un commissario d'esame: pone le domande nel formato della maturità, ascolta la tua risposta e assegna un voto da 1 a 10 con motivazione — punti forti, lacune e ciò che la commissione si aspettava.</p>
     </div>
-    <div class="mode-item">
-      <div class="mode-num">4</div>
-      <div class="mode-info">
-        <div class="mode-name">Seconda Prova Scritta</div>
-        <div class="mode-desc">Tema completo articolato in punti, specifico per il tuo indirizzo. Consegna la risposta per una valutazione dettagliata.</div>
-      </div>
-      <div class="mode-tag">Tema completo</div>
+    <div class="feat feat-b dark">
+      <div class="f-no">§ 02</div>
+      <h3>Il tuo motore, la tua chiave</h3>
+      <p>Anthropic, OpenAI, Gemini o Groq. La chiave API viaggia dal tuo browser direttamente al provider — non tocca mai un nostro server, perché un nostro server non esiste.</p>
+    </div>
+    <div class="feat feat-c">
+      <div class="f-no">§ 03</div>
+      <h3>Prova cronometrata</h3>
+      <p>Timer opzionale sulle domande a scelta multipla — 60s, 120s o cinque minuti, come allo scritto.</p>
+    </div>
+    <div class="feat feat-d">
+      <div class="f-no">§ 04</div>
+      <h3>Foto del quaderno</h3>
+      <p>Fotografa la seconda prova svolta a mano: l'AI la legge e la corregge come un commissario reale.</p>
+    </div>
+    <div class="feat feat-e">
+      <div class="f-no">§ 05</div>
+      <h3>Verbale delle sessioni</h3>
+      <p>Voti e domande salvati nel browser. Media, andamento e punti deboli — tutto sotto controllo.</p>
     </div>
   </div>
 </section>
 
-<!-- CTA -->
-<div class="cta-section">
-  <h2>Pronto a <em>iniziare a prepararti?</em></h2>
-  <p>Nessun account, nessun abbonamento. Solo la tua API key e la tua materia.</p>
-  <a href="exam.html" class="btn-primary" style="font-size:16px;padding:16px 40px">Inizia gratis →</a>
-</div>
+<hr class="am-rule">
 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-logo">Matura<em>AI</em></div>
-  <div class="footer-note">Pensato per gli studenti italiani · AI gira nel tuo browser</div>
+<!-- ============ MODALITÀ ============ -->
+<section class="am-section" id="modalita">
+  <div class="am-section-head">
+    <span class="am-eyebrow">03 — Modalità</span>
+    <h2>Sei modi<br>di <em>esercitarsi</em>.</h2>
+    <p>Ogni parte dell'Esame di Stato, simulata. Dalla scelta multipla rapida al colloquio orale completo.</p>
+  </div>
+
+  <div class="articles reveal">
+    <div class="article">
+      <div class="art-mark">I<small>Art.</small></div>
+      <div class="art-body"><h3>Scelta multipla</h3><p>Domande a quattro opzioni con correzione e spiegazione immediata. Timer a piacere.</p></div>
+      <div class="art-tag">Timer disponibile</div>
+    </div>
+    <div class="article">
+      <div class="art-mark">II<small>Art.</small></div>
+      <div class="art-body"><h3>Risposta aperta</h3><p>Scrivi una risposta argomentata. La commissione assegna voto, punti forti e deboli.</p></div>
+      <div class="art-tag">Valutazione AI</div>
+    </div>
+    <div class="article">
+      <div class="art-mark">III<small>Art.</small></div>
+      <div class="art-body"><h3>Colloquio orale</h3><p>L'AI fa la commissione. Rispondi come in aula; sei valutato su contenuto ed esposizione.</p></div>
+      <div class="art-tag">Ruolo commissione</div>
+    </div>
+    <div class="article">
+      <div class="art-mark">IV<small>Art.</small></div>
+      <div class="art-body"><h3>Seconda prova scritta</h3><p>Traccia ministeriale completa, specifica per il tuo indirizzo. Consegna e ricevi correzione.</p></div>
+      <div class="art-tag">Tema completo</div>
+    </div>
+    <div class="article">
+      <div class="art-mark">V<small>Art.</small></div>
+      <div class="art-body"><h3>Prima prova d'italiano</h3><p>Tipologia A, B e C in stile ministeriale: analisi del testo, argomentativo, attualità.</p></div>
+      <div class="art-tag">Tre tipologie</div>
+    </div>
+    <div class="article">
+      <div class="art-mark">VI<small>Art.</small></div>
+      <div class="art-body"><h3>Quiz rapidi</h3><p>Vero o falso, completa la frase, abbinamenti: ripasso veloce tra una prova e l'altra.</p></div>
+      <div class="art-tag">Ripasso lampo</div>
+    </div>
+  </div>
+</section>
+
+<hr class="am-rule">
+
+<!-- ============ MOTORI AI ============ -->
+<section class="am-section">
+  <div class="am-section-head">
+    <span class="am-eyebrow">04 — Motori AI</span>
+    <h2>Scegli il tuo<br><em>commissario artificiale</em>.</h2>
+    <p>Collega un provider con la tua chiave API. Cambialo quando vuoi.</p>
+  </div>
+
+  <div class="motori reveal">
+    <div class="motore">
+      <span class="m-dot" style="background:var(--seal)"></span>
+      <div class="m-name">Anthropic</div>
+      <div class="m-model">claude-sonnet</div>
+      <div class="m-cap"><span class="yes">testo ✓</span><br><span class="yes">foto quaderno ✓</span></div>
+    </div>
+    <div class="motore">
+      <span class="m-dot" style="background:var(--navy)"></span>
+      <div class="m-name">OpenAI</div>
+      <div class="m-model">gpt-4o · 4o-mini</div>
+      <div class="m-cap"><span class="yes">testo ✓</span><br><span class="yes">foto quaderno ✓</span></div>
+    </div>
+    <div class="motore">
+      <span class="m-dot" style="background:var(--navy-2)"></span>
+      <div class="m-name">Gemini</div>
+      <div class="m-model">gemini-1.5-flash</div>
+      <div class="m-cap"><span class="yes">testo ✓</span><br><span class="yes">foto quaderno ✓</span></div>
+    </div>
+    <div class="motore">
+      <span class="m-dot" style="background:var(--ink-3)"></span>
+      <div class="m-name">Groq</div>
+      <div class="m-model">llama-3.3 · gratis</div>
+      <div class="m-cap"><span class="yes">testo ✓</span><br><span class="no">foto quaderno ✕</span></div>
+    </div>
+  </div>
+  <p class="motori-note">La <strong>foto del quaderno</strong> carica le pagine della seconda prova scritta a mano: l'AI le legge e le corregge come un commissario. Richiede Anthropic, OpenAI o Gemini.</p>
+  <p class="motori-fine">Le chiavi restano nel localStorage del browser — mai inviate a server esterni.</p>
+</section>
+
+</div><!-- /am-wrap -->
+
+<!-- ============ CTA ============ -->
+<section class="am-section">
+  <div class="am-wrap">
+    <hr class="am-rule-double" style="margin-bottom:64px;">
+    <div class="colophon-cta">
+      <div class="cc-seal" id="sealCta"></div>
+      <h2>Ad maiora semper —<br><em>onward to greater things</em>.</h2>
+      <p>Nessun account, nessun abbonamento. Solo la tua chiave API e la materia su cui vuoi essere interrogato.</p>
+      <a href="exam.html" class="am-btn am-btn-seal" style="font-size:13px;padding:16px 38px;"><span>Entra in aula</span><span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="am-foot">
+  <div class="am-wrap">
+    <div>
+      <a href="index.html" class="am-wordmark" style="font-size:20px;">Ad <em>Maiora</em></a>
+      <small style="display:block;margin-top:10px;">Pensato per gli studenti italiani.<br>L'AI gira nel tuo browser — privacy per costruzione.</small>
+    </div>
+    <div class="foot-links">
+      <a href="#indirizzi">Indirizzi</a>
+      <a href="#modalita">Modalità</a>
+      <a href="prompts.html">Prompt</a>
+      <a href="exam.html">Aula</a>
+    </div>
+    <small>Sessione MMXXVI · v2<br>Ad Maiora Semper</small>
+  </div>
 </footer>
 
-<script>
-// Scroll reveal
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) { e.target.classList.add('visible'); }
-  });
-}, { threshold: 0.1 });
+</div><!-- /am-shell -->
 
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+<!-- official seal SVG (engraved stamp) -->
+<template id="sealSvg">
+<svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs>
+    <path id="circTop" d="M100,100 m-74,0 a74,74 0 1,1 148,0" />
+    <path id="circBot" d="M100,100 m74,0 a74,74 0 1,1 -148,0" />
+  </defs>
+  <circle cx="100" cy="100" r="92" stroke="currentColor" stroke-width="1.4" opacity="0.5"/>
+  <circle cx="100" cy="100" r="86" stroke="currentColor" stroke-width="2.4"/>
+  <circle cx="100" cy="100" r="58" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <text font-family="'IBM Plex Mono',monospace" font-size="11" letter-spacing="4" fill="currentColor">
+    <textPath href="#circTop" startOffset="50%" text-anchor="middle">· ESAME DI STATO ·</textPath>
+  </text>
+  <text font-family="'IBM Plex Mono',monospace" font-size="11" letter-spacing="4" fill="currentColor">
+    <textPath href="#circBot" startOffset="50%" text-anchor="middle">· AD MAIORA SEMPER ·</textPath>
+  </text>
+  <!-- central star -->
+  <g transform="translate(100,100)" stroke="currentColor" stroke-width="1.4" fill="none">
+    <path d="M0,-30 L7,-9 L29,-9 L11,4 L18,26 L0,12 L-18,26 L-11,4 L-29,-9 L-7,-9 Z" fill="currentColor"/>
+  </g>
+  <line x1="40" y1="100" x2="58" y2="100" stroke="currentColor" stroke-width="1.2"/>
+  <line x1="142" y1="100" x2="160" y2="100" stroke="currentColor" stroke-width="1.2"/>
+</svg>
+</template>
+
+<script>
+// inject seal
+const sealMarkup = document.getElementById('sealSvg').innerHTML;
+document.getElementById('sealStage').innerHTML = sealMarkup;
+document.getElementById('sealCta').innerHTML = sealMarkup;
+document.querySelector('#sealStage svg').style.color = 'var(--seal)';
+document.querySelector('#sealCta svg').style.color = 'var(--seal)';
+
+// scroll reveal — progressive enhancement, with hard failsafe so content
+// can never stay hidden even if the observer never fires.
+document.documentElement.classList.add('js-reveal');
+var revealEls = document.querySelectorAll('.reveal');
+if ('IntersectionObserver' in window) {
+  const io = new IntersectionObserver((es)=>{
+    es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  },{threshold:0.08, rootMargin:'0px 0px -8% 0px'});
+  revealEls.forEach(el=>io.observe(el));
+  // reveal anything already within the viewport on load
+  const showInView = ()=>revealEls.forEach(el=>{ if(el.getBoundingClientRect().top < window.innerHeight*0.95) el.classList.add('in'); });
+  window.addEventListener('load', showInView);
+  showInView();
+  // failsafe: never leave content hidden
+  setTimeout(()=>revealEls.forEach(el=>el.classList.add('in')), 2600);
+} else {
+  revealEls.forEach(el=>el.classList.add('in'));
+}
 </script>
 </body>
 </html>

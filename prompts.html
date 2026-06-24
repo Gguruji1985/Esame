@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MaturaAI — Prompt per ChatGPT & AI</title>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Ad Maiora — Prompt per l'AI</title>
+<link rel="stylesheet" href="assets/system.css">
 <style>
-:root{--bg:#080808;--surface:#141414;--surface2:#1c1c1c;--border:#232323;--border2:#2e2e2e;--text:#f2ede4;--text2:#7a756d;--text3:#3d3a36;--gold:#c8a84b;--gold2:#e6c96e;--green:#4a9e6e;--red:#c94f4f;--blue:#4f87c9;--purple:#8f6abf;}
+:root{--bg:#F4EFE3;--surface:#FBF8F0;--surface2:#EFE7D6;--border:#D8CFB9;--border2:#C7BCA0;--text:#182438;--text2:#4A5667;--text3:#8B8979;--gold:#1E3E6E;--gold2:#2B538C;--green:#3C7A53;--red:#9D2B23;--blue:#1E3E6E;--purple:#6B4FA0;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+body{font-family:'Newsreader',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 40px;background:rgba(8,8,8,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
-.logo{font-family:'Instrument Serif',serif;font-size:20px;color:var(--text);text-decoration:none;}
+.logo{font-family:'Newsreader',serif;font-size:20px;color:var(--text);text-decoration:none;}
 .logo em{color:var(--gold2);font-style:italic;}
 .nav-back{font-size:13px;color:var(--text2);text-decoration:none;transition:color .2s;}
 .nav-back:hover{color:var(--text);}
@@ -19,8 +19,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 
 /* HERO */
 .hero{text-align:center;padding:40px 0 48px;}
-.hero-badge{display:inline-block;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.15em;color:var(--gold);border:1px solid rgba(200,168,75,.3);border-radius:999px;padding:5px 14px;margin-bottom:18px;text-transform:uppercase;}
-.hero h1{font-family:'Instrument Serif',serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:400;line-height:1.1;margin-bottom:12px;}
+.hero-badge{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.15em;color:var(--gold);border:1px solid rgba(200,168,75,.3);border-radius:999px;padding:5px 14px;margin-bottom:18px;text-transform:uppercase;}
+.hero h1{font-family:'Newsreader',serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:400;line-height:1.1;margin-bottom:12px;}
 .hero h1 em{font-style:italic;color:var(--gold2);}
 .hero p{font-size:15px;color:var(--text2);max-width:540px;margin:0 auto 20px;line-height:1.7;}
 
@@ -31,18 +31,18 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 
 /* SUBJECT CUSTOMIZER */
 .customizer{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:28px;}
-.customizer-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;}
+.customizer-title{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;}
 .cust-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
 @media(max-width:500px){.cust-row{grid-template-columns:1fr;}}
-label.lbl{font-size:11px;color:var(--text3);margin-bottom:5px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.08em;display:block;}
-input[type=text],select{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Syne',sans-serif;font-size:16px;padding:9px 12px;outline:none;transition:border-color .2s;appearance:none;}
+label.lbl{font-size:11px;color:var(--text3);margin-bottom:5px;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.08em;display:block;}
+input[type=text],select{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Newsreader',sans-serif;font-size:16px;padding:9px 12px;outline:none;transition:border-color .2s;appearance:none;}
 input:focus,select:focus{border-color:var(--gold);}
 input::placeholder{color:var(--text3);}
 
 /* SECTION HEADERS */
 .section-head{margin:32px 0 14px;}
-.section-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
-.section-title{font-family:'Instrument Serif',serif;font-size:1.6rem;font-weight:400;}
+.section-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+.section-title{font-family:'Newsreader',serif;font-size:1.6rem;font-weight:400;}
 .section-title em{font-style:italic;color:var(--gold2);}
 
 /* PROMPT CARDS */
@@ -50,7 +50,7 @@ input::placeholder{color:var(--text3);}
 .prompt-top{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px;}
 .prompt-name{font-size:15px;font-weight:700;color:var(--text);}
 .prompt-desc{font-size:12px;color:var(--text2);margin-top:2px;font-weight:400;}
-.badge{font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}
+.badge{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:3px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}
 .b-mc{background:rgba(143,106,191,.15);color:var(--purple);border:1px solid rgba(143,106,191,.3);}
 .b-open{background:rgba(79,135,201,.15);color:var(--blue);border:1px solid rgba(79,135,201,.3);}
 .b-oral{background:rgba(200,168,75,.12);color:var(--gold);border:1px solid rgba(200,168,75,.25);}
@@ -63,12 +63,12 @@ input::placeholder{color:var(--text3);}
 .b-prima{background:rgba(200,168,75,.12);color:var(--gold);border:1px solid rgba(200,168,75,.3);}
 
 .prompt-box{position:relative;margin:0 18px 14px;}
-.prompt-text{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:14px 50px 14px 14px;font-family:'DM Mono',monospace;font-size:12px;line-height:1.8;color:var(--text2);white-space:pre-wrap;word-break:break-word;max-height:180px;overflow-y:auto;}
+.prompt-text{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:14px 50px 14px 14px;font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.8;color:var(--text2);white-space:pre-wrap;word-break:break-word;max-height:180px;overflow-y:auto;}
 .prompt-text.expanded{max-height:none;}
-.copy-btn{position:absolute;top:10px;right:10px;background:var(--surface);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;font-size:11px;font-family:'DM Mono',monospace;color:var(--text2);cursor:pointer;transition:all .15s;}
+.copy-btn{position:absolute;top:10px;right:10px;background:var(--surface);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--text2);cursor:pointer;transition:all .15s;}
 .copy-btn:hover{background:var(--gold);border-color:var(--gold);color:#080808;}
 .copy-btn.copied{background:var(--green);border-color:var(--green);color:#080808;}
-.expand-btn{background:none;border:none;font-size:11px;font-family:'DM Mono',monospace;color:var(--text3);cursor:pointer;padding:0 18px 12px;display:block;transition:color .15s;}
+.expand-btn{background:none;border:none;font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--text3);cursor:pointer;padding:0 18px 12px;display:block;transition:color .15s;}
 .expand-btn:hover{color:var(--text2);}
 
 /* TIPS BOX */
@@ -101,11 +101,24 @@ hr.div{border:none;border-top:1px solid var(--border);margin:32px 0;}
   .filter-row{gap:6px;}
   .filter-btn{font-size:11px;padding:5px 10px;}
 }
+
+/* ===== Ad Maiora — light-theme contrast & editorial overrides ===== */
+nav{background:rgba(244,239,227,0.9);border-bottom:1px solid var(--border2);}
+nav .logo em{color:#9D2B23;}
+nav .logo{white-space:nowrap;}
+.customizer,.prompt-card{border-radius:5px;}
+input[type=text],select,.prompt-text,.copy-btn,.tip-box,.hero-badge,.ai-link{border-radius:3px;}
+.ai-link{border-radius:999px;}
+.copy-btn:hover{background:var(--text);border-color:var(--text);color:#FBF8F0;}
+.copy-btn.copied{background:var(--green);border-color:var(--green);color:#FBF8F0;}
+.hero h1 em,.section-title em{color:var(--gold2);}
+.hero-badge{color:var(--seal,#9D2B23);border-color:rgba(157,43,35,0.3);}
+.section-label{color:var(--seal,#9D2B23);}
 </style>
 </head>
 <body>
 <nav>
-  <a href="index.html" class="logo">Matura<em>AI</em></a>
+  <a href="index.html" class="logo">Ad <em>Maiora</em></a>
   <a href="index.html" class="nav-back">← Home</a>
 </nav>
 
