@@ -985,7 +985,7 @@ async function subOpen(qe) {
 
 // ---- ORAL ----
 async function gOral(dm, ind) {
-  var sys = 'Sei un commissario d\'esame di maturità (orale)' + ind + '. Genera UNA domanda orale ' + dm + ' per: ' + st.subj + '. JSON solo: {"domanda":"...","suggerimento":"cosa vuole sentire la commissione","voto_max":10}';
+  var sys = 'Sei un commissario d\'esame di maturità (colloquio orale)' + ind + '. Genera UNA domanda orale ' + dm + ' per: ' + st.subj + '. La domanda, quando pertinente, deve invitare a collegamenti con altre discipline (come nel colloquio interdisciplinare reale). JSON solo: {"domanda":"...","suggerimento":"cosa vuole sentire la commissione, inclusi eventuali collegamenti interdisciplinari","voto_max":20}';
   var raw = await callAI(sys, 'Genera domanda orale.');
   var q = safeParseJSON(raw);
   curQ = q.domanda;
@@ -1000,29 +1000,33 @@ async function subOral(qe) {
   if (!ans) { document.getElementById('fa').innerHTML = '<div class="err">Scrivi una risposta.</div>'; return; }
   document.getElementById('aa').querySelectorAll('button,textarea').forEach(function(el) { el.disabled = true; if (el.tagName === 'TEXTAREA') el.readOnly = true; });
   document.getElementById('fa').innerHTML = '<div class="pulse"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
-  var sys = 'Sei un commissario d\'esame (orale). Valuta. Voto 1-10. Domanda: "' + q.domanda + '". JSON solo: {"voto":7,"esposizione":"...","contenuto":"...","consiglio":"..."}';
+  var sys = 'Sei un commissario d\'esame (colloquio orale). Valuta in ventesimi (voto da 1 a 20) su contenuto, esposizione e capacita di collegamento interdisciplinare. Domanda: "' + q.domanda + '". Il campo "voto" deve essere in ventesimi (1-20). JSON solo: {"voto":15,"esposizione":"...","contenuto":"...","collegamenti":"...","consiglio":"..."}';
   try {
     var raw = await callAI(sys, 'Risposta candidato: ' + ans);
     var ev = safeParseJSON(raw);
-    st.total++; st.correct += ev.voto / 10; updScore();
-    document.getElementById('fa').innerHTML = '<div class="fb fbb"><div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px"><span style="font-family:\'Instrument Serif\',serif;font-size:32px;font-style:italic;color:var(--gold2)">' + ev.voto + '/10</span></div><p style="font-size:13px;margin-bottom:6px"><strong>Esposizione:</strong> ' + ev.esposizione + '</p><p style="font-size:13px;margin-bottom:6px"><strong>Contenuto:</strong> ' + ev.contenuto + '</p><p style="font-size:13px;color:var(--gold)">💡 ' + ev.consiglio + '</p></div>';
-    logE({ question:curQ, correct:ev.voto >= 6, vote:ev.voto, mode:'oral', subject:st.subj });
+    var voto20 = Math.max(1, Math.min(20, Math.round(ev.voto)));
+    var voto10 = Math.round(voto20 / 2 * 10) / 10;
+    st.total++; st.correct += voto10 / 10; updScore();
+    var collHtml = ev.collegamenti ? '<p style="font-size:13px;margin-bottom:6px"><strong>Collegamenti:</strong> ' + ev.collegamenti + '</p>' : '';
+    document.getElementById('fa').innerHTML = '<div class="fb fbb"><div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px"><span style="font-family:\'Instrument Serif\',serif;font-size:32px;font-style:italic;color:var(--gold2)">' + voto20 + '/20</span><span style="font-size:12px;color:var(--text2)">\u2248 ' + voto10 + '/10</span></div><p style="font-size:13px;margin-bottom:6px"><strong>Esposizione:</strong> ' + ev.esposizione + '</p><p style="font-size:13px;margin-bottom:6px"><strong>Contenuto:</strong> ' + ev.contenuto + '</p>' + collHtml + '<p style="font-size:13px;color:var(--gold)">💡 ' + ev.consiglio + '</p></div>';
+    logE({ question:curQ, correct:voto20 >= 12, vote:Math.round(voto10), mode:'oral', subject:st.subj });
     document.getElementById('actrow').classList.remove('hidden');
   } catch(e) { document.getElementById('fa').innerHTML = '<div class="err">Errore: ' + e.message + '</div>'; document.getElementById('actrow').classList.remove('hidden'); }
 }
 
 // ---- SECONDA PROVA ----
 async function gSeconda(dm, ind) {
+  var indirizzo = st.ind || 'Istituto Tecnico';
   var sys = [
-    'Sei un membro esperto della commissione ministeriale italiana per la seconda prova scritta degli Esami di Stato (Maturita)' + ind + '.',
-    'Genera un tema di seconda prova per la materia: ' + st.subj + ' con difficolta: ' + dm + '.',
+    'Sei un membro della commissione ministeriale che predispone la seconda prova scritta dell\'Esame di Stato italiano.',
+    'Indirizzo: ' + indirizzo + ' — Disciplina: ' + st.subj + ' — Difficolta richiesta: ' + dm + '.',
     '',
-    'STILE UFFICIALE MINISTERIALE — segui esattamente questo formato:',
-    '- Premessa: contesto tecnico/professionale reale con terminologia specifica della materia (100+ parole)',
-    '- Caso professionale: scenario aziendale o istituzionale reale dettagliato con dati numerici specifici, nomi fittizi di aziende/enti, requisiti funzionali e non funzionali (200+ parole)',
-    '- Prima parte: 5-6 punti tecnici da svolgere obbligatoriamente, ciascuno con sotto-richieste specifiche e precise',
-    '- Seconda parte: 4 quesiti opzionali tra cui il candidato sceglie 2, ognuno su aspetti approfonditi del tema',
-    '- Allegati descritti: dati tecnici, specifiche, schemi logici parziali, tabelle dati in formato testuale',
+    'Genera una traccia di seconda prova COMPLETA che rispetti ESATTAMENTE il formato ministeriale reale, senza inventare sezioni inesistenti.',
+    '',
+    'REGOLE DI FORMATO MINISTERIALE (rispettale rigorosamente):',
+    '1. SCENARIO: presenta uno scenario reale e articolato (azienda, scuola, ente pubblico, struttura sanitaria, startup...) come UN UNICO testo discorsivo continuo, con dati tecnici concreti: numero di utenti/postazioni, sedi, vincoli, requisiti, tecnologie o velocita coinvolte. NON usare etichette tipo "Premessa", "Caso professionale" o "Allegati": NON esistono nelle tracce reali. Lo scenario deve essere un testo unico scorrevole (250+ parole).',
+    '2. PRIMA PARTE: 4 punti numerati da svolgere obbligatoriamente, ciascuno con richieste tecniche precise e legate allo scenario.',
+    '3. SECONDA PARTE: 4 quesiti numerati tra cui il candidato ne sceglie 2. Almeno due quesiti devono iniziare con "In relazione al tema proposto nella prima parte, ..." e approfondire aspetti tecnici della disciplina.',
     '',
     'ESEMPI DI STILE (per Informatica): la traccia reale 2025 chiedeva di progettare una piattaforma web per il labeling di fake news con schema ER, SQL, query specifiche e codice lato client/server.',
     'ESEMPI DI STILE (per Sistemi e Reti): la traccia reale 2024 chiedeva di progettare una rete in fibra ottica regionale con piano di indirizzamento IP, dispositivi, sicurezza e schedulazione backup.',
@@ -1032,40 +1036,45 @@ async function gSeconda(dm, ind) {
     '2. NO newline letterali nelle stringhe JSON',
     '3. NO caratteri speciali non escaped',
     'Rispondi SOLO con questo JSON (nessun altro testo):',
-    '{"titolo":"...","premessa":"...","caso":"...","punti_prima_parte":["1. ...","2. ...","3. ...","4. ...","5. ..."],"quesiti_seconda_parte":["I. ...","II. ...","III. ...","IV. ..."],"allegati":"...","durata_ore":6}'
+    '{"titolo":"...","scenario":"...","punti_prima_parte":["1. ...","2. ...","3. ...","4. ..."],"quesiti_seconda_parte":["1. ...","2. ...","3. ...","4. ..."]}'
   ].join(' ');
-  var raw = await callAI(sys, 'Genera il tema completo di seconda prova esattamente come nei veri esami ministeriali italiani. Usa terminologia tecnica precisa, dati numerici realistici e richieste operative concrete.', 20000);
+  var raw = await callAI(sys, 'Genera il tema completo di seconda prova esattamente come nei veri esami ministeriali italiani. Usa terminologia tecnica precisa, dati numerici realistici e richieste operative concrete. Lo scenario deve essere un testo unico discorsivo senza etichette di sezione.', 20000);
   var q = safeParseJSON(raw);
-  // Support both old format (punti) and new format (punti_prima_parte)
+  // Backward-compat: fold any legacy premessa/caso/introduzione/traccia fields into a single scenario
+  if (!q.scenario) {
+    var parts = [];
+    if (q.premessa || q.introduzione) parts.push(q.premessa || q.introduzione);
+    if (q.caso || q.traccia) parts.push(q.caso || q.traccia);
+    if (parts.length) q.scenario = parts.join(' ');
+  }
   if (!q.punti_prima_parte && q.punti) { q.punti_prima_parte = q.punti; }
   if (!q.quesiti_seconda_parte) { q.quesiti_seconda_parte = []; }
-  if (!q.premessa && q.introduzione) { q.premessa = q.introduzione; }
-  if (!q.caso && q.traccia) { q.caso = q.traccia; }
   curQ = q.titolo;
   var pl1 = q.punti_prima_parte.map(function(p,i) {
     var txt = p.replace(/^\d+\.\s*/, '');
     return '<li style="margin-bottom:12px;line-height:1.75"><strong style="color:var(--gold)">' + (i+1) + '.</strong> ' + txt + '</li>';
   }).join('');
   var pl2 = q.quesiti_seconda_parte.length > 0 ? q.quesiti_seconda_parte.map(function(p,i) {
-    var txt = p.replace(/^[IVX]+\.\s*/, '');
-    var rom = ['I','II','III','IV'][i] || (i+1);
-    return '<li style="margin-bottom:12px;line-height:1.75"><strong style="color:var(--blue)">' + rom + '.</strong> ' + txt + '</li>';
+    var txt = p.replace(/^\d+\.\s*/, '');
+    return '<li style="margin-bottom:12px;line-height:1.75"><strong style="color:var(--blue)">' + (i+1) + '.</strong> ' + txt + '</li>';
   }).join('') : '';
-  var allegati = q.allegati ? '<div style="margin-top:16px;padding:12px 16px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;font-size:13px;color:var(--text2);line-height:1.7"><strong style="color:var(--text)">📎 Allegati forniti:</strong> ' + q.allegati + '</div>' : '';
-  var secondaParte = pl2 ? '<div style="margin-top:20px;padding:14px 16px;background:rgba(79,135,201,0.06);border:1px solid rgba(79,135,201,0.25);border-radius:10px"><p style="font-size:11px;color:var(--blue);font-family:\'DM Mono\',monospace;margin-bottom:10px;text-transform:uppercase;letter-spacing:.1em">Seconda parte — scegli 2 quesiti su 4</p><ul style="font-size:14px;padding-left:8px;line-height:1.8;color:var(--text);list-style:none">' + pl2 + '</ul></div>' : '';
+  var secondaParte = pl2 ? '<div style="margin-top:20px;padding:14px 16px;background:rgba(79,135,201,0.06);border:1px solid rgba(79,135,201,0.25);border-radius:10px"><p style="font-size:11px;color:var(--blue);font-family:\'DM Mono\',monospace;margin-bottom:10px;text-transform:uppercase;letter-spacing:.1em">Seconda parte — rispondi a 2 dei 4 quesiti</p><ul style="font-size:14px;padding-left:8px;line-height:1.8;color:var(--text);list-style:none">' + pl2 + '</ul></div>' : '';
+  var footer = '<div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border2)"><p style="font-size:11px;color:var(--text3);line-height:1.85;font-family:\'DM Mono\',monospace">Durata massima della prova: da 6 a 8 ore.<br>È consentito l\'uso di manuali tecnici e di calcolatrici non programmabili.<br>È consentito l\'uso del dizionario bilingue (italiano-lingua del paese di provenienza) per i candidati di madrelingua non italiana.<br>Non è consentito lasciare l\'Istituto prima che siano trascorse 3 ore dalla consegna della traccia.</p></div>';
   var qenc = encodeURIComponent(JSON.stringify(q));
   document.getElementById('qa').innerHTML =
-    '<p style="font-size:11px;color:var(--text3);font-family:\'DM Mono\',monospace;margin-bottom:12px;letter-spacing:.1em">SECONDA PROVA SCRITTA · ESAME DI STATO · ' + q.durata_ore + ' ORE</p>' +
-    '<p class="qtext" style="margin-bottom:16px">' + q.titolo + '</p>' +
-    (q.premessa ? '<div style="margin-bottom:14px"><p style="font-size:11px;color:var(--text3);font-family:\'DM Mono\',monospace;margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Premessa</p><p style="font-size:14px;color:var(--text2);line-height:1.8">' + q.premessa + '</p></div>' : '') +
-    (q.caso ? '<div style="margin-bottom:16px"><p style="font-size:11px;color:var(--text3);font-family:\'DM Mono\',monospace;margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Caso professionale</p><p style="font-size:14px;color:var(--text);line-height:1.8">' + q.caso + '</p></div>' : '') +
+    '<p style="font-size:11px;color:var(--text3);font-family:\'DM Mono\',monospace;margin-bottom:4px;letter-spacing:.1em">MINISTERO DELL\'ISTRUZIONE E DEL MERITO</p>' +
+    '<p style="font-size:10px;color:var(--text3);font-family:\'DM Mono\',monospace;margin-bottom:4px;letter-spacing:.08em">ESAME DI STATO CONCLUSIVO DEL SECONDO CICLO DI ISTRUZIONE</p>' +
+    '<p style="font-size:10px;color:var(--text3);font-family:\'DM Mono\',monospace;margin-bottom:12px;letter-spacing:.06em">Indirizzo: ' + indirizzo + ' · Disciplina: ' + st.subj + '</p>' +
+    '<p class="qtext" style="margin-bottom:14px">' + q.titolo + '</p>' +
+    '<p style="font-size:13px;color:var(--text2);margin-bottom:16px;font-style:italic">Il candidato svolga la prima parte della prova e risponda a due tra i quesiti proposti nella seconda parte.</p>' +
+    (q.scenario ? '<div style="margin-bottom:16px"><p style="font-size:14px;color:var(--text);line-height:1.85">' + q.scenario + '</p></div>' : '') +
     '<div style="padding:14px 16px;background:rgba(200,168,75,0.05);border:1px solid rgba(200,168,75,0.2);border-radius:10px;margin-bottom:0">' +
-    '<p style="font-size:11px;color:var(--gold);font-family:\'DM Mono\',monospace;margin-bottom:10px;text-transform:uppercase;letter-spacing:.1em">Prima parte — da svolgere obbligatoriamente</p>' +
-    '<p style="font-size:13px;color:var(--text2);margin-bottom:10px;font-style:italic">Il candidato svolga tutti i punti della prima parte.</p>' +
+    '<p style="font-size:11px;color:var(--gold);font-family:\'DM Mono\',monospace;margin-bottom:10px;text-transform:uppercase;letter-spacing:.1em">Prima parte</p>' +
+    '<p style="font-size:13px;color:var(--text2);margin-bottom:10px;font-style:italic">Il candidato analizzi la realtà di riferimento e, formulate le opportune ipotesi aggiuntive, contribuisca alla stesura del progetto svolgendo i seguenti punti:</p>' +
     '<ul style="font-size:14px;padding-left:8px;line-height:1.8;color:var(--text);list-style:none">' + pl1 + '</ul>' +
     '</div>' +
     secondaParte +
-    allegati;
+    footer;
   document.getElementById('aa').innerHTML =
     '<div style="margin-top:16px">' +
     '<div style="display:flex;gap:8px;margin-bottom:10px">' +
@@ -1391,25 +1400,28 @@ async function gPrima(dm, ind) {
   const sysA = [
     'Sei un commissario ministeriale italiano per la prima prova scritta degli Esami di Stato (Maturit\u00e0).',
     'Genera una traccia realistica di Tipologia A \u2014 Analisi e interpretazione di un testo letterario italiano.',
-    'Includi un brano letterario autentico (autore del Novecento italiano: Ungaretti, Montale, Pirandello, Svevo, Verga, Pascoli, D\'Annunzio, Moravia, Calvino, Pavese, Primo Levi), note contestuali, e 5 consegne di analisi strutturate.',
+    'Includi un testo autentico (poesia o prosa) di un autore italiano dall\'Unit\u00e0 d\'Italia a oggi (es. Verga, Pascoli, D\'Annunzio, Pirandello, Svevo, Ungaretti, Montale, Saba, Moravia, Calvino, Pavese, Primo Levi), con autore, opera e anno, e un breve cappello introduttivo che contestualizzi autore e brano.',
+    'Le consegne devono essere divise in DUE sezioni distinte: "comprensione_analisi" con 4-6 domande numerate (contenuto, parafrasi/sintesi, aspetti metrici o sintattici, figure retoriche, stile, temi) e "interpretazione" con UNA richiesta di interpretazione complessiva con collegamenti al contesto storico-culturale o ad altri testi/autori.',
     'Difficolt\u00e0: ' + dm + '.',
-    'Rispondi SOLO in JSON valido: {"titolo":"...","autore":"...","opera":"...","anno":"...","brano":"...","note_contestuali":"...","consegne":["1. ...","2. ...","3. ...","4. ...","5. ..."],"durata_ore":6}'
+    'Rispondi SOLO in JSON valido: {"titolo":"...","autore":"...","opera":"...","anno":"...","brano":"...","note_contestuali":"...","comprensione_analisi":["1. ...","2. ...","3. ...","4. ..."],"interpretazione":"...","durata_ore":6}'
   ].join(' ');
 
   const sysB = [
     'Sei un commissario ministeriale italiano per la prima prova scritta degli Esami di Stato (Maturit\u00e0).',
     'Genera una traccia realistica di Tipologia B \u2014 Analisi e produzione di un testo argomentativo.',
-    'Includi: documento di riferimento (articolo, saggio o discorso) da uno dei 4 ambiti (artistico-letterario, scientifico-tecnologico, storico-politico, socio-economico), autore, titolo, testo (200+ parole), e 3 consegne precise.',
+    'Scegli uno degli ambiti ministeriali (artistico, letterario, storico, filosofico, scientifico, tecnologico, economico, sociale) e includi un testo di riferimento (estratto da articolo, saggio o discorso) con autore, titolo e fonte (200+ parole).',
+    'Le consegne devono essere divise in DUE sezioni distinte: "comprensione_analisi" con 4 domande numerate (comprensione/sintesi del contenuto; tesi e argomenti dell\'autore; struttura e connettivi del ragionamento; scelte lessicali e stilistiche) e "produzione" con UNA sola consegna: scrivere un testo argomentativo in cui lo studente esprime e sostiene la propria posizione sul tema, con argomenti coerenti e riferimenti culturali.',
     'Difficolt\u00e0: ' + dm + '.',
-    'Rispondi SOLO in JSON valido: {"titolo":"...","ambito":"...","documento_autore":"...","documento_titolo":"...","documento_testo":"...","consegne":["1. ...","2. ...","3. ..."],"durata_ore":6}'
+    'Rispondi SOLO in JSON valido: {"titolo":"...","ambito":"...","documento_autore":"...","documento_titolo":"...","documento_testo":"...","comprensione_analisi":["1. ...","2. ...","3. ...","4. ..."],"produzione":"...","durata_ore":6}'
   ].join(' ');
 
   const sysC = [
     'Sei un commissario ministeriale italiano per la prima prova scritta degli Esami di Stato (Maturit\u00e0).',
     'Genera una traccia realistica di Tipologia C \u2014 Riflessione critica di carattere espositivo-argomentativo su tematiche di attualit\u00e0.',
-    'Includi: tema rilevante, spunto di riflessione con contesto (100+ parole), e 3 consegne.',
+    'Includi: un breve testo o spunto (citazione, brano d\'autore, dato o notizia) con la relativa fonte, su un tema attuale (tecnologia e societ\u00e0, ambiente, identit\u00e0, lavoro, memoria storica, globalizzazione, ecc.).',
+    'IMPORTANTE: la Tipologia C ha UNA UNICA consegna aperta, NON una lista di domande come nelle Tipologie A e B. Fornisci quindi un solo invito alla riflessione che chieda di sviluppare una trattazione personale, ordinata e coerente, con invito a dare un titolo complessivo ed eventualmente articolare in paragrafi titolati.',
     'Difficolt\u00e0: ' + dm + '.',
-    'Rispondi SOLO in JSON valido: {"titolo":"...","tema":"...","spunto":"...","contesto":"...","consegne":["1. ...","2. ...","3. ..."],"suggerimento":"...","durata_ore":6}'
+    'Rispondi SOLO in JSON valido: {"titolo":"...","tema":"...","spunto":"...","fonte":"...","consegna_unica":"...","durata_ore":6}'
   ].join(' ');
 
   const sys = tipologia === 'A' ? sysA : tipologia === 'B' ? sysB : sysC;
@@ -1443,26 +1455,46 @@ async function gPrima(dm, ind) {
     html += '<div style="padding:16px;background:rgba(143,106,191,0.05);border:1px solid rgba(143,106,191,0.2);border-radius:10px">';
     html += '<p style="font-size:11px;color:var(--purple);font-family:\'DM Mono\',monospace;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Tema: ' + (q.tema||'') + '</p>';
     html += '<p style="font-size:14px;line-height:1.85;color:var(--text);white-space:pre-wrap">' + (q.spunto||'') + '</p>';
-    if (q.contesto) html += '<p style="font-size:13px;color:var(--text2);margin-top:10px;line-height:1.7">' + q.contesto + '</p>';
+    if (q.fonte) html += '<p style="font-size:12px;color:var(--text3);margin-top:10px;font-style:italic">Fonte: ' + q.fonte + '</p>';
     html += '</div></div>';
   }
 
-  // Consegne — styled exactly like seconda prova prima parte
-  const consegne = q.consegne || [];
-  if (consegne.length) {
-    const cl = consegne.map(function(c, i) {
-      const txt = c.replace(/^\d+\.\s*/, '');
-      return '<li style="margin-bottom:12px;line-height:1.75"><strong style="color:' + color + '">' + (i+1) + '.</strong> ' + txt + '</li>';
+  // Consegne — rendered per tipologia following the real ministerial structure
+  const noteRisposta = '<p style="font-size:12px;color:var(--text3);font-style:italic;margin-bottom:10px">Puoi rispondere punto per punto o con un unico discorso.</p>';
+  function renderSezione(label, items, accent) {
+    if (!items || !items.length) return '';
+    const cl = items.map(function(c, i) {
+      const txt = String(c).replace(/^\d+\.\s*/, '');
+      return '<li style="margin-bottom:12px;line-height:1.75"><strong style="color:' + accent + '">' + (i+1) + '.</strong> ' + txt + '</li>';
     }).join('');
-    html += '<div style="padding:14px 16px;background:rgba(200,168,75,0.05);border:1px solid rgba(200,168,75,0.2);border-radius:10px;margin-bottom:0">';
-    html += '<p style="font-size:11px;color:var(--gold);font-family:\'DM Mono\',monospace;margin-bottom:10px;text-transform:uppercase;letter-spacing:.1em">Consegne \u2014 da svolgere obbligatoriamente</p>';
-    html += '<p style="font-size:13px;color:var(--text2);margin-bottom:10px;font-style:italic">Il candidato svolga tutte le consegne.</p>';
-    html += '<ul style="font-size:14px;padding-left:8px;line-height:1.8;color:var(--text);list-style:none">' + cl + '</ul>';
-    html += '</div>';
+    return '<div style="padding:14px 16px;background:rgba(200,168,75,0.05);border:1px solid rgba(200,168,75,0.2);border-radius:10px;margin-top:14px">' +
+      '<p style="font-size:11px;color:' + accent + ';font-family:\'DM Mono\',monospace;margin-bottom:10px;text-transform:uppercase;letter-spacing:.1em">' + label + '</p>' +
+      noteRisposta +
+      '<ul style="font-size:14px;padding-left:8px;line-height:1.8;color:var(--text);list-style:none">' + cl + '</ul>' +
+      '</div>';
+  }
+  function renderConsegnaUnica(label, text, accent) {
+    if (!text) return '';
+    return '<div style="padding:14px 16px;background:rgba(143,106,191,0.05);border:1px solid rgba(143,106,191,0.25);border-radius:10px;margin-top:14px">' +
+      '<p style="font-size:11px;color:' + accent + ';font-family:\'DM Mono\',monospace;margin-bottom:10px;text-transform:uppercase;letter-spacing:.1em">' + label + '</p>' +
+      '<p style="font-size:14px;line-height:1.85;color:var(--text)">' + text + '</p>' +
+      '</div>';
   }
 
-  if (q.suggerimento) {
-    html += '<div style="margin-top:12px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;font-size:13px;color:var(--text2);line-height:1.7">\ud83d\udca1 ' + q.suggerimento + '</div>';
+  // Backward-compat: fold legacy flat "consegne" into the new fields
+  if (q.consegne && q.consegne.length) {
+    if (tipologia === 'C' && !q.consegna_unica) { q.consegna_unica = q.consegne.join(' '); }
+    else if (!q.comprensione_analisi) { q.comprensione_analisi = q.consegne; }
+  }
+
+  if (tipologia === 'A') {
+    html += renderSezione('Comprensione e analisi', q.comprensione_analisi, color);
+    html += renderConsegnaUnica('Interpretazione', q.interpretazione, color);
+  } else if (tipologia === 'B') {
+    html += renderSezione('Comprensione e analisi', q.comprensione_analisi, color);
+    html += renderConsegnaUnica('Produzione', q.produzione, color);
+  } else {
+    html += renderConsegnaUnica('Consegna', q.consegna_unica, color);
   }
 
   document.getElementById('qa').innerHTML = html;
@@ -1489,19 +1521,21 @@ async function subPrima(qe) {
   document.getElementById('aa').querySelectorAll('button,textarea').forEach(function(el) { el.disabled = true; if (el.tagName === 'TEXTAREA') el.readOnly = true; });
   document.getElementById('fa').innerHTML = '<div class="pulse"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
 
-  const criteri = 'Valuta con voto da 1 a 10 secondo i criteri ministeriali: pertinenza alla traccia e rispetto delle consegne, correttezza e ricchezza linguistica, coerenza argomentativa e organizzazione del testo, originalit\u00e0 e approfondimento critico.';
+  const criteri = 'Valuta secondo la griglia ministeriale reale assegnando un punteggio in ventesimi (da 1 a 20), sommando i quattro indicatori ufficiali: 1) padronanza linguistica (lessico, sintassi, ortografia); 2) pertinenza alla traccia e rispetto delle consegne; 3) coerenza e coesione del percorso argomentativo/espositivo; 4) ricchezza e congruenza dei riferimenti culturali e capacita critica.';
   const contesto = tipologia === 'A' ? 'Traccia Tipologia A \u2014 Analisi del testo: "' + (q.autore||'') + ' \u2014 ' + (q.titolo||'') + '".' :
                    tipologia === 'B' ? 'Traccia Tipologia B \u2014 Testo argomentativo, ambito ' + (q.ambito||'') + ': "' + (q.titolo||'') + '".' :
                    'Traccia Tipologia C \u2014 Tema di attualit\u00e0: "' + (q.titolo||'') + '".';
-  const sys = 'Sei un commissario della prima prova scritta degli Esami di Stato italiani. ' + criteri + ' ' + contesto + ' JSON solo: {"voto":7,"pertinenza":"...","linguistica":"...","argomentazione":"...","originalita":"...","suggerimento":"..."}';
+  const sys = 'Sei un commissario della prima prova scritta degli Esami di Stato italiani. ' + criteri + ' ' + contesto + ' Il campo "voto" deve essere il totale in ventesimi (1-20). JSON solo: {"voto":15,"pertinenza":"...","linguistica":"...","argomentazione":"...","originalita":"...","suggerimento":"..."}';
 
   try {
     const raw = await callAI(sys, 'Elaborato dello studente:\n\n' + ans, 1500);
     const ev = safeParseJSON(raw);
     if (!ev || ev.voto == null) throw new Error('Risposta non valida.');
-    const col = ev.voto >= 7 ? 'var(--green)' : ev.voto >= 5 ? 'var(--gold)' : 'var(--red)';
+    const voto20 = Math.max(1, Math.min(20, Math.round(ev.voto)));
+    const voto10 = Math.round(voto20 / 2 * 10) / 10;
+    const col = voto20 >= 14 ? 'var(--green)' : voto20 >= 10 ? 'var(--gold)' : 'var(--red)';
     let fbHtml = '<div class="fb fbg">';
-    fbHtml += '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:14px"><span style="font-family:\'Instrument Serif\',serif;font-size:36px;font-style:italic;color:' + col + '">' + ev.voto + '/10</span><span style="font-size:13px;color:var(--text2)">valutazione commissione</span></div>';
+    fbHtml += '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:14px"><span style="font-family:\'Instrument Serif\',serif;font-size:36px;font-style:italic;color:' + col + '">' + voto20 + '/20</span><span style="font-size:13px;color:var(--text2)">valutazione commissione (\u2248 ' + voto10 + '/10)</span></div>';
     if (ev.pertinenza)     fbHtml += '<p style="font-size:13px;margin-bottom:6px"><strong>Pertinenza:</strong> ' + ev.pertinenza + '</p>';
     if (ev.linguistica)    fbHtml += '<p style="font-size:13px;margin-bottom:6px"><strong>Linguistica:</strong> ' + ev.linguistica + '</p>';
     if (ev.argomentazione) fbHtml += '<p style="font-size:13px;margin-bottom:6px"><strong>Argomentazione:</strong> ' + ev.argomentazione + '</p>';
@@ -1509,7 +1543,7 @@ async function subPrima(qe) {
     if (ev.suggerimento)   fbHtml += '<p style="font-size:13px;color:var(--gold)">\ud83d\udca1 ' + ev.suggerimento + '</p>';
     fbHtml += '</div>';
     document.getElementById('fa').innerHTML = fbHtml;
-    logE({ question:curQ, correct:ev.voto >= 6, vote:ev.voto, mode:'prima', subject:st.subj });
+    logE({ question:curQ, correct:voto20 >= 12, vote:Math.round(voto10), mode:'prima', subject:st.subj });
     document.getElementById('actrow').classList.remove('hidden');
   } catch(e) { document.getElementById('fa').innerHTML = '<div class="err">Errore: ' + e.message + '</div>'; document.getElementById('actrow').classList.remove('hidden'); }
 }
