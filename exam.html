@@ -1034,7 +1034,7 @@ async function gSeconda(dm, ind) {
     'Rispondi SOLO con questo JSON (nessun altro testo):',
     '{"titolo":"...","premessa":"...","caso":"...","punti_prima_parte":["1. ...","2. ...","3. ...","4. ...","5. ..."],"quesiti_seconda_parte":["I. ...","II. ...","III. ...","IV. ..."],"allegati":"...","durata_ore":6}'
   ].join(' ');
-  var raw = await callAI(sys, 'Genera il tema completo di seconda prova esattamente come nei veri esami ministeriali italiani. Usa terminologia tecnica precisa, dati numerici realistici e richieste operative concrete.', 8000);
+  var raw = await callAI(sys, 'Genera il tema completo di seconda prova esattamente come nei veri esami ministeriali italiani. Usa terminologia tecnica precisa, dati numerici realistici e richieste operative concrete.', 20000);
   var q = safeParseJSON(raw);
   // Support both old format (punti) and new format (punti_prima_parte)
   if (!q.punti_prima_parte && q.punti) { q.punti_prima_parte = q.punti; }
@@ -1413,7 +1413,7 @@ async function gPrima(dm, ind) {
   ].join(' ');
 
   const sys = tipologia === 'A' ? sysA : tipologia === 'B' ? sysB : sysC;
-  const raw = await callAI(sys, 'Genera la traccia completa di prima prova scritta.', 8000);
+  const raw = await callAI(sys, 'Genera la traccia completa di prima prova scritta.', 20000);
   const q = safeParseJSON(raw);
   if (!q || !q.titolo) throw new Error('Risposta AI non valida. Riprova.');
   curQ = q.titolo;
